@@ -1,7 +1,6 @@
 aid: callidus-legal-ai
 name: Callidus Legal AI
-description: 'Callidus Legal AI is a company surfaced via the API Evangelist harvest backlog (source:
-  secondary-market) and added to the network as a stub for full-pipeline profiling.'
+description: 'Callidus Legal AI, now operating as StrongSuit, provides an advanced AI-driven legal research and litigation platform. It offers case law search, contract drafting, document review, oral argument simulation, and workflow automation for lawyers and legal teams. The platform integrates a comprehensive U.S. case law database with generative AI to streamline research, drafting, and risk management, targeting appellate litigators and corporate legal departments.'
 url: https://raw.githubusercontent.com/api-evangelist/callidus-legal-ai/refs/heads/main/apis.yml
 x-type: company
 x-source: harvest:secondary-market
@@ -11,13 +10,25 @@ specificationVersion: '0.20'
 created: '2026-10-06'
 modified: '2026-10-06'
 tags:
-- Company
-apis: []
+- LegalTech
+- AI
+- Litigation
+- ContractAutomation
+- Research
+apis:
+- name: CallidusAI
+  description: Callidus AI backend API providing legal research, drafting, and workflow automation.
+  humanURL: https://api.app.strongsuit.com
+  baseURL: https://api.app.strongsuit.com
+  openapi:
+    url: openapi/callidus-legal-ai-openapi.json
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: DomainSecurity
+  url: security/callidus-legal-ai-domain-security.yml
 - type: Website
-  url: https://www.nasdaqprivatemarket.com/
+  url: https://strongsuit.com
