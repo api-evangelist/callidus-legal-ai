@@ -8,6 +8,11 @@ hosts:
   cert_expires: Dec 15 18:04:32 2026 GMT
   hsts: true
   hsts_max_age: 86400
+- host: api.app.strongsuit.com
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Dec 17 23:59:59 2026 GMT
+  hsts: null
 domains:
 - domain: strongsuit.com
   dnssec: false

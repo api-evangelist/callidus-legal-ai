@@ -1,0 +1,595 @@
+openapi: 3.2.0
+info:
+  title: CallidusAI Oral Argument Simulator API
+  description: Callidus AI backend API
+  version: 0.1.0
+tags:
+- name: Oral Argument Simulator
+paths:
+  /oral_argument_simulator/background_research2:
+    post:
+      tags:
+      - Oral Argument Simulator
+      summary: Background Research2
+      description: 'Like /background_research, but inputs are DocMetadata UUIDs.
+
+
+        `blob_names` is a list of doc UUID strings (DocMetadata.id). Document text is
+
+        retrieved from the doc-hub vector store (already extracted), so no OCR/text extraction
+
+        occurs in this route.'
+      operationId: background_research2_oral_argument_simulator_background_research2_post
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Body_background_research2_oral_argument_simulator_background_research2_post'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /oral_argument_simulator/background_research:
+    post:
+      tags:
+      - Oral Argument Simulator
+      summary: Background Research Legacy
+      operationId: background_research_legacy_oral_argument_simulator_background_research_post
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Body_background_research_legacy_oral_argument_simulator_background_research_post'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /oral_argument_simulator/feedback/{session_id}/{chat_history_key}/{dataset_id}:
+    get:
+      tags:
+      - Oral Argument Simulator
+      summary: Stream Feedback For Argument
+      description: 'Stream AI-generated feedback for an oral argument session.
+
+
+        Retrieves session data from Redis, constructs a prompt, and initiates a streaming
+
+        response using Gemini to provide real-time structured feedback.
+
+
+        Args:
+
+        session_id (str): The session identifier for the oral argument.
+
+
+        Returns:
+
+        StreamingResponse on success.'
+      operationId: stream_feedback_for_argument_oral_argument_simulator_feedback__session_id___chat_history_key___dataset_id__get
+      parameters:
+      - name: session_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Session Id
+      - name: chat_history_key
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Chat History Key
+      - name: dataset_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Dataset Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /oral_argument_simulator/get_argument_session_ids/{session_id}/{dataset_id}:
+    get:
+      tags:
+      - Oral Argument Simulator
+      summary: Get Argument Session Ids
+      description: Retrieves and returns all session ids from redis for oral argument simulator to provide feedback for each.
+      operationId: get_argument_session_ids_oral_argument_simulator_get_argument_session_ids__session_id___dataset_id__get
+      parameters:
+      - name: session_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Session Id
+      - name: dataset_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Dataset Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /oral_argument_simulator/background_research2/{dataset_id}:
+    get:
+      tags:
+      - Oral Argument Simulator
+      summary: Get background research for dataset
+      operationId: get_background_research_oral_argument_simulator_background_research2__dataset_id__get
+      parameters:
+      - name: dataset_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Dataset Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /oral_argument_simulator/background_research/{dataset_id}:
+    get:
+      tags:
+      - Oral Argument Simulator
+      summary: Get background research for dataset
+      operationId: get_background_research_legacy_oral_argument_simulator_background_research__dataset_id__get
+      parameters:
+      - name: dataset_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Dataset Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /oral_argument_simulator/feedback2/{dataset_id}:
+    get:
+      tags:
+      - Oral Argument Simulator
+      summary: Get all feedbacks for dataset
+      operationId: get_feedback_oral_argument_simulator_feedback2__dataset_id__get
+      parameters:
+      - name: dataset_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Dataset Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /oral_argument_simulator/save-task-memory/{dataset_id}:
+    post:
+      tags:
+      - Oral Argument Simulator
+      summary: Save Case Coach task memory to doc hub
+      description: 'Save the current Case Coach session state as a TASK_MEMORY doc.
+
+
+        Called by the frontend once after the feedback page is fully loaded.
+
+        Captures background research + all feedback sessions into a single
+
+        markdown doc. Triggers INGEST → TASK_MEMORY_SYNTHESIS → matter
+
+        memory regen downstream.
+
+
+        Best-effort: returns ``saved=false`` on failure rather than raising.'
+      operationId: save_case_coach_task_memory_endpoint_oral_argument_simulator_save_task_memory__dataset_id__post
+      parameters:
+      - name: dataset_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Dataset Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SaveTaskMemoryResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /oral_argument_simulator/feedback/{dataset_id}:
+    get:
+      tags:
+      - Oral Argument Simulator
+      summary: Get all feedbacks for dataset
+      operationId: get_feedback_legacy_oral_argument_simulator_feedback__dataset_id__get
+      parameters:
+      - name: dataset_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Dataset Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /oral_argument_simulator/inputs/{dataset_id}:
+    get:
+      tags:
+      - Oral Argument Simulator
+      summary: Get saved Case Coach inputs for a dataset
+      description: 'Return previously saved inputs, or ``result: null`` for new datasets.'
+      operationId: get_inputs_oral_argument_simulator_inputs__dataset_id__get
+      parameters:
+      - name: dataset_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Dataset Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    put:
+      tags:
+      - Oral Argument Simulator
+      summary: Save (full replace) Case Coach inputs for a dataset
+      description: 'Full-replace of all input fields.
+
+
+        * ``source_files: []`` clears section assignments.
+
+        * ``witness_metadata: null`` clears witness metadata.
+
+        * Validates enums and section uniqueness.
+
+        * No side effects beyond storage.'
+      operationId: put_inputs_oral_argument_simulator_inputs__dataset_id__put
+      parameters:
+      - name: dataset_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Dataset Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InputsPayload'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    InputsPayload:
+      properties:
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        trial_stage:
+          $ref: '#/components/schemas/TrialStageEnum'
+        witness_metadata:
+          anyOf:
+          - $ref: '#/components/schemas/WitnessMetadata'
+          - type: 'null'
+        source_files:
+          items:
+            $ref: '#/components/schemas/SourceFileEntry'
+          type: array
+          title: Source Files
+        additional_context_files:
+          items:
+            $ref: '#/components/schemas/SourceFileEntry'
+          type: array
+          title: Additional Context Files
+      type: object
+      required:
+      - role
+      - trial_stage
+      title: InputsPayload
+      description: Full-replace payload for PUT /inputs/{dataset_id}.
+    TrialStageEnum:
+      type: string
+      enum:
+      - trial
+      - deposition
+      title: TrialStageEnum
+    SourceFileEntry:
+      properties:
+        section:
+          $ref: '#/components/schemas/SectionEnum'
+        doc_id:
+          type: string
+          title: Doc Id
+        blob_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Blob Name
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+        size:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Size
+        context:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Context
+        file_role:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: File Role
+      type: object
+      required:
+      - section
+      - doc_id
+      title: SourceFileEntry
+    Body_background_research2_oral_argument_simulator_background_research2_post:
+      properties:
+        files_context:
+          items:
+            type: string
+          type: array
+          title: Files Context
+        blob_names:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Blob Names
+        titles:
+          items:
+            type: string
+          type: array
+          title: Titles
+        dataset_id:
+          type: string
+          title: Dataset Id
+        trial_stage:
+          type: string
+          title: Trial Stage
+        witness_name:
+          type: string
+          title: Witness Name
+        witness_disposition:
+          type: string
+          title: Witness Disposition
+        witness_background:
+          type: string
+          title: Witness Background
+        is_expert:
+          type: string
+          title: Is Expert
+      type: object
+      required:
+      - files_context
+      - titles
+      - dataset_id
+      - trial_stage
+      title: Body_background_research2_oral_argument_simulator_background_research2_post
+    SectionEnum:
+      type: string
+      enum:
+      - supporting
+      - counterparty
+      - context
+      - oral
+      title: SectionEnum
+    WitnessMetadata:
+      properties:
+        witness_name:
+          type: string
+          title: Witness Name
+        witness_disposition:
+          type: string
+          title: Witness Disposition
+        witness_background:
+          type: string
+          title: Witness Background
+        is_expert:
+          type: boolean
+          title: Is Expert
+      type: object
+      required:
+      - witness_name
+      - witness_disposition
+      - witness_background
+      - is_expert
+      title: WitnessMetadata
+    RoleEnum:
+      type: string
+      enum:
+      - judge
+      - witness
+      title: RoleEnum
+    Body_background_research_legacy_oral_argument_simulator_background_research_post:
+      properties:
+        files_context:
+          items:
+            type: string
+          type: array
+          title: Files Context
+        blob_names:
+          items:
+            type: string
+          type: array
+          title: Blob Names
+        dataset_id:
+          type: string
+          title: Dataset Id
+        trial_stage:
+          type: string
+          title: Trial Stage
+        witness_name:
+          type: string
+          title: Witness Name
+        witness_disposition:
+          type: string
+          title: Witness Disposition
+        witness_background:
+          type: string
+          title: Witness Background
+        is_expert:
+          type: string
+          title: Is Expert
+      type: object
+      required:
+      - files_context
+      - blob_names
+      - dataset_id
+      - trial_stage
+      title: Body_background_research_legacy_oral_argument_simulator_background_research_post
+    SaveTaskMemoryResponse:
+      properties:
+        saved:
+          type: boolean
+          title: Saved
+        skipped_reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Skipped Reason
+        doc_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Doc Id
+      type: object
+      required:
+      - saved
+      title: SaveTaskMemoryResponse
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError

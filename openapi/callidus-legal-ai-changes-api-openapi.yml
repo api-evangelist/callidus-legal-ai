@@ -1,0 +1,86 @@
+openapi: 3.2.0
+info:
+  title: CallidusAI Changes API
+  description: Callidus AI backend API
+  version: 0.1.0
+tags:
+- name: Changes
+paths:
+  /changes/apply:
+    post:
+      summary: Update Changes
+      operationId: update_changes_changes_apply_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OPTPFileUpdate'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Changes
+components:
+  schemas:
+    OPTPFileUpdate:
+      properties:
+        file_content:
+          type: string
+          title: File Content
+        corrected_texts:
+          items:
+            items:
+              type: string
+            type: array
+          type: array
+          title: Corrected Texts
+      type: object
+      required:
+      - file_content
+      - corrected_texts
+      title: OPTPFileUpdate
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError

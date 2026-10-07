@@ -1,1 +1,80 @@
-# No llms.txt found on provider docs
+# StrongSuit Help Center
+
+> Help center for StrongSuit
+
+## Getting Started
+
+- [Welcome to StrongSuit](https://help.strongsuit.com/en/articles/12500845-welcome-to-strongsuit.md): Getting started with StrongSuit
+- [Organizing Files with Folders in a Matter](https://help.strongsuit.com/en/articles/16156210-organizing-files-with-folders-in-a-matter.md): How to create folders and subfolders in a matter's Files tab and move files into them.
+- [Pausing Your Subscription](https://help.strongsuit.com/en/articles/16162203-pausing-your-subscription.md): How pausing works: pause for up to 6 months, access is suspended while paused, billing stops and resumes automatically, and your remaining paid time is preserved.
+- [File Uploads: Limits and Supported File Types](https://help.strongsuit.com/en/articles/16191870-file-uploads-limits-and-supported-file-types.md): There is no fixed cap on the number of files or total upload size in AI Assistant. What to expect with very large document sets, and which file types are supported.
+- [Where Your Uploaded Documents Go: Document Hub & Matter Files](https://help.strongsuit.com/en/articles/16219311-where-your-uploaded-documents-go-document-hub-matter-files.md): Documents uploaded in the AI Assistant are saved automatically to your Document Hub, and appear in a matter's Files when uploaded in that matter or when the task is linked to it.
+- [Current Promotion and Promo Code](https://help.strongsuit.com/en/articles/16309146-current-promotion-and-promo-code.md): The promo code currently offered, what it discounts, who is eligible, how to apply it at checkout, and what to do if it is rejected.
+- [StrongStart: Your Automatic Initial Matter Analysis](https://help.strongsuit.com/en/articles/16446321-strongstart-your-automatic-initial-matter-analysis.md): StrongStart runs a batch of tasks on a new matter and puts the results in one place, called the Initial Matter Analysis. Here's what it runs, how to start it, and where the output goes.
+- [Team Collaboration: Sharing Matters with Colleagues and Staff](https://help.strongsuit.com/en/articles/17173114-team-collaboration-sharing-matters-with-colleagues-and-staff.md): Team collaboration — sharing matters with other attorneys, paralegals, and staff — is available today on the StrongSuit Firm plan. It is not available on the Individual plan. Contact us to set up a...
+- [Creating Excel Spreadsheets with the AI Assistant](https://help.strongsuit.com/en/articles/17175830-creating-excel-spreadsheets-with-the-ai-assistant.md): The AI Assistant can create Excel \(.xlsx\) files you download from the chat. Also: pasting from Word or Excel now pastes as text.
+- [Case Timeline: What Counts as an Event](https://help.strongsuit.com/en/articles/17175831-case-timeline-what-counts-as-an-event.md): Case Timeline lists what happened in your case. It leaves out dates from cited case law, complaint allegations and legal arguments, removes duplicate Critical events, and Print includes the full ti...
+- [Doc Review: Importance Levels and Filters](https://help.strongsuit.com/en/articles/17310769-doc-review-importance-levels-and-filters.md): What Critical, High, Medium and Low mean in Doc Review, why results open on High and above, and how to change the filters.
+- [Referencing a File with @ in the AI Assistant](https://help.strongsuit.com/en/articles/17310770-referencing-a-file-with-in-the-ai-assistant.md): Type @ in the Assistant chat box to pick a file by name and point the Assistant to it.
+- [Sign Up Process: Step by Step](https://help.strongsuit.com/en/articles/12500907-sign-up-process-step-by-step.md): Step by Step process of how to sign up
+- [Quick Overview](https://help.strongsuit.com/en/articles/13162671-quick-overview.md): Here is a simple starting point to help you succeed quickly with StrongSuit.
+- [Getting Started: Organizing Your Matter and Workflow](https://help.strongsuit.com/en/articles/14324084-getting-started-organizing-your-matter-and-workflow.md): This workflow is designed to help you keep everything in one place so you can move from intake to output without losing context.
+- [Managing Your Account](https://help.strongsuit.com/en/articles/13162909-managing-your-account.md): A guide to managing your account — checking your usage, when your usage allowance resets \(the 1st of each month\), buying more usage if you hit your cap, switching light/dark mode, and cancelling yo...
+
+## Legal Research & Drafting 
+
+- [Drafting Hub vs. Draft Studio](https://help.strongsuit.com/en/articles/17001377-drafting-hub-vs-draft-studio.md): Drafting Hub and Draft Studio are both part of the Legal Research & Drafting module. Drafting Hub is where you pick the type of document to draft; Draft Studio is where you edit that draft in the p...
+- [Step-by-Step Guide: Research & Drafting Workflow](https://help.strongsuit.com/en/articles/15426781-step-by-step-guide-research-drafting-workflow.md): A quick step by step guide to help you explore and make the most of StrongSuit’s Research and Drafting solution from starting your research to building out your work with ease.
+
+## AI Assistant
+
+- [Step-by-Step Guide: AI Assistant](https://help.strongsuit.com/en/articles/12844744-step-by-step-guide-ai-assistant.md): A quick step by step guide to help you get the most out of StrongSuit’s AI Assistant, perfect for everyday tasks and general legal work.
+
+## Case Search 
+
+- [Step-by-Step Guide: Case Search](https://help.strongsuit.com/en/articles/13171806-step-by-step-guide-case-search.md): A quick step-by-step guide to help you explore and make the most of StrongSuit’s Case Search feature, from finding the right cases to getting tailored, precise search results for your legal research.
+
+## Case Timeline
+
+- [Step-by-Step Guide: Case Timeline](https://help.strongsuit.com/en/articles/12874504-step-by-step-guide-case-timeline.md): A quick step by step guide to help you explore and make the most of StrongSuit’s Case Timeline solution from uploading your documents to building a clear timeline and statement of facts with ease.
+
+## Case Coach 
+
+- [Step-by-Step Guide: Case Coach](https://help.strongsuit.com/en/articles/13442550-step-by-step-guide-case-coach.md): Case Coach lets you upload briefs, memos, complaints, and opposing filings to receive a detailed case breakdown. Practice oral arguments, receive structured feedback and analysis, and review transc...
+
+## Depositions
+
+- [Step by Step Guide: Depositions](https://help.strongsuit.com/en/articles/12927097-step-by-step-guide-depositions.md): Learn how to use StrongSuit’s Depositions tool to upload transcripts, generate clear summaries, identify inconsistencies, and create custom deposition prep questions.
+
+## Doc Review \(Relevancy\) 
+
+- [Step-by-Step Guide: Doc Review \(Relevancy\)](https://help.strongsuit.com/en/articles/13047430-step-by-step-guide-doc-review-relevancy.md): Our Doc Review tool is designed to help you upload high volumes of doc review files to drive insights and find responsive documents. This article shows you how it works step by step.
+
+## Reliance List
+
+- [Step-by-Step Guide: Reliance List](https://help.strongsuit.com/en/articles/13162587-step-by-step-guide-reliance-list.md): Your guide to navigating and using the Reliance List solution with ease.
+
+## Matter Portal 
+
+- [Matter Portal](https://help.strongsuit.com/en/articles/12921568-matter-portal.md): Learn how to use the StrongSuit Matter Portal to stay organized and manage all your legal work in one place.
+
+## Customer Support 
+
+- [Customer Support](https://help.strongsuit.com/en/articles/12902122-customer-support.md): We are happy to help!
+- [How can I resolve login and access issues on StrongSuit?](https://help.strongsuit.com/en/articles/15279835-how-can-i-resolve-login-and-access-issues-on-strongsuit.md)
+
+## Word Add-In
+
+- [General Tools: Word Add-In](https://help.strongsuit.com/en/articles/13539208-general-tools-word-add-in.md): A look into our General tools in the Word Add-In including Chat and Proofread.
+- [Litigate: Word Add-In](https://help.strongsuit.com/en/articles/13539446-litigate-word-add-in.md): A look into our Litigate tool in the Word Add-In.
+- [Contract Tools: Word Add-In](https://help.strongsuit.com/en/articles/13539544-contract-tools-word-add-in.md): A look into our contract focused tools including our Negotiate and Drafting tools.
+- [Sample Playbook for Word Add-In](https://help.strongsuit.com/en/articles/14443266-sample-playbook-for-word-add-in.md): A sample playbook for when you are in our Word Add-In tool
+
+## Forensic Analysis
+
+- [Step-by-Step Guide: Forensic Analysis](https://help.strongsuit.com/en/articles/15525222-step-by-step-guide-forensic-analysis.md): Learn how to run a forensic investigation, analyze financial data, uncover potential missing assets, and generate family law documents directly from your matter.
+
+## Integrations
+
+- [Clio: Import Matters and Documents](https://help.strongsuit.com/en/articles/16776606-clio-import-matters-and-documents.md): Connect Clio to pull matter details and documents into StrongSuit and keep them current. Available on the Firm plan. Covers connecting, creating a matter from Clio, sync banners, pulling updates an...
+- [Outlook: Sync Emails and Draft Replies](https://help.strongsuit.com/en/articles/17300644-outlook-sync-emails-and-draft-replies.md): Connect Outlook to StrongSuit two ways: sync an Outlook folder's emails and attachments into a matter, and draft replies in Outlook with the StrongSuit add-in. Covers requirements, setup, and commo...

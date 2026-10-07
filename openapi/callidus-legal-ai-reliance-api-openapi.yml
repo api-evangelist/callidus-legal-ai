@@ -1,0 +1,371 @@
+openapi: 3.2.0
+info:
+  title: CallidusAI Reliance API
+  description: Callidus AI backend API
+  version: 0.1.0
+tags:
+- name: Reliance
+paths:
+  /reliance/generate:
+    post:
+      tags:
+      - Reliance
+      summary: Generate Reliance List
+      description: 'Kick off reliance list generation for the given task.
+
+
+        Thin wrapper over ``start_reliance_generation`` (the shared service the Task Assistant''s
+
+        ``generate_reliance_list`` tool also calls): it resolves the conversation, gates on CAN_EDIT,
+
+        validates document ownership, and enqueues the non-blocking Temporal workflow.'
+      operationId: generate_reliance_list_reliance_generate_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenerateResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /reliance/list/{task_id}:
+    get:
+      tags:
+      - Reliance
+      summary: List Reliance Files
+      description: 'Return reliance file references for the given task.
+
+
+        Checks two sources:
+
+        - ``Conversation.data`` (platform DB): JSON blob containing ``doc_ids`` of
+
+        generated documents keyed under ``"doc_ids"``.
+
+        - ``Dataset.reliance_files_list`` (ediscovery DB): blob-storage file names
+
+        written by the Temporal reliance workflow. The dataset is resolved via
+
+        ``Conversation.reference_data`` if it holds a numeric dataset ID.'
+      operationId: list_reliance_files_reliance_list__task_id__get
+      parameters:
+      - name: task_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Task Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RelianceFilesResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /reliance/download/{task_id}:
+    post:
+      tags:
+      - Reliance
+      summary: Get Reliance Download Url
+      description: 'Return a time-limited Azure SAS download URL for a reliance file.
+
+
+        Two storage paths are checked in order:
+
+
+        1. **Dataset reliance file** — if the task has a linked dataset and ``file_ref``
+
+        appears in ``Dataset.reliance_files_list``, the blob is located at
+
+        ``{dataset_id}/reliance-lists/{file_ref}`` in the ``ediscovery-{user_id}``
+
+        container on the default storage account.
+
+
+        2. **Conversation document** — if ``file_ref`` is a UUID present in
+
+        ``Conversation.data["doc_ids"]``, the blob location is read from the
+
+        corresponding ``DocMetadata`` row (``storage_account_alias``,
+
+        ``storage_container``, ``location``).'
+      operationId: get_reliance_download_url_reliance_download__task_id__post
+      parameters:
+      - name: task_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Task Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DownloadRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DownloadUrlResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /reliance/export/{task_id}:
+    get:
+      tags:
+      - Reliance
+      summary: Export Reliance Lists
+      description: 'Stream a zip archive of all generated reliance lists for the given task.
+
+
+        Collects files from two sources:
+
+
+        - ``RelianceList`` records in the matters DB (Doc Hub path) — each record
+
+        with an ``output_doc_metadata_id`` resolves to a blob via ``DocMetadata``.
+
+        - ``Dataset.reliance_files_list`` (ediscovery DB) — blob-storage file names
+
+        written by the dataset Temporal reliance workflow.
+
+
+        The zip is written to a temporary file on disk, streamed to the client, then
+
+        deleted automatically via a background cleanup task.'
+      operationId: export_reliance_lists_reliance_export__task_id__get
+      parameters:
+      - name: task_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Task Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /reliance/dataset/{dataset_id}/{filename}:
+    delete:
+      tags:
+      - Reliance
+      summary: Remove Reliance Dataset File
+      description: Remove a reliance file from a dataset's list and delete it from Azure Blob Storage.
+      operationId: remove_reliance_dataset_file_reliance_dataset__dataset_id___filename__delete
+      parameters:
+      - name: dataset_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Dataset Id
+      - name: filename
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Filename
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    RelianceFilesResponse:
+      properties:
+        doc_ids:
+          items:
+            type: string
+          type: array
+          title: Doc Ids
+        reliance_files:
+          items:
+            type: string
+          type: array
+          title: Reliance Files
+        reliance_lists:
+          items:
+            $ref: '#/components/schemas/RelianceListEntry'
+          type: array
+          title: Reliance Lists
+      type: object
+      required:
+      - doc_ids
+      - reliance_files
+      - reliance_lists
+      title: RelianceFilesResponse
+      description: Files generated for a reliance task, from either storage source.
+    RelianceListEntry:
+      properties:
+        expert_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Expert Name
+        preferred_format:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Preferred Format
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        output_doc_metadata_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Output Doc Metadata Id
+      type: object
+      required:
+      - expert_name
+      - preferred_format
+      - created_at
+      - output_doc_metadata_id
+      title: RelianceListEntry
+      description: A generated reliance list record from the reliance_list table.
+    DownloadUrlResponse:
+      properties:
+        url:
+          type: string
+          title: Url
+      type: object
+      required:
+      - url
+      title: DownloadUrlResponse
+      description: Signed Azure download URL for a reliance file.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    PreferredFormat:
+      type: string
+      enum:
+      - XLSX
+      - DOCX
+      title: PreferredFormat
+    GenerateRequest:
+      properties:
+        task_id:
+          type: string
+          title: Task Id
+        expert_name:
+          type: string
+          title: Expert Name
+        doc_ids:
+          items:
+            type: string
+          type: array
+          title: Doc Ids
+        preferred_format:
+          $ref: '#/components/schemas/PreferredFormat'
+        expert_opinions:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Expert Opinions
+      type: object
+      required:
+      - task_id
+      - expert_name
+      - doc_ids
+      - preferred_format
+      title: GenerateRequest
+      description: Request body for the generate reliance list endpoint.
+    GenerateResponse:
+      properties:
+        task_id:
+          type: string
+          title: Task Id
+        doc_count:
+          type: integer
+          title: Doc Count
+        temporal_job_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Temporal Job Id
+      type: object
+      required:
+      - task_id
+      - doc_count
+      - temporal_job_id
+      title: GenerateResponse
+      description: Response after kicking off reliance list generation.
+    DownloadRequest:
+      properties:
+        file_ref:
+          type: string
+          title: File Ref
+      type: object
+      required:
+      - file_ref
+      title: DownloadRequest
+      description: Request body for the download URL endpoint.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError

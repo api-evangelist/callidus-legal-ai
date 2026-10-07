@@ -1,0 +1,259 @@
+openapi: 3.2.0
+info:
+  title: CallidusAI Doc Agent API
+  description: Callidus AI backend API
+  version: 0.1.0
+tags:
+- name: Doc Agent
+paths:
+  /doc-agent/chat:
+    post:
+      tags:
+      - Doc Agent
+      summary: Doc Agent Chat
+      description: 'Execute a doc-agent chat turn with SSE streaming.
+
+
+        The turn itself runs in ``DocAgentV2ChatTurnWorkflow`` on the general worker (ENG-22450):
+
+        Aspose.Words must not run in the API process. This handler authorizes, holds the turn slot,
+
+        and relays the worker''s event stream to the client.'
+      operationId: doc_agent_chat_doc_agent_chat_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocAgentChatRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /doc-agent/upload:
+    post:
+      tags:
+      - Doc Agent
+      summary: Doc Agent Upload
+      description: Validate and upload a .docx file for the doc-agent.
+      operationId: doc_agent_upload_doc_agent_upload_post
+      parameters:
+      - name: conversationId
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Conversationid
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Body_doc_agent_upload_doc_agent_upload_post'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  anyOf:
+                  - type: string
+                  - type: integer
+                title: Response Doc Agent Upload Doc Agent Upload Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /doc-agent/status:
+    get:
+      tags:
+      - Doc Agent
+      summary: Doc Agent Status
+      description: Return whether draft mode is active for a conversation.
+      operationId: doc_agent_status_doc_agent_status_get
+      parameters:
+      - name: conversationId
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Conversationid
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Doc Agent Status Doc Agent Status Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /doc-agent/toggle:
+    patch:
+      tags:
+      - Doc Agent
+      summary: Doc Agent Toggle
+      description: Toggle draft mode for a conversation.
+      operationId: doc_agent_toggle_doc_agent_toggle_patch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocAgentToggleRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Doc Agent Toggle Doc Agent Toggle Patch
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /doc-agent/outputs/{session_id}:
+    get:
+      tags:
+      - Doc Agent
+      summary: Doc Agent Output
+      description: 'Get a fresh signed download URL for a generated document.
+
+
+        If ``output_url`` is provided (a specific blob URL from a prior turn''s
+
+        ContextData), a signed URL is generated for that exact blob version.
+
+        Otherwise, falls back to the latest output on the DocAgentSession.'
+      operationId: doc_agent_output_doc_agent_outputs__session_id__get
+      parameters:
+      - name: session_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Session Id
+      - name: output_url
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Output Url
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+                title: Response Doc Agent Output Doc Agent Outputs  Session Id  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    DocAgentToggleRequest:
+      properties:
+        conversationId:
+          type: string
+          title: Conversationid
+        enabled:
+          type: boolean
+          title: Enabled
+      type: object
+      required:
+      - conversationId
+      - enabled
+      title: DocAgentToggleRequest
+      description: Request body for PATCH /doc-agent/toggle.
+    Body_doc_agent_upload_doc_agent_upload_post:
+      properties:
+        file:
+          type: string
+          contentMediaType: application/octet-stream
+          title: File
+      type: object
+      required:
+      - file
+      title: Body_doc_agent_upload_doc_agent_upload_post
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    DocAgentChatRequest:
+      properties:
+        request:
+          type: string
+          title: Request
+        conversationId:
+          type: string
+          title: Conversationid
+        interaction_mode:
+          type: string
+          title: Interaction Mode
+          default: detailed
+      type: object
+      required:
+      - request
+      - conversationId
+      title: DocAgentChatRequest
+      description: Request body for POST /doc-agent/chat.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError

@@ -1,0 +1,146 @@
+openapi: 3.2.0
+info:
+  title: CallidusAI Generate Summary API
+  description: Callidus AI backend API
+  version: 0.1.0
+tags:
+- name: Generate Summary
+paths:
+  /generate-summary:
+    post:
+      summary: Generate Summary Api
+      operationId: generate_summary_api_generate_summary_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BasicBotRequestRoot'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  anyOf:
+                  - type: string
+                  - type: number
+                  - {}
+                type: object
+                title: Response Generate Summary Api Generate Summary Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Generate Summary
+components:
+  schemas:
+    BasicBotControlPanelOptions:
+      properties:
+        creativity:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Creativity
+          default: 0
+        analysisDepth:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Analysisdepth
+          default: 1
+        legalFocus:
+          anyOf:
+          - type: boolean
+          - type: string
+          - type: 'null'
+          title: Legalfocus
+          default: 'True'
+        jurisdictions:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Jurisdictions
+          default: ''
+      type: object
+      title: BasicBotControlPanelOptions
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    BasicBotRequestRoot:
+      properties:
+        request:
+          type: string
+          title: Request
+        conversationId:
+          type: string
+          title: Conversationid
+        history:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: History
+          default: []
+        control_options:
+          anyOf:
+          - $ref: '#/components/schemas/BasicBotControlPanelOptions'
+          - type: 'null'
+          default:
+            creativity: 0.0
+            analysisDepth: 1
+            legalFocus: 'True'
+            jurisdictions: ''
+        needs_citations:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Needs Citations
+        is_advanced_mode:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Advanced Mode
+          default: false
+      type: object
+      required:
+      - request
+      - conversationId
+      title: BasicBotRequestRoot

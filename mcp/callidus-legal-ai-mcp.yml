@@ -1,8 +1,215 @@
-generated: 2026-10-06
-method: none
-source: none
-
+generated: '2026-10-06'
+method: derived
+generator: derive-mcp-candidate.py
+source:
+- openapi/callidus-legal-ai-openapi.json
+status: candidate
 deployment:
   mode: none
   auth: unknown
-  verified: derived
+  verified: probed
+note: 'No MCP server was found. The pre-flight posted tools/list to /mcp on api.app.strongsuit.com, api.strongsuit.com, strongsuit.com, app.strongsuit.com;
+  verdict gated (https://api.app.strongsuit.com/mcp/v1 answered 401: the edge authenticates before it routes, which proves nothing either way).
+  Candidate tools below are derived from the 865 operation(s) in the provider''s own OpenAPI (40 listed); they describe what a server WOULD expose,
+  not one that exists.'
+tools:
+- name: list_prompt_overrides_legal_research_v3_drafting_studio_prom
+  operationId: list_prompt_overrides_legal_research_v3_drafting_studio_prompts_get
+  method: GET
+  path: /legal_research/v3/drafting-studio/prompts
+  description: List Prompt Overrides
+- name: upsert_prompt_override_legal_research_v3_drafting_studio_pro
+  operationId: upsert_prompt_override_legal_research_v3_drafting_studio_prompts__prompt_key__put
+  method: PUT
+  path: /legal_research/v3/drafting-studio/prompts/{prompt_key}
+  description: Upsert Prompt Override
+- name: delete_prompt_override_legal_research_v3_drafting_studio_pro
+  operationId: delete_prompt_override_legal_research_v3_drafting_studio_prompts__prompt_key__delete
+  method: DELETE
+  path: /legal_research/v3/drafting-studio/prompts/{prompt_key}
+  description: Delete Prompt Override
+- name: list_user_researches_legal_research_v3_get
+  operationId: list_user_researches_legal_research_v3__get
+  method: GET
+  path: /legal_research/v3/
+  description: List User Researches
+- name: create_research_legal_research_v3_post
+  operationId: create_research_legal_research_v3__post
+  method: POST
+  path: /legal_research/v3/
+  description: Create Research
+- name: seed_research_legal_research_v3_seed_post
+  operationId: seed_research_legal_research_v3_seed_post
+  method: POST
+  path: /legal_research/v3/seed
+  description: Seed Research
+- name: get_research_metadata_legal_research_v3_research_id_get
+  operationId: get_research_metadata_legal_research_v3__research_id__get
+  method: GET
+  path: /legal_research/v3/{research_id}
+  description: Get Research Metadata
+- name: set_research_metadata_legal_research_v3_research_id_put
+  operationId: set_research_metadata_legal_research_v3__research_id__put
+  method: PUT
+  path: /legal_research/v3/{research_id}
+  description: Set Research Metadata
+- name: update_research_metadata_legal_research_v3_research_id_patch
+  operationId: update_research_metadata_legal_research_v3__research_id__patch
+  method: PATCH
+  path: /legal_research/v3/{research_id}
+  description: Update Research Metadata
+- name: delete_research_endpoint_legal_research_v3_research_id_delet
+  operationId: delete_research_endpoint_legal_research_v3__research_id__delete
+  method: DELETE
+  path: /legal_research/v3/{research_id}
+  description: Delete Research Endpoint
+- name: get_full_research_progress_legal_research_v3_research_id_ful
+  operationId: get_full_research_progress_legal_research_v3__research_id__full_research_progress_get
+  method: GET
+  path: /legal_research/v3/{research_id}/full-research-progress
+  description: Get Full Research Progress
+- name: get_deepen_progress_legal_research_v3_research_id_deepen_pro
+  operationId: get_deepen_progress_legal_research_v3__research_id__deepen_progress_get
+  method: GET
+  path: /legal_research/v3/{research_id}/deepen-progress
+  description: Get Deepen Progress
+- name: get_overview_bundle_legal_research_v3_research_id_overview_b
+  operationId: get_overview_bundle_legal_research_v3__research_id__overview_bundle_get
+  method: GET
+  path: /legal_research/v3/{research_id}/overview_bundle
+  description: Get Overview Bundle
+- name: start_quick_answer_legal_research_v3_research_id_quick_answe
+  operationId: start_quick_answer_legal_research_v3__research_id__quick_answer_start_post
+  method: POST
+  path: /legal_research/v3/{research_id}/quick_answer/start
+  description: Start Quick Answer
+- name: start_full_research_legal_research_v3_research_id_full_resea
+  operationId: start_full_research_legal_research_v3__research_id__full_research_start_post
+  method: POST
+  path: /legal_research/v3/{research_id}/full_research/start
+  description: Start Full Research
+- name: ensure_fill_legal_research_v3_research_id_ensure_fill_post
+  operationId: ensure_fill_legal_research_v3__research_id__ensure_fill_post
+  method: POST
+  path: /legal_research/v3/{research_id}/ensure_fill
+  description: Ensure Fill
+- name: get_followup_state_legal_research_v3_research_id_followup_ge
+  operationId: get_followup_state_legal_research_v3__research_id__followup_get
+  method: GET
+  path: /legal_research/v3/{research_id}/followup
+  description: Get Followup State
+- name: commit_followup_legal_research_v3_research_id_followup_put
+  operationId: commit_followup_legal_research_v3__research_id__followup_put
+  method: PUT
+  path: /legal_research/v3/{research_id}/followup
+  description: Commit Followup
+- name: generate_followup_suggestion_legal_research_v3_research_id_f
+  operationId: generate_followup_suggestion_legal_research_v3__research_id__followup_generate_post
+  method: POST
+  path: /legal_research/v3/{research_id}/followup/generate
+  description: Generate Followup Suggestion
+- name: generate_additional_followup_legal_research_v3_research_id_f
+  operationId: generate_additional_followup_legal_research_v3__research_id__followup_generate_additional_post
+  method: POST
+  path: /legal_research/v3/{research_id}/followup/generate-additional
+  description: Generate Additional Followup
+- name: save_followup_draft_legal_research_v3_research_id_followup_d
+  operationId: save_followup_draft_legal_research_v3__research_id__followup_draft_put
+  method: PUT
+  path: /legal_research/v3/{research_id}/followup/draft
+  description: Save Followup Draft
+- name: get_summary_state_legal_research_v3_research_id_summary_get
+  operationId: get_summary_state_legal_research_v3__research_id__summary_get
+  method: GET
+  path: /legal_research/v3/{research_id}/summary
+  description: Get Summary State
+- name: commit_summary_legal_research_v3_research_id_summary_put
+  operationId: commit_summary_legal_research_v3__research_id__summary_put
+  method: PUT
+  path: /legal_research/v3/{research_id}/summary
+  description: Commit Summary
+- name: generate_summary_step_legal_research_v3_research_id_summary_
+  operationId: generate_summary_step_legal_research_v3__research_id__summary_generate_post
+  method: POST
+  path: /legal_research/v3/{research_id}/summary/generate
+  description: Generate Summary Step
+- name: refresh_summary_legal_research_v3_research_id_summary_refres
+  operationId: refresh_summary_legal_research_v3__research_id__summary_refresh_post
+  method: POST
+  path: /legal_research/v3/{research_id}/summary/refresh
+  description: Refresh Summary
+- name: get_parties_state_legal_research_v3_research_id_parties_get
+  operationId: get_parties_state_legal_research_v3__research_id__parties_get
+  method: GET
+  path: /legal_research/v3/{research_id}/parties
+  description: Get Parties State
+- name: commit_parties_selection_legal_research_v3_research_id_parti
+  operationId: commit_parties_selection_legal_research_v3__research_id__parties_put
+  method: PUT
+  path: /legal_research/v3/{research_id}/parties
+  description: Commit Parties Selection
+- name: generate_parties_suggestion_legal_research_v3_research_id_pa
+  operationId: generate_parties_suggestion_legal_research_v3__research_id__parties_generate_post
+  method: POST
+  path: /legal_research/v3/{research_id}/parties/generate
+  description: Generate Parties Suggestion
+- name: get_party_alignment_state_legal_research_v3_research_id_part
+  operationId: get_party_alignment_state_legal_research_v3__research_id__party_alignment_get
+  method: GET
+  path: /legal_research/v3/{research_id}/party_alignment
+  description: Get Party Alignment State
+- name: update_party_alignment_legal_research_v3_research_id_party_a
+  operationId: update_party_alignment_legal_research_v3__research_id__party_alignment_put
+  method: PUT
+  path: /legal_research/v3/{research_id}/party_alignment
+  description: Update Party Alignment
+- name: resolve_party_alignment_endpoint_legal_research_v3_research_
+  operationId: resolve_party_alignment_endpoint_legal_research_v3__research_id__party_alignment_resolve_post
+  method: POST
+  path: /legal_research/v3/{research_id}/party_alignment/resolve
+  description: Resolve Party Alignment Endpoint
+- name: get_briefing_state_legal_research_v3_research_id_briefing_ge
+  operationId: get_briefing_state_legal_research_v3__research_id__briefing_get
+  method: GET
+  path: /legal_research/v3/{research_id}/briefing
+  description: Get Briefing State
+- name: commit_briefing_legal_research_v3_research_id_briefing_put
+  operationId: commit_briefing_legal_research_v3__research_id__briefing_put
+  method: PUT
+  path: /legal_research/v3/{research_id}/briefing
+  description: Commit Briefing
+- name: generate_briefing_suggestion_legal_research_v3_research_id_b
+  operationId: generate_briefing_suggestion_legal_research_v3__research_id__briefing_generate_post
+  method: POST
+  path: /legal_research/v3/{research_id}/briefing/generate
+  description: Generate Briefing Suggestion
+- name: get_facts_and_evidence_legal_research_v3_research_id_facts_e
+  operationId: get_facts_and_evidence_legal_research_v3__research_id__facts_evidence_get
+  method: GET
+  path: /legal_research/v3/{research_id}/facts-evidence
+  description: Get Facts And Evidence
+- name: get_statement_of_facts_legal_research_v3_research_id_stateme
+  operationId: get_statement_of_facts_legal_research_v3__research_id__statement_of_facts__variant__get
+  method: GET
+  path: /legal_research/v3/{research_id}/statement_of_facts/{variant}
+  description: Get Statement Of Facts
+- name: commit_statement_of_facts_legal_research_v3_research_id_stat
+  operationId: commit_statement_of_facts_legal_research_v3__research_id__statement_of_facts__variant__put
+  method: PUT
+  path: /legal_research/v3/{research_id}/statement_of_facts/{variant}
+  description: Commit Statement Of Facts
+- name: rewrite_statement_of_facts_legal_research_v3_research_id_sta
+  operationId: rewrite_statement_of_facts_legal_research_v3__research_id__statement_of_facts_generate_post
+  method: POST
+  path: /legal_research/v3/{research_id}/statement_of_facts/generate
+  description: Rewrite Statement Of Facts
+- name: add_paragraph_legal_research_v3_research_id_statement_of_fac
+  operationId: add_paragraph_legal_research_v3__research_id__statement_of_facts__variant__paragraph_post
+  method: POST
+  path: /legal_research/v3/{research_id}/statement_of_facts/{variant}/paragraph
+  description: Add Paragraph
+- name: delete_paragraph_legal_research_v3_research_id_statement_of_
+  operationId: delete_paragraph_legal_research_v3__research_id__statement_of_facts__variant__paragraph__paragraph_id__delete
+  method: DELETE
+  path: /legal_research/v3/{research_id}/statement_of_facts/{variant}/paragraph/{paragraph_id}
+  description: Delete Paragraph

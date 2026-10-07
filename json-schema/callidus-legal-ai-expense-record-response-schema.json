@@ -1,0 +1,921 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/callidus-legal-ai/main/json-schema/callidus-legal-ai-expense-record-response-schema.json",
+  "title": "ExpenseRecordResponse",
+  "description": "Response model for expense records",
+  "x-generated": "2026-10-06",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/callidus-legal-ai-openapi.json#/components/schemas/ExpenseRecordResponse",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "title": "Id"
+    },
+    "dataset_id": {
+      "type": "integer",
+      "title": "Dataset Id"
+    },
+    "document_id": {
+      "type": "integer",
+      "title": "Document Id"
+    },
+    "category_id": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Category Id"
+    },
+    "merchant_id": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Merchant Id"
+    },
+    "expense_date": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Expense Date"
+    },
+    "total_amount": {
+      "type": "string",
+      "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+      "title": "Total Amount"
+    },
+    "tax_amount": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Tax Amount"
+    },
+    "tip_amount": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Tip Amount"
+    },
+    "subtotal_amount": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Subtotal Amount"
+    },
+    "receipt_number": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Receipt Number"
+    },
+    "transaction_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Transaction Id"
+    },
+    "payment_method": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Payment Method"
+    },
+    "currency": {
+      "type": "string",
+      "title": "Currency",
+      "default": "USD"
+    },
+    "merchant_name": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Merchant Name"
+    },
+    "merchant_address": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Merchant Address"
+    },
+    "merchant_city": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Merchant City"
+    },
+    "merchant_state": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Merchant State"
+    },
+    "expense_type": {
+      "type": "string",
+      "title": "Expense Type"
+    },
+    "expense_description": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Expense Description"
+    },
+    "is_business_expense": {
+      "type": "boolean",
+      "title": "Is Business Expense",
+      "default": false
+    },
+    "is_recurring": {
+      "type": "boolean",
+      "title": "Is Recurring",
+      "default": false
+    },
+    "family_members_present": {
+      "anyOf": [
+        {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Family Members Present"
+    },
+    "occasion": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Occasion"
+    },
+    "notes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Notes"
+    },
+    "source_node_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Source Node Id"
+    },
+    "raw_text_sample": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Raw Text Sample"
+    },
+    "extraction_confidence": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Extraction Confidence"
+    },
+    "processing_notes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Processing Notes"
+    },
+    "metadata_ex": {
+      "anyOf": [
+        {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Metadata Ex"
+    },
+    "category": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ExpenseCategoryResponse"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "merchant": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/MerchantResponse"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "line_items": {
+      "items": {
+        "$ref": "#/$defs/ExpenseLineItemResponse"
+      },
+      "type": "array",
+      "title": "Line Items",
+      "default": []
+    },
+    "display_merchant": {
+      "type": "string",
+      "title": "Display Merchant",
+      "readOnly": true
+    },
+    "net_amount": {
+      "type": "string",
+      "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+      "title": "Net Amount",
+      "description": "Calculate net expense amount (total - tax - tip)",
+      "readOnly": true
+    },
+    "effective_tax_rate": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Effective Tax Rate",
+      "description": "Calculate effective tax rate as percentage",
+      "readOnly": true
+    },
+    "formatted_amount": {
+      "type": "string",
+      "title": "Formatted Amount",
+      "readOnly": true
+    },
+    "display_description": {
+      "type": "string",
+      "title": "Display Description",
+      "readOnly": true
+    },
+    "merchant_location": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Merchant Location",
+      "readOnly": true
+    },
+    "line_item_count": {
+      "type": "integer",
+      "title": "Line Item Count",
+      "readOnly": true
+    },
+    "has_detailed_breakdown": {
+      "type": "boolean",
+      "title": "Has Detailed Breakdown",
+      "readOnly": true
+    }
+  },
+  "type": "object",
+  "required": [
+    "id",
+    "dataset_id",
+    "document_id",
+    "expense_date",
+    "total_amount",
+    "expense_type",
+    "display_merchant",
+    "net_amount",
+    "effective_tax_rate",
+    "formatted_amount",
+    "display_description",
+    "merchant_location",
+    "line_item_count",
+    "has_detailed_breakdown"
+  ],
+  "$defs": {
+    "ExpenseCategoryResponse": {
+      "properties": {
+        "id": {
+          "type": "integer",
+          "title": "Id"
+        },
+        "dataset_id": {
+          "type": "integer",
+          "title": "Dataset Id"
+        },
+        "category_name": {
+          "type": "string",
+          "title": "Category Name"
+        },
+        "category_type": {
+          "type": "string",
+          "title": "Category Type"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Description"
+        },
+        "is_recurring": {
+          "type": "boolean",
+          "title": "Is Recurring",
+          "default": false
+        },
+        "average_monthly_amount": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Average Monthly Amount"
+        },
+        "display_name": {
+          "type": "string",
+          "title": "Display Name",
+          "readOnly": true
+        },
+        "is_essential": {
+          "type": "boolean",
+          "title": "Is Essential",
+          "readOnly": true
+        }
+      },
+      "type": "object",
+      "required": [
+        "id",
+        "dataset_id",
+        "category_name",
+        "category_type",
+        "display_name",
+        "is_essential"
+      ],
+      "title": "ExpenseCategoryResponse",
+      "description": "Response model for expense categories"
+    },
+    "ExpenseLineItemResponse": {
+      "properties": {
+        "id": {
+          "type": "integer",
+          "title": "Id"
+        },
+        "dataset_id": {
+          "type": "integer",
+          "title": "Dataset Id"
+        },
+        "expense_record_id": {
+          "type": "integer",
+          "title": "Expense Record Id"
+        },
+        "item_description": {
+          "type": "string",
+          "title": "Item Description"
+        },
+        "item_category": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Item Category"
+        },
+        "quantity": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Quantity"
+        },
+        "unit_price": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Unit Price"
+        },
+        "total_price": {
+          "type": "string",
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "title": "Total Price"
+        },
+        "product_code": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Product Code"
+        },
+        "brand": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Brand"
+        },
+        "size_description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Size Description"
+        },
+        "is_essential": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Is Essential"
+        },
+        "age_group": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Age Group"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Notes"
+        },
+        "metadata_ex": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata Ex"
+        },
+        "display_description": {
+          "type": "string",
+          "title": "Display Description",
+          "readOnly": true
+        },
+        "formatted_price": {
+          "type": "string",
+          "title": "Formatted Price",
+          "readOnly": true
+        },
+        "price_per_unit": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Price Per Unit",
+          "readOnly": true
+        }
+      },
+      "type": "object",
+      "required": [
+        "id",
+        "dataset_id",
+        "expense_record_id",
+        "item_description",
+        "total_price",
+        "display_description",
+        "formatted_price",
+        "price_per_unit"
+      ],
+      "title": "ExpenseLineItemResponse",
+      "description": "Response model for expense line items"
+    },
+    "MerchantResponse": {
+      "properties": {
+        "id": {
+          "type": "integer",
+          "title": "Id"
+        },
+        "dataset_id": {
+          "type": "integer",
+          "title": "Dataset Id"
+        },
+        "name": {
+          "type": "string",
+          "title": "Name"
+        },
+        "name_normalized": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Name Normalized"
+        },
+        "merchant_type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Merchant Type"
+        },
+        "address": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Address"
+        },
+        "city": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "City"
+        },
+        "state": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "State"
+        },
+        "zip_code": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Zip Code"
+        },
+        "country": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Country"
+        },
+        "phone": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Phone"
+        },
+        "website": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Website"
+        },
+        "total_expenses": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Total Expenses"
+        },
+        "transaction_count": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Transaction Count"
+        },
+        "first_transaction_date": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "First Transaction Date"
+        },
+        "last_transaction_date": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Last Transaction Date"
+        },
+        "metadata_ex": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Metadata Ex"
+        },
+        "display_name": {
+          "type": "string",
+          "title": "Display Name",
+          "readOnly": true
+        },
+        "full_address": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Full Address",
+          "readOnly": true
+        },
+        "average_transaction_amount": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Average Transaction Amount",
+          "readOnly": true
+        },
+        "activity_period_days": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Activity Period Days",
+          "readOnly": true
+        }
+      },
+      "type": "object",
+      "required": [
+        "id",
+        "dataset_id",
+        "name",
+        "display_name",
+        "full_address",
+        "average_transaction_amount",
+        "activity_period_days"
+      ],
+      "title": "MerchantResponse",
+      "description": "Response model for merchants/vendors"
+    }
+  }
+}

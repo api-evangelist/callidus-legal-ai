@@ -1,0 +1,142 @@
+openapi: 3.2.0
+info:
+  title: CallidusAI Summarize API
+  description: Callidus AI backend API
+  version: 0.1.0
+tags:
+- name: Summarize
+paths:
+  /summarize/attachment:
+    post:
+      summary: Summary Attachment
+      description: Download the summary as a file. By default the endpoint creates a docx/pdf (as specified in previous route) for the summary that was just created (no request parameters needed). To create a docx/pdf for a different summary, provide the summary as a string (default) or object (case summary) together with the desired output format.
+      operationId: summary_attachment_summarize_attachment_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SummarizeAttachmentRequestWrapped'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Summarize
+components:
+  schemas:
+    CaseSummary:
+      properties:
+        key_facts:
+          type: string
+          title: Key Facts
+          description: The fact pattern of the case. Excludes the procedural history and the outcome of the case
+          default: ''
+        procedural_history:
+          type: string
+          title: Procedural History
+          description: The procedural history of the case, i.e. the outcomes in the lower courts. Excludes the outcome of the case
+          default: ''
+        legal_questions:
+          items:
+            type: string
+          type: array
+          title: Legal Questions
+          description: Key Legal Questions
+          default: []
+        dissenting_opinions:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Dissenting Opinions
+          description: Dissenting opinions in the case, if any.
+        outcome:
+          type: string
+          title: Outcome
+          description: The outcome of the case.
+          default: ''
+        holdings:
+          items:
+            type: string
+          type: array
+          title: Holdings
+          description: Holdings, or generalizable legal principles, that follow from the case
+          default: []
+        legal_reasoning:
+          type: string
+          title: Legal Reasoning
+          description: The legal reasoning that led the court to its decision
+          default: ''
+      type: object
+      title: CaseSummary
+    SummarizeAttachmentRequest:
+      properties:
+        summary:
+          anyOf:
+          - $ref: '#/components/schemas/CaseSummary'
+          - type: string
+          - type: 'null'
+          title: Summary
+          description: An existing summary to create the pdf for, can either be a string or a CaseSummary object
+        output_format:
+          anyOf:
+          - type: string
+            enum:
+            - pdf
+            - docx
+          - type: 'null'
+          title: Output Format
+          description: The format of the output file, either pdf or docx. If not provided, earlier provided value will be used. If no value was provided earlier, pdf will be used by default.
+      type: object
+      title: SummarizeAttachmentRequest
+    SummarizeAttachmentRequestWrapped:
+      properties:
+        request:
+          $ref: '#/components/schemas/SummarizeAttachmentRequest'
+      type: object
+      required:
+      - request
+      title: SummarizeAttachmentRequestWrapped
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError

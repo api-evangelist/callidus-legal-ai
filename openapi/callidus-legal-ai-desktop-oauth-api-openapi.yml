@@ -1,0 +1,489 @@
+openapi: 3.2.0
+info:
+  title: CallidusAI Desktop OAuth API
+  description: Callidus AI backend API
+  version: 0.1.0
+tags:
+- name: Desktop OAuth
+paths:
+  /desktop/oauth/authorize:
+    post:
+      tags:
+      - Desktop OAuth
+      summary: Authorize
+      description: 'Issue a one-time authorization code for a first-party desktop client.
+
+
+        Called by the web approval page with the user''s regular Bearer token, so no
+
+        password is collected here. Returns the deep link the page should redirect to.'
+      operationId: authorize_desktop_oauth_authorize_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorizeRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorizeResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /desktop/oauth/token:
+    post:
+      tags:
+      - Desktop OAuth
+      summary: Token
+      description: 'Token endpoint (RFC 6749 §3.2): authorization_code exchange or refresh_token rotation.'
+      operationId: token_desktop_oauth_token_post
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Body_token_desktop_oauth_token_post'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /desktop/oauth/act-as/search:
+    post:
+      tags:
+      - Desktop OAuth
+      summary: Act As Search
+      description: 'Find someone to act as: by name, email, user id or Stripe customer id.
+
+
+        The same fields the web admin search (``Admin/searchUsers.ts``) looks at,
+
+        without its credit arithmetic -- that costs a backend call per result and
+
+        a switcher needs none of it. Every field matches on part of its value,
+
+        case-insensitively, including the ids: an admin working from a log line or
+
+        a support ticket often has only the start of one. The web matches ids
+
+        exactly; the switcher''s hint says partial, and one rule for every field is
+
+        the only kind a hint can describe honestly.
+
+
+        POST rather than GET so the search terms, which are usually an email, stay
+
+        out of access logs. Restricted to ``strongsuit-god`` like the grant: the
+
+        results are customer contact details, and only that role can use them here.
+
+
+        People who cannot be chosen are returned marked rather than left out, so an
+
+        admin looking for a colleague learns why the row is disabled instead of
+
+        concluding the person does not exist.'
+      operationId: act_as_search_desktop_oauth_act_as_search_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActAsSearchRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActAsSearchResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /desktop/oauth/act-as:
+    post:
+      tags:
+      - Desktop OAuth
+      summary: Act As
+      description: 'Exchange an admin''s own desktop token for one scoped to a customer.
+
+
+        The rules are the web mint''s (``Admin/mintImpersonationToken.ts``): only
+
+        ``strongsuit-god``, never yourself, and never internal staff -- except that
+
+        the beta client may target staff, so a god user can reproduce what a tester
+
+        who holds an internal role is seeing.
+
+
+        The desktop client comes from the caller''s own token, never from the
+
+        request. The beta client is the one allowed to target staff, and taking it
+
+        from the body would let the prod app claim to be beta and lift the block.
+
+
+        No refresh token is issued. The app mints again from the admin''s own
+
+        session when this one runs out, so the admin''s sign-in remains the only
+
+        long-lived credential, and revoking it ends acting-as within one lifetime.
+
+
+        Every mint is recorded in ``Usage`` before the token exists. If that write
+
+        fails, nothing is issued: an impersonation with no audit row is exactly
+
+        what the row is there to prevent.'
+      operationId: act_as_desktop_oauth_act_as_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActAsRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActAsResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /desktop/oauth/revoke:
+    post:
+      tags:
+      - Desktop OAuth
+      summary: Revoke
+      description: Revoke a refresh token (RFC 7009). Always 200 so callers cannot probe token validity.
+      operationId: revoke_desktop_oauth_revoke_post
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Body_revoke_desktop_oauth_revoke_post'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /desktop/oauth/sessions/revoke-all:
+    post:
+      tags:
+      - Desktop OAuth
+      summary: Revoke All
+      description: Sign the caller out of every desktop install. Requires the user's normal session.
+      operationId: revoke_all_desktop_oauth_sessions_revoke_all_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+components:
+  schemas:
+    ActAsRequest:
+      properties:
+        target_user_id:
+          type: string
+          maxLength: 128
+          minLength: 1
+          title: Target User Id
+      type: object
+      required:
+      - target_user_id
+      title: ActAsRequest
+    DesktopUser:
+      properties:
+        id:
+          type: string
+          title: Id
+        email:
+          type: string
+          title: Email
+        role:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Role
+        beta_access:
+          type: boolean
+          title: Beta Access
+          default: false
+        enterprise_client_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Enterprise Client Id
+        pricing_tier:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Pricing Tier
+        is_subscribed:
+          type: boolean
+          title: Is Subscribed
+      type: object
+      required:
+      - id
+      - email
+      - is_subscribed
+      title: DesktopUser
+      description: 'Profile returned alongside tokens so the app can gate its UI without a second call.
+
+
+        The server still enforces every gate on each request; this is convenience.'
+    ActAsSearchRequest:
+      properties:
+        query:
+          type: string
+          maxLength: 320
+          minLength: 2
+          title: Query
+      type: object
+      required:
+      - query
+      title: ActAsSearchRequest
+    Body_revoke_desktop_oauth_revoke_post:
+      properties:
+        token:
+          type: string
+          title: Token
+        client_id:
+          type: string
+          title: Client Id
+          default: ''
+      type: object
+      required:
+      - token
+      title: Body_revoke_desktop_oauth_revoke_post
+    ActAsSearchResponse:
+      properties:
+        users:
+          items:
+            $ref: '#/components/schemas/ActAsCandidate'
+          type: array
+          title: Users
+        has_more:
+          type: boolean
+          title: Has More
+      type: object
+      required:
+      - users
+      - has_more
+      title: ActAsSearchResponse
+    AuthorizeResponse:
+      properties:
+        code:
+          type: string
+          title: Code
+        state:
+          type: string
+          title: State
+        redirect_to:
+          type: string
+          title: Redirect To
+        client_name:
+          type: string
+          title: Client Name
+      type: object
+      required:
+      - code
+      - state
+      - redirect_to
+      - client_name
+      title: AuthorizeResponse
+    Body_token_desktop_oauth_token_post:
+      properties:
+        grant_type:
+          type: string
+          title: Grant Type
+        client_id:
+          type: string
+          title: Client Id
+          default: ''
+        code:
+          type: string
+          title: Code
+          default: ''
+        code_verifier:
+          type: string
+          title: Code Verifier
+          default: ''
+        redirect_uri:
+          type: string
+          title: Redirect Uri
+          default: ''
+        refresh_token:
+          type: string
+          title: Refresh Token
+          default: ''
+      type: object
+      required:
+      - grant_type
+      title: Body_token_desktop_oauth_token_post
+    AuthorizeRequest:
+      properties:
+        client_id:
+          type: string
+          maxLength: 64
+          minLength: 1
+          title: Client Id
+        redirect_uri:
+          type: string
+          maxLength: 512
+          minLength: 1
+          title: Redirect Uri
+        code_challenge:
+          type: string
+          maxLength: 128
+          minLength: 43
+          title: Code Challenge
+        code_challenge_method:
+          type: string
+          title: Code Challenge Method
+          default: S256
+        state:
+          type: string
+          maxLength: 512
+          title: State
+          default: ''
+      type: object
+      required:
+      - client_id
+      - redirect_uri
+      - code_challenge
+      title: AuthorizeRequest
+    ActAsResponse:
+      properties:
+        access_token:
+          type: string
+          title: Access Token
+        token_type:
+          type: string
+          title: Token Type
+          default: bearer
+        expires_in:
+          type: integer
+          title: Expires In
+        user:
+          $ref: '#/components/schemas/DesktopUser'
+        impersonated_by:
+          type: string
+          title: Impersonated By
+      type: object
+      required:
+      - access_token
+      - expires_in
+      - user
+      - impersonated_by
+      title: ActAsResponse
+      description: A customer-scoped access token. No refresh token, by design; see ``act_as``.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ActAsCandidate:
+      properties:
+        id:
+          type: string
+          title: Id
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+        email:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Email
+        pricing_tier:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Pricing Tier
+        enterprise_client_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Enterprise Client Id
+        can_act_as:
+          type: boolean
+          title: Can Act As
+        reason:
+          anyOf:
+          - type: string
+            enum:
+            - yourself
+            - staff
+          - type: 'null'
+          title: Reason
+      type: object
+      required:
+      - id
+      - can_act_as
+      title: ActAsCandidate
+      description: A user the switcher can offer, and whether it can actually be chosen.

@@ -1,0 +1,2730 @@
+openapi: 3.2.0
+info:
+  title: CallidusAI Contract API
+  description: Callidus AI backend API
+  version: 0.1.0
+tags:
+- name: Contract
+paths:
+  /contract/generate/followup:
+    post:
+      summary: Contract Generate Followup
+      description: 'Generate follow-up questions for contract generation.
+
+
+        Args:
+
+        request: JSON string containing request data including conversationId
+
+        files: Optional list of uploaded files
+
+        fileMetadata: Optional list of JSON strings with file metadata
+
+        doc_ids: Optional JSON-encoded list of DocHub document ID strings
+
+        session: Redis session
+
+        state: Application state
+
+
+        Returns:
+
+        JSONResponse with follow-up questions
+
+
+        Raises:
+
+        HTTPException: If validation fails or generation error occurs'
+      operationId: contract_generate_followup_contract_generate_followup_post
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Body_contract_generate_followup_contract_generate_followup_post'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Contract
+  /contract/generate/outline:
+    post:
+      summary: Contract Generate Outline
+      description: 'Generate a contract outline based on user input and uploaded documents.
+
+
+        Args:
+
+        request: JSON string containing request data including conversationId and documentsProcessed flag
+
+        files: Optional list of uploaded files
+
+        fileMetadata: Optional list of JSON strings with file metadata
+
+        doc_ids: Optional JSON-encoded list of DocHub document ID strings
+
+        session: Redis session for storing outline and defined terms
+
+        state: Application state
+
+
+        Returns:
+
+        JSONResponse with generated contract outline
+
+
+        Raises:
+
+        HTTPException: If validation fails or generation error occurs'
+      operationId: contract_generate_outline_contract_generate_outline_post
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Body_contract_generate_outline_contract_generate_outline_post'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Contract
+  /contract/generate/update_outline:
+    post:
+      summary: Contract Update Outlines
+      description: 'Update an existing contract outline.
+
+
+        Args:
+
+        query: Request containing the outline update data
+
+        session: Redis session
+
+
+        Returns:
+
+        JSONResponse with updated outline'
+      operationId: contract_update_outlines_contract_generate_update_outline_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateContractOutlineUpdateRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Contract
+  /contract/generate:
+    post:
+      summary: Contract Generate
+      description: 'Generate a contract based on outline and uploaded documents.
+
+
+        Args:
+
+        request: JSON string containing request data including conversationId and stream flag
+
+        files: Optional list of uploaded files
+
+        fileMetadata: Optional list of JSON strings with file metadata
+
+        doc_ids: Optional JSON-encoded list of DocHub document ID strings
+
+        session: Redis session
+
+        state: Application state
+
+
+        Returns:
+
+        EventSourceResponse for streaming or PlainTextResponse for non-streaming
+
+
+        Raises:
+
+        HTTPException: If request parsing fails, validation fails, or generation error occurs'
+      operationId: contract_generate_contract_generate_post
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Body_contract_generate_contract_generate_post'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Contract
+  /contract/generate_agent:
+    post:
+      summary: Contract Generate Agent
+      description: 'Agent-first Draft Contract (durable). Starts a Temporal workflow that drafts
+
+        the whole contract from the structured Draft Contract inputs, renders a DOCX,
+
+        persists it to DocHub, and charges credits — then returns a ``job_id``
+
+        immediately. The draft runs as a heartbeated Temporal activity on the general
+
+        worker, so it survives a page refresh, tab close, network drop, and even a full
+
+        web-process restart mid-draft; the frontend polls
+
+        GET /generate_agent/status/{job_id} for progress and the rendered file.
+
+
+        Standard Temporal status pattern: Temporal is the source of truth for terminal
+
+        state (the status endpoint reads it via describe()/result()), and the drafting
+
+        stepper is reported to the standard ``RedisStatusManager`` keyed by workflow id.
+
+
+        Gated by config.CONTRACT_DRAFTING_USE_DOC_AGENT; the legacy per-section
+
+        /generate path is unchanged and used when the flag is off.'
+      operationId: contract_generate_agent_contract_generate_agent_post
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Body_contract_generate_agent_contract_generate_agent_post'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenerateAgentResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Contract
+  /contract/generate_agent/status/{job_id}:
+    get:
+      summary: Contract Generate Agent Status
+      description: 'Poll a durable agent Draft Contract job. Returns {status, message, step,
+
+        total_steps, phase} while running, the rendered file (docx_base64 + filename +
+
+        doc_id) on completion, or {status:"error", message}. Authorized to the user who
+
+        started the job.
+
+
+        Follows the platform''s standard Temporal status pattern: Temporal is the source
+
+        of truth for terminal state (running/done/failed) via ``describe()``/result(),
+
+        and the drafting stepper is read from the standard ``RedisStatusManager``.'
+      operationId: contract_generate_agent_status_contract_generate_agent_status__job_id__get
+      parameters:
+      - name: job_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Job Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenerateAgentStatusResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Contract
+  /contract/load:
+    post:
+      summary: Load Html
+      description: 'Load contract HTML content and extract terms, parties, and provisions.
+
+
+        Args:
+
+        query: Request containing HTML content, terms, parties, and section objects
+
+        state: Application state
+
+        session: Redis session for storing contract data
+
+
+        Returns:
+
+        HTML content string'
+      operationId: load_html_contract_load_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoadContractRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Contract
+  /contract/intake:
+    post:
+      summary: Contract Intake
+      description: 'Intake a contract document from URL, text, or file upload.
+
+
+        Processes the document, extracts parties and provisions, and stores in session.
+
+
+        Args:
+
+        url: Optional URL to fetch document from
+
+        text: Optional text content
+
+        file: Optional uploaded file
+
+        module_name: Optional module name
+
+        session: Redis session for storing processed contract
+
+        state: Application state
+
+
+        Returns:
+
+        JSONResponse with contract data including page count, word count, parties, and provisions
+
+
+        Raises:
+
+        HTTPException: If document processing fails or validation error occurs'
+      operationId: contract_intake_contract_intake_post
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Body_contract_intake_contract_intake_post'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Contract
+  /contract/generate_file:
+    post:
+      summary: Contract Generate File
+      description: 'Generate a contract file (.docx) from contract text.
+
+
+        Args:
+
+        query: Request containing contract text, contract type, and optional reference document
+
+        session: Redis session
+
+
+        Returns:
+
+        FileResponse with the generated .docx file
+
+
+        Raises:
+
+        HTTPException: If file generation fails'
+      operationId: contract_generate_file_contract_generate_file_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateContractFileRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Contract
+  /contract/summary:
+    post:
+      summary: Contract Summary
+      description: 'Generate a summary of the contract content.
+
+
+        Args:
+
+        query: Chat query (unused but required by endpoint signature)
+
+        session: Redis session containing contract data
+
+        stream_handler: Handler for streaming LLM responses
+
+        event_generator: Generator for streaming events
+
+
+        Returns:
+
+        EventSourceResponse streaming the contract summary'
+      operationId: contract_summary_contract_summary_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatQuery'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Contract
+  /contract/process:
+    post:
+      summary: Contract Process
+      description: 'Process contract review query and return relevant sections.
+
+
+        Args:
+
+        query: Chat query containing party represented and industry information
+
+        stream_handler: Handler for streaming LLM responses
+
+        event_generator: Generator for streaming events
+
+        session: Redis session containing contract data
+
+
+        Returns:
+
+        EventSourceResponse streaming relevant contract sections'
+      operationId: contract_process_contract_process_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatQuery'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Contract
+  /contract/terms:
+    post:
+      summary: Contract Terms
+      description: 'Extract and analyze contract terms.
+
+
+        Args:
+
+        query: Request containing term extraction options
+
+        session: Redis session containing contract data
+
+        state: Application state
+
+        stream_handler: Handler for streaming LLM responses
+
+        event_generator: Generator for streaming events
+
+
+        Returns:
+
+        EventSourceResponse streaming term analysis'
+      operationId: contract_terms_contract_terms_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TermOptionRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Contract
+  /contract/parties/extract:
+    post:
+      summary: Contract Parties
+      description: 'Extract parties from contract.
+
+
+        Args:
+
+        query: Request containing text to extract parties from
+
+        session: Redis session containing contract data
+
+
+        Returns:
+
+        JSONResponse with extracted parties'
+      operationId: contract_parties_contract_parties_extract_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PartyQueryRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Contract
+  /contract/type/extract:
+    post:
+      summary: Contract Type
+      description: 'Extract contract type from text.
+
+
+        Args:
+
+        query: Request containing text to analyze
+
+        session: Redis session
+
+
+        Returns:
+
+        JSONResponse with contract type classification'
+      operationId: contract_type_contract_type_extract_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PartyQueryRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Contract
+  /contract/download:
+    get:
+      summary: Download Contract
+      description: 'Download the contract file from session.
+
+
+        Args:
+
+        session: Redis session containing contract file path
+
+
+        Returns:
+
+        FileResponse with the contract .docx file
+
+
+        Raises:
+
+        HTTPException: If contract file path not found in session'
+      operationId: download_contract_contract_download_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      tags:
+      - Contract
+  /contract/rewrite:
+    post:
+      summary: Contract Rewrite
+      description: 'Rewrite a section of the contract based on user request.
+
+
+        Args:
+
+        query: Chat query containing issue, text, chunkIndex, and skew
+
+        session: Redis session containing contract data
+
+        state: Application state
+
+
+        Returns:
+
+        EventSourceResponse streaming the rewritten contract section
+
+
+        Raises:
+
+        HTTPException: If contract data not found in session'
+      operationId: contract_rewrite_contract_rewrite_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatQuery'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Contract
+  /contract/rewrite/accept:
+    post:
+      summary: Contract Accept Rewrite
+      description: 'Accept and apply contract rewrites to the document.
+
+
+        Args:
+
+        corrected_texts: Chat query containing corrected text sections
+
+        session: Redis session containing contract data
+
+        state: Application state
+
+
+        Returns:
+
+        FileResponse with the revised contract .docx file
+
+
+        Raises:
+
+        HTTPException: If contract data not found or revision fails'
+      operationId: contract_accept_rewrite_contract_rewrite_accept_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatQuery'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Contract
+  /contract/negotiate/metadata:
+    post:
+      summary: Negotiate
+      description: 'Negotiate contract sections metadata.
+
+
+        Args:
+
+        request: FastAPI request object
+
+        query: Request containing paragraphs to negotiate
+
+        task_tracker: Task tracker for monitoring
+
+        session: Redis session
+
+        stream_handler: Handler for streaming LLM responses
+
+        event_generator: Generator for streaming events
+
+
+        Returns:
+
+        EventSourceResponse streaming negotiation results'
+      operationId: negotiate_contract_negotiate_metadata_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddinNegotiate'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Contract
+  /contract/negotiate/terms:
+    post:
+      summary: Negotiate Terms
+      description: 'Negotiate contract terms.
+
+
+        Args:
+
+        request: FastAPI request object
+
+        query: Request containing paragraphs to analyze for terms
+
+        task_tracker: Task tracker for monitoring
+
+        session: Redis session
+
+        stream_handler: Handler for streaming LLM responses
+
+        event_generator: Generator for streaming events
+
+
+        Returns:
+
+        EventSourceResponse streaming term negotiation results'
+      operationId: negotiate_terms_contract_negotiate_terms_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddinNegotiate'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Contract
+  /contract/negotiate/defined-terms:
+    post:
+      summary: Negotiate Defined Terms
+      description: 'Extract and negotiate defined terms from contract paragraphs.
+
+
+        Args:
+
+        request: FastAPI request object
+
+        query: Request containing paragraphs to analyze for defined terms
+
+        session: Redis session
+
+
+        Returns:
+
+        JSONResponse with defined terms analysis
+
+
+        Raises:
+
+        HTTPException: If session data retrieval fails'
+      operationId: negotiate_defined_terms_contract_negotiate_defined_terms_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddinNegotiate'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Contract
+  /contract/negotiate/relevant-documents:
+    post:
+      summary: Negotiate Relevant Documents
+      description: 'Upload and process relevant documents for contract negotiation.
+
+
+        Args:
+
+        request: FastAPI request object
+
+        file0-file4: Optional uploaded files (up to 5 files)
+
+        fileType0-fileType4: Optional file type identifiers for each file
+
+        session: Redis session
+
+        state: Application state
+
+
+        Returns:
+
+        JSONResponse with file type mapping
+
+
+        Raises:
+
+        HTTPException: If session data retrieval fails or unsupported file type
+
+        ValueError: If file extension is not supported'
+      operationId: negotiate_relevant_documents_contract_negotiate_relevant_documents_post
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Body_negotiate_relevant_documents_contract_negotiate_relevant_documents_post'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Contract
+  /contract/negotiate/review:
+    post:
+      summary: Negotiate Sections
+      description: 'Review and negotiate contract sections.
+
+
+        Args:
+
+        request: FastAPI request object
+
+        data: JSON string containing industry, parties, paragraphs, representingParty, and additionalGuidance
+
+        session: Redis session
+
+        state: Application state
+
+
+        Returns:
+
+        JSONResponse with review results or status indicating next step
+
+
+        Raises:
+
+        HTTPException: If data parsing fails or review error occurs'
+      operationId: negotiate_sections_contract_negotiate_review_post
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Body_negotiate_sections_contract_negotiate_review_post'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Contract
+  /contract/negotiate/review/process_files:
+    post:
+      summary: Process Review Files
+      description: 'Process review files for contract negotiation.
+
+
+        Args:
+
+        request: FastAPI request object
+
+        data: JSON string containing data_dict and main_result
+
+        session: Redis session
+
+        state: Application state
+
+
+        Returns:
+
+        JSONResponse with combined review results
+
+
+        Raises:
+
+        HTTPException: If processing fails'
+      operationId: process_review_files_contract_negotiate_review_process_files_post
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Body_process_review_files_contract_negotiate_review_process_files_post'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Contract
+  /contract/negotiate/summary:
+    post:
+      summary: Negotiate Summary
+      description: 'Generate a summary of negotiation results.
+
+
+        Args:
+
+        request: FastAPI request object
+
+        query: Request containing paragraphs to summarize
+
+        session: Redis session
+
+        stream_handler: Handler for streaming LLM responses
+
+        event_generator: Generator for streaming events
+
+
+        Returns:
+
+        EventSourceResponse streaming negotiation summary
+
+
+        Raises:
+
+        HTTPException: If session data retrieval fails'
+      operationId: negotiate_summary_contract_negotiate_summary_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddinNegotiate'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Contract
+  /contract/negotiate/explain:
+    post:
+      summary: Negotiate Explain
+      description: 'Explain a contract term in various ways.
+
+
+        Args:
+
+        request: FastAPI request object
+
+        query: Request containing question type, term_text, and contract_text
+
+        session: Redis session
+
+        stream_handler: Handler for streaming LLM responses
+
+        event_generator: Generator for streaming events
+
+
+        Returns:
+
+        EventSourceResponse streaming term explanation
+
+
+        Note:
+
+        Question types: "explain", "purpose", "compare", "influence", "integration"'
+      operationId: negotiate_explain_contract_negotiate_explain_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddinNegotiate'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Contract
+  /contract/negotiate/rewrite:
+    post:
+      summary: Negotiate Rewrite
+      description: 'Rewrite a contract term based on specified rewrite type.
+
+
+        Args:
+
+        request: FastAPI request object
+
+        query: Request containing rewrite_type, term_text, contract_text, and optional custom_instructions
+
+        session: Redis session
+
+
+        Returns:
+
+        JSONResponse with rewritten term
+
+
+        Note:
+
+        Rewrite types: "simplify", "align", "robust", "market", "mutual", "custom"'
+      operationId: negotiate_rewrite_contract_negotiate_rewrite_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddinNegotiate'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Contract
+  /contract/draft/inputs:
+    post:
+      summary: Draft Inputs
+      description: 'Generate draft inputs for contract creation.
+
+
+        Args:
+
+        request: FastAPI request object
+
+        query: Request containing paragraphs to process
+
+        task_tracker: Task tracker for monitoring
+
+        session: Redis session
+
+        stream_handler: Handler for streaming LLM responses
+
+        event_generator: Generator for streaming events
+
+
+        Returns:
+
+        EventSourceResponse streaming draft inputs'
+      operationId: draft_inputs_contract_draft_inputs_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddinDraftInputs'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Contract
+  /contract/proofread:
+    post:
+      summary: Proofread
+      description: 'Proofread contract paragraphs with various modes (content, concise, grammar, cohesion, custom).
+
+
+        Args:
+
+        request: FastAPI request object
+
+        query: Request containing paragraphs, mode, ai_strength, and other proofreading options
+
+        task_tracker: Task tracker for monitoring
+
+        session: Redis session
+
+
+        Returns:
+
+        EventSourceResponse streaming proofreading results with paragraph updates
+
+
+        Note:
+
+        Modes: "content", "concise", "grammar", "cohesion", "custom"'
+      operationId: proofread_contract_proofread_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddinProofRead'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Contract
+  /contract/addin_generate_outline:
+    post:
+      summary: Addin Generate Outline
+      operationId: addin_generate_outline_contract_addin_generate_outline_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddinGenerateOutline'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Contract
+  /contract/addin_names_and_definitions:
+    post:
+      summary: Addin Names And Definitions
+      description: 'Extract names and definitions from a contract document.
+
+
+        Args:
+
+        request: FastAPI request object
+
+        query: Request containing document text
+
+        task_tracker: Task tracker for monitoring
+
+        session: Redis session
+
+
+        Returns:
+
+        JSONResponse with extracted names and definitions'
+      operationId: addin_names_and_definitions_contract_addin_names_and_definitions_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddinNamesAndDefinitions'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Contract
+  /contract/addin_reference_doc:
+    post:
+      summary: Addin Reference Doc
+      operationId: addin_reference_doc_contract_addin_reference_doc_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddinReferenceDoc'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Contract
+  /contract/requested_changes:
+    post:
+      summary: Requested Changes
+      description: 'Process requested changes to contract paragraphs.
+
+
+        Args:
+
+        query: Request containing document, userRequest, originalParagraph, text_comment, and updated_text
+
+        session: Redis session
+
+        stream_handler: Handler for streaming LLM responses
+
+        event_generator: Generator for streaming events
+
+
+        Returns:
+
+        EventSourceResponse streaming change analysis results'
+      operationId: requested_changes_contract_requested_changes_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestedChanges'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Contract
+  /contract/addin_requested_changes_comment_only:
+    post:
+      summary: Addin Requested Changes Comment Only
+      operationId: addin_requested_changes_comment_only_contract_addin_requested_changes_comment_only_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestedChangesComment'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Contract
+  /contract/chat_with_context:
+    post:
+      summary: Chat With Context
+      description: 'Chat with contract context.
+
+
+        Args:
+
+        query: Request containing message, context, and contract information
+
+        session: Redis session
+
+        stream_handler: Handler for streaming LLM responses
+
+        event_generator: Generator for streaming events
+
+
+        Returns:
+
+        EventSourceResponse streaming chat responses'
+      operationId: chat_with_context_contract_chat_with_context_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContractChatWithContext'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Contract
+  /contract/addin_chat_with_context_comment:
+    post:
+      summary: Addin Chat With Context Comment
+      description: 'Chat with contract context for comment-only mode.
+
+
+        Args:
+
+        query: Request containing message, context, ai_strength, and contract information
+
+        session: Redis session
+
+        stream_handler: Handler for streaming LLM responses
+
+        event_generator: Generator for streaming events
+
+
+        Returns:
+
+        EventSourceResponse streaming chat responses with comments'
+      operationId: addin_chat_with_context_comment_contract_addin_chat_with_context_comment_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContractChatWithContext'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Contract
+  /contract/generate_provision:
+    post:
+      summary: Generate Provision
+      description: 'Generate a contract provision based on context and surrounding text.
+
+
+        Args:
+
+        query: Request containing context, previous_text, current_text, next_text, document, document_type, concise_robust, and requiresContext
+
+        session: Redis session
+
+        stream_handler: Handler for streaming LLM responses
+
+        event_generator: Generator for streaming events
+
+
+        Returns:
+
+        EventSourceResponse streaming generated provision
+
+
+        Note:
+
+        If concise_robust is 1, it is automatically adjusted to 7'
+      operationId: generate_provision_contract_generate_provision_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Provision'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Contract
+  /contract/addin_generate_followup_questions:
+    post:
+      summary: Addin Generate Followup Questions
+      description: 'Generate follow-up questions for contract generation.
+
+
+        Args:
+
+        query: Request containing contract details and number of questions to generate
+
+        session: Redis session
+
+        stream_handler: Handler for streaming LLM responses
+
+        event_generator: Generator for streaming events
+
+
+        Returns:
+
+        JSONResponse with follow-up questions'
+      operationId: addin_generate_followup_questions_contract_addin_generate_followup_questions_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FollowupQuestions-Input'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Contract
+  /contract/calculate-diff-negotiate:
+    post:
+      summary: Calculate Diff Negotiate
+      description: 'Calculate diffs for negotiate flow.
+
+
+        Calculates diffs between original text and suggested text from negotiate review.
+
+        Designed for the negotiate flow where we have paragraphIndex, originalText, and suggestedText.
+
+
+        Use cases:
+
+        - Apply negotiate review suggestions to documents
+
+        - Calculate diffs for contract rewrites
+
+        - Track changes from negotiate analysis
+
+
+        Args:
+
+        request: Dictionary containing paragraph_index, original_text, and suggested_text
+
+
+        Returns:
+
+        Dictionary with success status and diff_list or error message
+
+
+        Returns only the diffs array for simple integration in the negotiate frontend.'
+      operationId: calculate_diff_negotiate_contract_calculate_diff_negotiate_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+              title: Request
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Contract
+components:
+  schemas:
+    AddinDraftInputs:
+      properties:
+        paragraphs:
+          items:
+            additionalProperties:
+              type: string
+            type: object
+          type: array
+          title: Paragraphs
+      type: object
+      required:
+      - paragraphs
+      title: AddinDraftInputs
+    ContractChatWithContext:
+      properties:
+        document:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Document
+        context:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Context
+        request:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Request
+        ai_strength:
+          type: integer
+          title: Ai Strength
+        concise_robust:
+          type: integer
+          title: Concise Robust
+        document_type:
+          type: string
+          title: Document Type
+        comment_only:
+          type: boolean
+          title: Comment Only
+        all_messages:
+          anyOf:
+          - items:
+              additionalProperties:
+                type: string
+              type: object
+            type: array
+          - type: 'null'
+          title: All Messages
+        usage_data:
+          additionalProperties: true
+          type: object
+          title: Usage Data
+      type: object
+      required:
+      - document
+      - context
+      - request
+      - ai_strength
+      - concise_robust
+      - document_type
+      - comment_only
+      - all_messages
+      - usage_data
+      title: ContractChatWithContext
+    RequestedChangesComment:
+      properties:
+        originalParagraph:
+          type: string
+          title: Originalparagraph
+        document_type:
+          type: string
+          title: Document Type
+        text_comment:
+          type: string
+          title: Text Comment
+        document:
+          type: string
+          title: Document
+        userRequest:
+          type: string
+          title: Userrequest
+        usage_data:
+          additionalProperties: true
+          type: object
+          title: Usage Data
+      type: object
+      required:
+      - originalParagraph
+      - document_type
+      - text_comment
+      - document
+      - userRequest
+      - usage_data
+      title: RequestedChangesComment
+    AddinNamesAndDefinitions:
+      properties:
+        document:
+          type: string
+          title: Document
+      type: object
+      required:
+      - document
+      title: AddinNamesAndDefinitions
+    GenerateContractFileSection:
+      properties:
+        sectionTitle:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sectiontitle
+        sectionBody:
+          type: string
+          title: Sectionbody
+      type: object
+      required:
+      - sectionTitle
+      - sectionBody
+      title: GenerateContractFileSection
+    ControlPanelOptions:
+      properties:
+        legalQuestionsCount:
+          type: integer
+          title: Legalquestionscount
+          default: 3
+        casePerQuestionsCount:
+          type: integer
+          title: Caseperquestionscount
+          default: 3
+        casesToInclude:
+          type: integer
+          title: Casestoinclude
+          default: 3
+        legalResearchFollowUpQuestions:
+          type: integer
+          title: Legalresearchfollowupquestions
+          default: 5
+        followUpQuestions:
+          type: integer
+          title: Followupquestions
+          default: 3
+        statutesCount:
+          type: integer
+          title: Statutescount
+          default: 3
+        showHoldings:
+          type: boolean
+          title: Showholdings
+          default: true
+        analysisDepth:
+          type: integer
+          title: Analysisdepth
+          default: 2
+        creativity:
+          type: number
+          title: Creativity
+          default: 0
+        argumentBias:
+          type: string
+          title: Argumentbias
+          default: objective
+        documentType:
+          type: string
+          title: Documenttype
+          default: ''
+        partyToFavour:
+          type: string
+          title: Partytofavour
+          default: ''
+        focusArea:
+          type: string
+          title: Focusarea
+          default: ''
+        legalFocus:
+          anyOf:
+          - type: boolean
+          - type: string
+          title: Legalfocus
+          default: notInteracted
+        jurisdictions:
+          type: string
+          title: Jurisdictions
+          default: ''
+        responseLength:
+          type: integer
+          title: Responselength
+          default: 2
+        grammarCheck:
+          type: boolean
+          title: Grammarcheck
+          default: false
+        activeVoiceCheck:
+          type: boolean
+          title: Activevoicecheck
+          default: false
+        legalWritingCheck:
+          type: boolean
+          title: Legalwritingcheck
+          default: false
+        persuasiveCheck:
+          type: boolean
+          title: Persuasivecheck
+          default: false
+        narrativeCheck:
+          type: boolean
+          title: Narrativecheck
+          default: false
+        expositoryCheck:
+          type: boolean
+          title: Expositorycheck
+          default: false
+        descriptiveCheck:
+          type: boolean
+          title: Descriptivecheck
+          default: false
+        summaryMethod:
+          type: string
+          title: Summarymethod
+          default: notInteracted
+        summaryType:
+          type: string
+          title: Summarytype
+          default: notInteracted
+      type: object
+      title: ControlPanelOptions
+    Body_contract_generate_outline_contract_generate_outline_post:
+      properties:
+        request:
+          type: string
+          title: Request
+        files:
+          items:
+            type: string
+            contentMediaType: application/octet-stream
+          type: array
+          title: Files
+        fileMetadata:
+          items:
+            type: string
+          type: array
+          title: Filemetadata
+        doc_ids:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Doc Ids
+      type: object
+      required:
+      - request
+      title: Body_contract_generate_outline_contract_generate_outline_post
+    Body_negotiate_sections_contract_negotiate_review_post:
+      properties:
+        data:
+          type: string
+          title: Data
+      type: object
+      required:
+      - data
+      title: Body_negotiate_sections_contract_negotiate_review_post
+    TermOptions:
+      properties:
+        text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Text
+        question:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Question
+      type: object
+      required:
+      - text
+      - question
+      title: TermOptions
+    GenerateContractFileRequest:
+      properties:
+        request:
+          $ref: '#/components/schemas/GenerateContractFileBody'
+        conversationId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Conversationid
+        referenceDoc:
+          type: boolean
+          title: Referencedoc
+          default: false
+      type: object
+      required:
+      - request
+      title: GenerateContractFileRequest
+    Body_contract_intake_contract_intake_post:
+      properties:
+        url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Url
+        text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Text
+        file:
+          anyOf:
+          - type: string
+            contentMediaType: application/octet-stream
+          - type: 'null'
+          title: File
+        module_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Module Name
+      type: object
+      title: Body_contract_intake_contract_intake_post
+    AddinReferenceDoc:
+      properties:
+        document:
+          type: string
+          title: Document
+        paragraphs:
+          items:
+            additionalProperties:
+              type: string
+            type: object
+          type: array
+          title: Paragraphs
+        outline:
+          items:
+            type: string
+          type: array
+          title: Outline
+        contract_type:
+          type: string
+          title: Contract Type
+        industry:
+          type: string
+          title: Industry
+        party1:
+          type: string
+          title: Party1
+        party1_defined:
+          type: string
+          title: Party1 Defined
+        party2:
+          type: string
+          title: Party2
+        party2_defined:
+          type: string
+          title: Party2 Defined
+        governing_law:
+          type: string
+          title: Governing Law
+        general_guidance:
+          type: string
+          title: General Guidance
+        favor_level:
+          anyOf:
+          - type: integer
+          - type: string
+          title: Favor Level
+        length_level:
+          anyOf:
+          - type: integer
+          - type: string
+          title: Length Level
+        country:
+          type: string
+          title: Country
+        writing_style:
+          type: string
+          enum:
+          - Simple Plain Language
+          - Modern Legal Writing
+          - Traditional Legal Writing
+          - ''
+          title: Writing Style
+        use_advanced_model:
+          type: boolean
+          title: Use Advanced Model
+        document_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Document Type
+        is_same_type:
+          type: boolean
+          title: Is Same Type
+        priorities:
+          additionalProperties:
+            type: string
+          type: object
+          title: Priorities
+      type: object
+      required:
+      - document
+      - paragraphs
+      - outline
+      - contract_type
+      - industry
+      - party1
+      - party1_defined
+      - party2
+      - party2_defined
+      - governing_law
+      - general_guidance
+      - favor_level
+      - length_level
+      - country
+      - writing_style
+      - use_advanced_model
+      - document_type
+      - is_same_type
+      title: AddinReferenceDoc
+    Body_contract_generate_agent_contract_generate_agent_post:
+      properties:
+        request:
+          type: string
+          title: Request
+      type: object
+      required:
+      - request
+      title: Body_contract_generate_agent_contract_generate_agent_post
+    Body_negotiate_relevant_documents_contract_negotiate_relevant_documents_post:
+      properties:
+        file0:
+          anyOf:
+          - type: string
+            contentMediaType: application/octet-stream
+          - type: 'null'
+          title: File0
+        file1:
+          anyOf:
+          - type: string
+            contentMediaType: application/octet-stream
+          - type: 'null'
+          title: File1
+        file2:
+          anyOf:
+          - type: string
+            contentMediaType: application/octet-stream
+          - type: 'null'
+          title: File2
+        file3:
+          anyOf:
+          - type: string
+            contentMediaType: application/octet-stream
+          - type: 'null'
+          title: File3
+        file4:
+          anyOf:
+          - type: string
+            contentMediaType: application/octet-stream
+          - type: 'null'
+          title: File4
+        fileType0:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Filetype0
+        fileType1:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Filetype1
+        fileType2:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Filetype2
+        fileType3:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Filetype3
+        fileType4:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Filetype4
+      type: object
+      title: Body_negotiate_relevant_documents_contract_negotiate_relevant_documents_post
+    PartyQueryRequest:
+      properties:
+        request:
+          $ref: '#/components/schemas/PartyQuery'
+      type: object
+      required:
+      - request
+      title: PartyQueryRequest
+    AddinGenerateOutline:
+      properties:
+        document:
+          type: string
+          title: Document
+        paragraphs:
+          items:
+            additionalProperties:
+              type: string
+            type: object
+          type: array
+          title: Paragraphs
+        conversation_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Conversation Id
+        usage_data:
+          additionalProperties: true
+          type: object
+          title: Usage Data
+      type: object
+      required:
+      - document
+      - paragraphs
+      - conversation_id
+      - usage_data
+      title: AddinGenerateOutline
+    LoadContractRequest:
+      properties:
+        request:
+          type: string
+          title: Request
+      type: object
+      required:
+      - request
+      title: LoadContractRequest
+    RequestedChanges:
+      properties:
+        originalParagraph:
+          type: string
+          title: Originalparagraph
+        updated_text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Updated Text
+        document_type:
+          type: string
+          title: Document Type
+        text_comment:
+          type: string
+          title: Text Comment
+        document:
+          type: string
+          title: Document
+        userRequest:
+          type: string
+          title: Userrequest
+        usage_data:
+          additionalProperties: true
+          type: object
+          title: Usage Data
+      type: object
+      required:
+      - originalParagraph
+      - updated_text
+      - document_type
+      - text_comment
+      - document
+      - userRequest
+      - usage_data
+      title: RequestedChanges
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    PartyQuery:
+      properties:
+        text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Text
+      type: object
+      required:
+      - text
+      title: PartyQuery
+    GenerateContractFileBody:
+      properties:
+        contract:
+          items:
+            $ref: '#/components/schemas/GenerateContractFileSection'
+          type: array
+          title: Contract
+        contractType:
+          type: string
+          title: Contracttype
+        documentStyles:
+          anyOf:
+          - additionalProperties:
+              $ref: '#/components/schemas/DocumentStyle'
+            type: object
+          - type: 'null'
+          title: Documentstyles
+      type: object
+      required:
+      - contract
+      - contractType
+      title: GenerateContractFileBody
+    Body_process_review_files_contract_negotiate_review_process_files_post:
+      properties:
+        data:
+          type: string
+          title: Data
+      type: object
+      required:
+      - data
+      title: Body_process_review_files_contract_negotiate_review_process_files_post
+    Provision:
+      properties:
+        context:
+          type: string
+          title: Context
+        previous_text:
+          type: string
+          title: Previous Text
+        document_type:
+          type: string
+          title: Document Type
+        current_text:
+          type: string
+          title: Current Text
+        next_text:
+          type: string
+          title: Next Text
+        document:
+          type: string
+          title: Document
+        concise_robust:
+          type: integer
+          title: Concise Robust
+        requiresContext:
+          type: boolean
+          title: Requirescontext
+        usage_data:
+          additionalProperties: true
+          type: object
+          title: Usage Data
+      type: object
+      required:
+      - context
+      - previous_text
+      - document_type
+      - current_text
+      - next_text
+      - document
+      - concise_robust
+      - requiresContext
+      - usage_data
+      title: Provision
+    AddinNegotiate:
+      properties:
+        paragraphs:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Paragraphs
+          default: {}
+        industry:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Industry
+          default: ''
+        parties:
+          anyOf:
+          - items:
+              additionalProperties:
+                type: string
+              type: object
+            type: array
+          - type: 'null'
+          title: Parties
+          default: []
+        text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Text
+          default: ''
+        contract_text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Contract Text
+          default: ''
+        term_text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Term Text
+          default: ''
+        question:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Question
+          default: ''
+        rewrite_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Rewrite Type
+          default: ''
+        custom_instructions:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Custom Instructions
+          default: ''
+        representing_party:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Representing Party
+          default: ''
+      type: object
+      title: AddinNegotiate
+    GenerateContractOutlineUpdate:
+      properties:
+        indexNum:
+          type: integer
+          title: Indexnum
+        updateNum:
+          type: integer
+          title: Updatenum
+        newSectionTitle:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Newsectiontitle
+          default: ''
+      type: object
+      required:
+      - indexNum
+      - updateNum
+      title: GenerateContractOutlineUpdate
+    AddinProofRead:
+      properties:
+        document:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Document
+        paragraphs:
+          items:
+            additionalProperties:
+              type: string
+            type: object
+          type: array
+          title: Paragraphs
+        ai_strength:
+          type: integer
+          title: Ai Strength
+        query:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Query
+        mode:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Mode
+        legal_authorities:
+          type: boolean
+          title: Legal Authorities
+        add_points:
+          type: boolean
+          title: Add Points
+        document_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Document Type
+        concise_robust:
+          type: integer
+          title: Concise Robust
+        standard_grammar:
+          type: boolean
+          title: Standard Grammar
+        clarity:
+          type: boolean
+          title: Clarity
+        legal_writing_lens:
+          type: boolean
+          title: Legal Writing Lens
+        provision_references:
+          type: boolean
+          title: Provision References
+        defined_terms:
+          type: boolean
+          title: Defined Terms
+        comment_only:
+          type: boolean
+          title: Comment Only
+        add_arguments:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Add Arguments
+        high_quality_writing:
+          type: boolean
+          title: High Quality Writing
+        true_spelling:
+          type: boolean
+          title: True Spelling
+        check_facts:
+          type: boolean
+          title: Check Facts
+        usage_data:
+          additionalProperties: true
+          type: object
+          title: Usage Data
+      type: object
+      required:
+      - document
+      - paragraphs
+      - ai_strength
+      - query
+      - mode
+      - legal_authorities
+      - add_points
+      - document_type
+      - concise_robust
+      - standard_grammar
+      - clarity
+      - legal_writing_lens
+      - provision_references
+      - defined_terms
+      - comment_only
+      - add_arguments
+      - high_quality_writing
+      - true_spelling
+      - check_facts
+      - usage_data
+      title: AddinProofRead
+    GenerateAgentResponse:
+      properties:
+        job_id:
+          type: string
+          title: Job Id
+      type: object
+      required:
+      - job_id
+      title: GenerateAgentResponse
+    GenerateContractOutlineUpdateRequest:
+      properties:
+        request:
+          $ref: '#/components/schemas/GenerateContractOutlineUpdate'
+      type: object
+      required:
+      - request
+      title: GenerateContractOutlineUpdateRequest
+    Body_contract_generate_contract_generate_post:
+      properties:
+        request:
+          type: string
+          title: Request
+        files:
+          items:
+            type: string
+            contentMediaType: application/octet-stream
+          type: array
+          title: Files
+        fileMetadata:
+          items:
+            type: string
+          type: array
+          title: Filemetadata
+        doc_ids:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Doc Ids
+      type: object
+      required:
+      - request
+      title: Body_contract_generate_contract_generate_post
+    Body_contract_generate_followup_contract_generate_followup_post:
+      properties:
+        request:
+          type: string
+          title: Request
+        files:
+          items:
+            type: string
+            contentMediaType: application/octet-stream
+          type: array
+          title: Files
+        fileMetadata:
+          items:
+            type: string
+          type: array
+          title: Filemetadata
+        doc_ids:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Doc Ids
+      type: object
+      required:
+      - request
+      title: Body_contract_generate_followup_contract_generate_followup_post
+    GenerateAgentStatusResponse:
+      properties:
+        status:
+          type: string
+          title: Status
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+        contract_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Contract Type
+        doc_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Doc Id
+        filename:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Filename
+        docx_base64:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Docx Base64
+        step:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Step
+        total_steps:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Total Steps
+        phase:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Phase
+      type: object
+      required:
+      - status
+      title: GenerateAgentStatusResponse
+      description: 'Durable agent-draft job status. Non-terminal states carry ``status`` +
+
+        ``message``; the terminal ``done`` state adds the rendered file.'
+    DocumentStyle:
+      properties:
+        fontName:
+          type: string
+          title: Fontname
+        fontSize:
+          type: number
+          title: Fontsize
+      type: object
+      required:
+      - fontName
+      - fontSize
+      title: DocumentStyle
+    FollowupQuestions-Input:
+      properties:
+        type_of_contract:
+          type: string
+          title: Type Of Contract
+        industry:
+          type: string
+          title: Industry
+        party_1_name:
+          type: string
+          title: Party 1 Name
+        party_1_defined_name:
+          type: string
+          title: Party 1 Defined Name
+        party_2_name:
+          type: string
+          title: Party 2 Name
+        party_2_defined_name:
+          type: string
+          title: Party 2 Defined Name
+        who_to_favor:
+          type: integer
+          title: Who To Favor
+        how_lengthy:
+          type: integer
+          title: How Lengthy
+        governing_law:
+          type: string
+          title: Governing Law
+        facts_to_consider:
+          type: string
+          title: Facts To Consider
+        number_of_questions:
+          type: integer
+          title: Number Of Questions
+        usage_data:
+          additionalProperties: true
+          type: object
+          title: Usage Data
+      type: object
+      required:
+      - type_of_contract
+      - industry
+      - party_1_name
+      - party_1_defined_name
+      - party_2_name
+      - party_2_defined_name
+      - who_to_favor
+      - how_lengthy
+      - governing_law
+      - facts_to_consider
+      - number_of_questions
+      - usage_data
+      title: FollowupQuestions
+    ChatQuery:
+      properties:
+        request:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Request
+        control_options:
+          anyOf:
+          - $ref: '#/components/schemas/ControlPanelOptions'
+          - type: 'null'
+          default:
+            legalQuestionsCount: 3
+            casePerQuestionsCount: 3
+            casesToInclude: 3
+            legalResearchFollowUpQuestions: 5
+            followUpQuestions: 3
+            statutesCount: 3
+            showHoldings: true
+            analysisDepth: 2
+            creativity: 0.0
+            argumentBias: objective
+            documentType: ''
+            partyToFavour: ''
+            focusArea: ''
+            legalFocus: notInteracted
+            jurisdictions: ''
+            responseLength: 2
+            grammarCheck: false
+            activeVoiceCheck: false
+            legalWritingCheck: false
+            persuasiveCheck: false
+            narrativeCheck: false
+            expositoryCheck: false
+            descriptiveCheck: false
+            summaryMethod: notInteracted
+            summaryType: notInteracted
+      type: object
+      required:
+      - request
+      title: ChatQuery
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    TermOptionRequest:
+      properties:
+        request:
+          $ref: '#/components/schemas/TermOptions'
+      type: object
+      required:
+      - request
+      title: TermOptionRequest

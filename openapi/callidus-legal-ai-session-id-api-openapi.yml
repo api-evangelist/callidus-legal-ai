@@ -1,0 +1,24 @@
+openapi: 3.2.0
+info:
+  title: CallidusAI Session Id API
+  description: Callidus AI backend API
+  version: 0.1.0
+tags:
+- name: Session Id
+paths:
+  /session_id:
+    get:
+      summary: Get Session Id
+      operationId: get_session_id_session_id_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+                title: Response Get Session Id Session Id Get
+      tags:
+      - Session Id

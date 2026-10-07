@@ -1,0 +1,362 @@
+openapi: 3.2.0
+info:
+  title: CallidusAI Proofread API
+  description: Callidus AI backend API
+  version: 0.1.0
+tags:
+- name: Proofread
+paths:
+  /proofread/intake:
+    post:
+      summary: Proofread Intake
+      operationId: proofread_intake_proofread_intake_post
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Body_proofread_intake_proofread_intake_post'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Proofread
+  /proofread/process:
+    post:
+      summary: Proofread Process
+      operationId: proofread_process_proofread_process_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProofreadRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Proofread
+  /proofread/process/live_corrections:
+    post:
+      summary: Proofread Process Live Corrections
+      operationId: proofread_process_live_corrections_proofread_process_live_corrections_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      tags:
+      - Proofread
+  /proofread/process/metrics:
+    post:
+      summary: Proofread Process Metrics
+      operationId: proofread_process_metrics_proofread_process_metrics_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      tags:
+      - Proofread
+  /proofread/analysis:
+    post:
+      summary: Proofread Analysis
+      operationId: proofread_analysis_proofread_analysis_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatQuery'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Proofread
+  /proofread/continued_conversation:
+    post:
+      summary: Proofread Continue Conversation
+      operationId: proofread_continue_conversation_proofread_continued_conversation_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatQuery'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Proofread
+components:
+  schemas:
+    Body_proofread_intake_proofread_intake_post:
+      properties:
+        url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Url
+        text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Text
+        file:
+          anyOf:
+          - type: string
+            contentMediaType: application/octet-stream
+          - type: 'null'
+          title: File
+      type: object
+      title: Body_proofread_intake_proofread_intake_post
+    ProofreadRequest:
+      properties:
+        request:
+          $ref: '#/components/schemas/ProofreadRequestParams'
+        control_options:
+          anyOf:
+          - $ref: '#/components/schemas/ControlPanelOptions'
+          - type: 'null'
+      type: object
+      required:
+      - request
+      title: ProofreadRequest
+    ProofreadRequestParams:
+      properties:
+        types:
+          items:
+            type: string
+          type: array
+          title: Types
+        defined_terms:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Defined Terms
+      type: object
+      required:
+      - types
+      - defined_terms
+      title: ProofreadRequestParams
+    ControlPanelOptions:
+      properties:
+        legalQuestionsCount:
+          type: integer
+          title: Legalquestionscount
+          default: 3
+        casePerQuestionsCount:
+          type: integer
+          title: Caseperquestionscount
+          default: 3
+        casesToInclude:
+          type: integer
+          title: Casestoinclude
+          default: 3
+        legalResearchFollowUpQuestions:
+          type: integer
+          title: Legalresearchfollowupquestions
+          default: 5
+        followUpQuestions:
+          type: integer
+          title: Followupquestions
+          default: 3
+        statutesCount:
+          type: integer
+          title: Statutescount
+          default: 3
+        showHoldings:
+          type: boolean
+          title: Showholdings
+          default: true
+        analysisDepth:
+          type: integer
+          title: Analysisdepth
+          default: 2
+        creativity:
+          type: number
+          title: Creativity
+          default: 0
+        argumentBias:
+          type: string
+          title: Argumentbias
+          default: objective
+        documentType:
+          type: string
+          title: Documenttype
+          default: ''
+        partyToFavour:
+          type: string
+          title: Partytofavour
+          default: ''
+        focusArea:
+          type: string
+          title: Focusarea
+          default: ''
+        legalFocus:
+          anyOf:
+          - type: boolean
+          - type: string
+          title: Legalfocus
+          default: notInteracted
+        jurisdictions:
+          type: string
+          title: Jurisdictions
+          default: ''
+        responseLength:
+          type: integer
+          title: Responselength
+          default: 2
+        grammarCheck:
+          type: boolean
+          title: Grammarcheck
+          default: false
+        activeVoiceCheck:
+          type: boolean
+          title: Activevoicecheck
+          default: false
+        legalWritingCheck:
+          type: boolean
+          title: Legalwritingcheck
+          default: false
+        persuasiveCheck:
+          type: boolean
+          title: Persuasivecheck
+          default: false
+        narrativeCheck:
+          type: boolean
+          title: Narrativecheck
+          default: false
+        expositoryCheck:
+          type: boolean
+          title: Expositorycheck
+          default: false
+        descriptiveCheck:
+          type: boolean
+          title: Descriptivecheck
+          default: false
+        summaryMethod:
+          type: string
+          title: Summarymethod
+          default: notInteracted
+        summaryType:
+          type: string
+          title: Summarytype
+          default: notInteracted
+      type: object
+      title: ControlPanelOptions
+    ChatQuery:
+      properties:
+        request:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Request
+        control_options:
+          anyOf:
+          - $ref: '#/components/schemas/ControlPanelOptions'
+          - type: 'null'
+          default:
+            legalQuestionsCount: 3
+            casePerQuestionsCount: 3
+            casesToInclude: 3
+            legalResearchFollowUpQuestions: 5
+            followUpQuestions: 3
+            statutesCount: 3
+            showHoldings: true
+            analysisDepth: 2
+            creativity: 0.0
+            argumentBias: objective
+            documentType: ''
+            partyToFavour: ''
+            focusArea: ''
+            legalFocus: notInteracted
+            jurisdictions: ''
+            responseLength: 2
+            grammarCheck: false
+            activeVoiceCheck: false
+            legalWritingCheck: false
+            persuasiveCheck: false
+            narrativeCheck: false
+            expositoryCheck: false
+            descriptiveCheck: false
+            summaryMethod: notInteracted
+            summaryType: notInteracted
+      type: object
+      required:
+      - request
+      title: ChatQuery
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError

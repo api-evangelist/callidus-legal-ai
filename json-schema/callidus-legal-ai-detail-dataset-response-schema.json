@@ -1,0 +1,452 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/callidus-legal-ai/main/json-schema/callidus-legal-ai-detail-dataset-response-schema.json",
+  "title": "DetailDatasetResponse",
+  "description": "Dataset response with additional details, such as document filenames for import benchmark",
+  "x-generated": "2026-10-06",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/callidus-legal-ai-openapi.json#/components/schemas/DetailDatasetResponse",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "title": "Id"
+    },
+    "name": {
+      "type": "string",
+      "title": "Name"
+    },
+    "context": {
+      "type": "string",
+      "title": "Context"
+    },
+    "created_on": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Created On"
+    },
+    "file_count": {
+      "type": "integer",
+      "title": "File Count"
+    },
+    "import_count": {
+      "type": "integer",
+      "title": "Import Count"
+    },
+    "total_size": {
+      "type": "integer",
+      "title": "Total Size"
+    },
+    "token_count": {
+      "type": "integer",
+      "title": "Token Count"
+    },
+    "contract_entities": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "title": "Contract Entities"
+    },
+    "import_failures": {
+      "additionalProperties": true,
+      "type": "object",
+      "title": "Import Failures"
+    },
+    "dataset_type": {
+      "$ref": "#/$defs/DatasetType"
+    },
+    "document_source": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/DatasetDocumentSource"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "parent_id": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Parent Id"
+    },
+    "parent": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/LinkedDatasetInfo"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "linked_datasets": {
+      "items": {
+        "$ref": "#/$defs/LinkedDatasetInfo"
+      },
+      "type": "array",
+      "title": "Linked Datasets"
+    },
+    "case_background": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Case Background"
+    },
+    "case_anchors": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Case Anchors"
+    },
+    "case_considerations": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Case Considerations"
+    },
+    "finding_highlights": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Finding Highlights"
+    },
+    "finding_summary": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Finding Summary"
+    },
+    "statement_of_facts": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Statement Of Facts"
+    },
+    "facts_summary": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Facts Summary"
+    },
+    "legal_analysis": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Legal Analysis"
+    },
+    "criteria": {
+      "items": {
+        "type": "integer"
+      },
+      "type": "array",
+      "title": "Criteria"
+    },
+    "timeline_sync": {
+      "type": "boolean",
+      "title": "Timeline Sync",
+      "default": false
+    },
+    "summary_quotes": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Summary Quotes"
+    },
+    "form_questions": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Form Questions"
+    },
+    "expert_name": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Expert Name",
+      "description": "Name of the expert associated with the reliance list."
+    },
+    "preferred_format": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Preferred Format",
+      "description": "Preferred format for the reliance list (e.g., 'Excel', 'DOCX')."
+    },
+    "reliance_files_list": {
+      "anyOf": [
+        {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Reliance Files List",
+      "description": "List of generated reliance files names."
+    },
+    "forensic_accounting": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Forensic Accounting"
+    },
+    "background_research": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Background Research"
+    },
+    "feedback": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Feedback"
+    },
+    "metadata_ex": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Metadata Ex"
+    },
+    "needs_processing": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Needs Processing",
+      "description": "Whether the dataset should show the Start Processing action."
+    },
+    "processing_reason": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ProcessingReason"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Why processing is needed for this dataset, when applicable."
+    },
+    "document_filenames": {
+      "items": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "type": "array",
+      "title": "Document Filenames",
+      "default": []
+    },
+    "created_by": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Created By",
+      "description": "Name or email of the user who created this dataset."
+    },
+    "shared_with": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "title": "Shared With",
+      "description": "Names or emails of users this dataset is shared with."
+    },
+    "capabilities": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "title": "Capabilities",
+      "description": "User's permissions on this dataset (e.g., can_view, can_edit, can_delete)"
+    }
+  },
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "context",
+    "created_on",
+    "file_count",
+    "import_count",
+    "total_size",
+    "token_count",
+    "contract_entities",
+    "import_failures",
+    "dataset_type",
+    "criteria"
+  ],
+  "$defs": {
+    "DatasetDocumentSource": {
+      "type": "string",
+      "enum": [
+        "discovery",
+        "doc_hub"
+      ],
+      "title": "DatasetDocumentSource",
+      "description": "Canonical backing-source enum for discovery vs doc-hub datasets."
+    },
+    "DatasetType": {
+      "type": "string",
+      "enum": [
+        "contract",
+        "discovery",
+        "benchmark",
+        "facts",
+        "depositions",
+        "reliance",
+        "forensic_accounting",
+        "oral_argument_simulator"
+      ],
+      "title": "DatasetType"
+    },
+    "LinkedDatasetInfo": {
+      "properties": {
+        "id": {
+          "type": "integer",
+          "title": "Id"
+        },
+        "name": {
+          "type": "string",
+          "title": "Name"
+        },
+        "dataset_type": {
+          "$ref": "#/$defs/DatasetType"
+        },
+        "document_source": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DatasetDocumentSource"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "dataset_type"
+      ],
+      "title": "LinkedDatasetInfo",
+      "description": "Basic information about a linked dataset"
+    },
+    "ProcessingReason": {
+      "type": "string",
+      "enum": [
+        "initial",
+        "files_added",
+        "files_deleted",
+        "files_changed"
+      ]
+    }
+  }
+}

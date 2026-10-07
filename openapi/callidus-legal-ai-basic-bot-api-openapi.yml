@@ -1,0 +1,1569 @@
+openapi: 3.2.0
+info:
+  title: CallidusAI Basic Bot API
+  description: Callidus AI backend API
+  version: 0.1.0
+tags:
+- name: Basic Bot
+paths:
+  /basic_bot/conversation/{conversation_id}/token-count:
+    get:
+      summary: Basic Bot Conversation Token Count
+      description: 'Returns the total LLM token count for all messages in a conversation.
+
+        Messages are fetched and decrypted prior to counting.'
+      operationId: basic_bot_conversation_token_count_basic_bot_conversation__conversation_id__token_count_get
+      parameters:
+      - name: conversation_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Conversation Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: integer
+                title: Response Basic Bot Conversation Token Count Basic Bot Conversation  Conversation Id  Token Count Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Basic Bot
+  /basic_bot/conversation/{conversation_id}/summary:
+    get:
+      summary: Basic Bot Conversation Summary
+      description: 'Summarize all messages in a conversation.
+
+        Uses OpenAI if total tokens 250k.
+
+        Automatically handles large conversations via smart message truncation.'
+      operationId: basic_bot_conversation_summary_basic_bot_conversation__conversation_id__summary_get
+      parameters:
+      - name: conversation_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Conversation Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Basic Bot Conversation Summary Basic Bot Conversation  Conversation Id  Summary Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Basic Bot
+  /basic_bot/conversation/{conversation_id}/summary/create:
+    post:
+      summary: Basic Bot Conversation Summary Create
+      description: 'Summarize all messages in an existing conversation, create a new conversation,
+
+        save the summary as an AI message in that new conversation, and return the new conversation_id.
+
+        Uses OpenAI if total tokens 370k and 950k, returns a content too large error.'
+      operationId: basic_bot_conversation_summary_create_basic_bot_conversation__conversation_id__summary_create_post
+      parameters:
+      - name: conversation_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Conversation Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Basic Bot Conversation Summary Create Basic Bot Conversation  Conversation Id  Summary Create Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Basic Bot
+  /basic_bot/conversation/{conversation_id}/attach-doc-hub-documents:
+    post:
+      summary: Basic Bot Attach Doc Hub Documents
+      description: 'Attach doc-hub documents to a basic_bot conversation by document ID.
+
+        Fetches each document''s text from the doc-hub vector store and saves it as
+
+        context messages so they are included when the user sends a message.'
+      operationId: basic_bot_attach_doc_hub_documents_basic_bot_conversation__conversation_id__attach_doc_hub_documents_post
+      parameters:
+      - name: conversation_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Conversation Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttachDocHubDocumentsRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Basic Bot Attach Doc Hub Documents Basic Bot Conversation  Conversation Id  Attach Doc Hub Documents Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Basic Bot
+  /basic_bot/conversation/{conversation_id}/attach-matter-context:
+    post:
+      summary: Basic Bot Attach Matter Context
+      description: 'Attach matter context engine markdown output to a basic_bot conversation.
+
+        Saves the markdown as a context message so it is included when the user sends a message.'
+      operationId: basic_bot_attach_matter_context_basic_bot_conversation__conversation_id__attach_matter_context_post
+      parameters:
+      - name: conversation_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Conversation Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttachMatterContextRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Basic Bot Attach Matter Context Basic Bot Conversation  Conversation Id  Attach Matter Context Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Basic Bot
+  /basic_bot/conversation/{conversation_id}/notify-turn-complete:
+    post:
+      summary: Basic Bot Notify Turn Complete
+      description: 'Notify the backend that an assistant turn has been saved for this conversation.
+
+
+        Called by the frontend after persisting the AI response message to the
+
+        database. Fires (or signals) a debounced Temporal workflow that will
+
+        eventually save the conversation as a TASK_MEMORY doc in doc hub and
+
+        trigger downstream matter-memory regeneration.
+
+
+        ``body.count`` is forwarded to the debounce workflow so the message-count
+
+        cap tracks only qualifying messages (user inputs + final AI text responses),
+
+        not thinking blocks. Defaults to 1 in all cases (body omitted or body
+
+        provided without an explicit count).
+
+
+        This endpoint is intentionally best-effort:
+
+        - If the Temporal trigger fails, the response still returns 200 and a
+
+        warning is logged. The next turn will try again.
+
+        - If the conversation is not linked to a matter (or memory is disabled),
+
+        the downstream activity will skip the save silently.
+
+        - The context engine''s live-collector fallback produces correct output
+
+        even if this trigger never fires — it will just be slower on read.'
+      operationId: basic_bot_notify_turn_complete_basic_bot_conversation__conversation_id__notify_turn_complete_post
+      parameters:
+      - name: conversation_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Conversation Id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              anyOf:
+              - $ref: '#/components/schemas/NotifyTurnCompleteRequest'
+              - type: 'null'
+              title: Body
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+                title: Response Basic Bot Notify Turn Complete Basic Bot Conversation  Conversation Id  Notify Turn Complete Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Basic Bot
+  /basic_bot/upload/start:
+    post:
+      summary: Basic Bot Upload
+      description: 'Accepts a file, uploads it to Azure Blob Storage, and starts a Temporal workflow for processing.
+
+        Returns a workflow ID for polling status.'
+      operationId: basic_bot_upload_basic_bot_upload_start_post
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Body_basic_bot_upload_basic_bot_upload_start_post'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileUploadJobStartResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Basic Bot
+  /basic_bot/upload/status/{job_id}:
+    get:
+      summary: Get Upload Status
+      description: 'Check the status of an upload workflow using Temporal.
+
+        Returns FileUploadJobStatus compatible with the frontend.
+
+
+        Note: job_id is actually the workflow_id for Temporal workflows.'
+      operationId: get_upload_status_basic_bot_upload_status__job_id__get
+      parameters:
+      - name: job_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Job Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileUploadJobStatus'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Basic Bot
+  /basic_bot/search_case:
+    post:
+      summary: Basic Bot Search Case
+      operationId: basic_bot_search_case_basic_bot_search_case_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BasicBotCitationSearch'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Basic Bot Search Case Basic Bot Search Case Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Basic Bot
+  /basic_bot/categorize-prompts:
+    post:
+      summary: Basic Bot Categorize
+      description: Categorizes the user's request into one of the predefined categories.
+      operationId: basic_bot_categorize_basic_bot_categorize_prompts_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BasicBotRequestRoot'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Basic Bot Categorize Basic Bot Categorize Prompts Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Basic Bot
+  /basic_bot/coverage-assessment:
+    post:
+      summary: Basic Bot Coverage Assessment
+      description: 'Assess whether the user''s request can be reasonably answered using ONLY the
+
+        cases/statutes already present in prior conversation messages'' ContextData.
+
+        If yes, identify which cases/statutes should be used.'
+      operationId: basic_bot_coverage_assessment_basic_bot_coverage_assessment_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BasicBotRequestRoot'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Basic Bot Coverage Assessment Basic Bot Coverage Assessment Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Basic Bot
+  /basic_bot/contract_and_drafting:
+    post:
+      summary: Basic Bot Contract Drafting
+      description: Basic bot streamed response with focus on contracting and drafting
+      operationId: basic_bot_contract_drafting_basic_bot_contract_and_drafting_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BasicBotOptionalResearchedCaseRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Basic Bot Contract Drafting Basic Bot Contract And Drafting Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Basic Bot
+  /basic_bot/email:
+    post:
+      summary: Basic Bot Contract Drafting
+      description: Basic bot streamed response with focus on contracting and drafting
+      operationId: basic_bot_contract_drafting_basic_bot_email_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BasicBotOptionalResearchedCaseRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Basic Bot Contract Drafting Basic Bot Email Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Basic Bot
+  /basic_bot/litigation:
+    post:
+      summary: Basic Bot Litigation Argumentation
+      description: Basic bot streamed response with focus on litigation and argumentation
+      operationId: basic_bot_litigation_argumentation_basic_bot_litigation_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BasicBotOptionalResearchedCaseRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Basic Bot Litigation Argumentation Basic Bot Litigation Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Basic Bot
+  /basic_bot/general:
+    post:
+      summary: Basic Bot General
+      description: Basic bot streamed response with general legal assistance
+      operationId: basic_bot_general_basic_bot_general_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BasicBotOptionalResearchedCaseRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Basic Bot General Basic Bot General Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Basic Bot
+  /basic_bot/summarize:
+    post:
+      summary: Basic Bot Summarize
+      description: Basic bot streamed response for summarization
+      operationId: basic_bot_summarize_basic_bot_summarize_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BasicBotOptionalResearchedCaseRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Basic Bot Summarize Basic Bot Summarize Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Basic Bot
+  /basic_bot/cited_response:
+    post:
+      summary: Basic Bot Research
+      description: Creates a response for the basic bot with legal research citations
+      operationId: basic_bot_research_basic_bot_cited_response_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BasicBotResearchedRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Basic Bot Research Basic Bot Cited Response Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Basic Bot
+  /basic_bot/legal-research-prep/robust:
+    post:
+      summary: Basic Bot Legal Research Robust Prep
+      description: 'Takes the users request and returns:
+
+        1. Key Issues
+
+        2. Causes of Action
+
+        3. Affirmative Defenses
+
+        4. Legal Questions
+
+        5. Legal Doctrines'
+      operationId: basic_bot_legal_research_robust_prep_basic_bot_legal_research_prep_robust_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BasicBotRequestRoot'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Basic Bot Legal Research Robust Prep Basic Bot Legal Research Prep Robust Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Basic Bot
+  /basic_bot/legal-research-prep/legal-authorities/ai/start:
+    post:
+      summary: Basic Bot Legal Research Prep Ai Cases Start
+      description: 'Start a background job to generate legal authorities (cases and statutes) using AI.
+
+        Returns a job ID for polling the status.'
+      operationId: basic_bot_legal_research_prep_ai_cases_start_basic_bot_legal_research_prep_legal_authorities_ai_start_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BasicBotResearchPrepLegalAuthorities'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LegalAuthoritiesJobStartResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Basic Bot
+  /basic_bot/legal-research-prep/legal-authorities/ai/status/{job_id}:
+    get:
+      summary: Get Legal Authorities Status
+      description: 'Check the status of a legal authorities generation job.
+
+        Returns the full LegalAuthoritiesJobStatus object if found,
+
+        otherwise returns a default "waiting" response.'
+      operationId: get_legal_authorities_status_basic_bot_legal_research_prep_legal_authorities_ai_status__job_id__get
+      parameters:
+      - name: job_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Job Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LegalAuthoritiesJobStatus'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Basic Bot
+  /basic_bot/legal-research-prep/legal-authorities/ai/validate:
+    post:
+      summary: Basic Bot Verify Against Court Listener
+      operationId: basic_bot_verify_against_court_listener_basic_bot_legal_research_prep_legal_authorities_ai_validate_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BasicBotValidateCases'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Basic Bot Verify Against Court Listener Basic Bot Legal Research Prep Legal Authorities Ai Validate Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Basic Bot
+  /basic_bot/cases/add-holdings:
+    post:
+      summary: Basic Bot Add Holdings
+      description: Basic bot streamed response with focus on contracting and drafting
+      operationId: basic_bot_add_holdings_basic_bot_cases_add_holdings_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BasicBotResearchedCasesRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BasicBotResearchedCasesRequest'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Basic Bot
+  /basic_bot/generate_image:
+    post:
+      summary: Basic Bot Generate Image
+      description: 'Generate an image based on chat history and user request using Gemini 3.1 Flash Image Preview ("Nano Banana 2").
+
+
+        The generated image is saved to the conversation as an AI message before being returned.
+
+        Includes automatic retries for transient failures.'
+      operationId: basic_bot_generate_image_basic_bot_generate_image_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BasicBotRequestRoot'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Basic Bot Generate Image Basic Bot Generate Image Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Basic Bot
+  /basic_bot/generate_infographic:
+    post:
+      summary: Basic Bot Generate Infographic
+      description: 'Generate an infographic image based on user request using Gemini 3.1 Flash Image Preview ("Nano Banana 2").
+
+
+        Unlike generate_image, this endpoint:
+
+        - Does not use conversation history (stateless)
+
+        - Uses a specific prompt template optimized for infographic generation
+
+        - Expects the request to contain both a question and a text response to visualize
+
+        - Still saves the result to the conversation
+
+
+        The generated infographic is saved to the conversation as an AI message before being returned.
+
+        Includes automatic retries for transient failures.'
+      operationId: basic_bot_generate_infographic_basic_bot_generate_infographic_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BasicBotRequestRoot'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Basic Bot Generate Infographic Basic Bot Generate Infographic Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Basic Bot
+components:
+  schemas:
+    BasicBotCaseLaw:
+      properties:
+        case_name:
+          type: string
+          title: Case Name
+        citation:
+          type: string
+          title: Citation
+        court:
+          type: string
+          title: Court
+        year:
+          type: integer
+          title: Year
+        holding_summary:
+          type: string
+          title: Holding Summary
+      type: object
+      required:
+      - case_name
+      - citation
+      - court
+      - year
+      - holding_summary
+      title: BasicBotCaseLaw
+    Body_basic_bot_upload_basic_bot_upload_start_post:
+      properties:
+        file:
+          anyOf:
+          - type: string
+            contentMediaType: application/octet-stream
+          - type: 'null'
+          title: File
+        conversation_id:
+          type: string
+          title: Conversation Id
+      type: object
+      title: Body_basic_bot_upload_basic_bot_upload_start_post
+    BasicBotCitationSearch:
+      properties:
+        request:
+          $ref: '#/components/schemas/CaseCitationRequest'
+      type: object
+      required:
+      - request
+      title: BasicBotCitationSearch
+    BasicBotResearchedRequest:
+      properties:
+        request:
+          type: string
+          title: Request
+        conversationId:
+          type: string
+          title: Conversationid
+        history:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: History
+          default: []
+        control_options:
+          anyOf:
+          - $ref: '#/components/schemas/BasicBotControlPanelOptions'
+          - type: 'null'
+          default:
+            creativity: 0.0
+            analysisDepth: 1
+            legalFocus: 'True'
+            jurisdictions: ''
+        needs_citations:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Needs Citations
+        is_advanced_mode:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Advanced Mode
+          default: false
+        allowed_cases:
+          items:
+            $ref: '#/components/schemas/CaseSearchResult'
+          type: array
+          title: Allowed Cases
+        allowed_statutes:
+          items:
+            additionalProperties:
+              type: string
+            type: object
+          type: array
+          title: Allowed Statutes
+        allowed_web_search:
+          items:
+            additionalProperties:
+              type: string
+            type: object
+          type: array
+          title: Allowed Web Search
+      type: object
+      required:
+      - request
+      - conversationId
+      - allowed_cases
+      - allowed_statutes
+      - allowed_web_search
+      title: BasicBotResearchedRequest
+    NotifyTurnCompleteRequest:
+      properties:
+        count:
+          type: integer
+          minimum: 1.0
+          title: Count
+          description: 'Number of qualifying messages in this turn: the user input plus the number of final displayed AI text responses.  Thinking blocks, tool calls, and tool results must be excluded by the caller.'
+          default: 1
+      type: object
+      title: NotifyTurnCompleteRequest
+      description: Request body for the notify-turn-complete endpoint.
+    BasicBotValidateCases:
+      properties:
+        data:
+          $ref: '#/components/schemas/BasicBotLegalResearchResponse'
+      type: object
+      required:
+      - data
+      title: BasicBotValidateCases
+    PrecedentTreatment:
+      type: string
+      enum:
+      - OVERRULES_FULLY
+      - OVERRULES_PARTIALLY
+      - LIMITS
+      - REVERSES
+      - VACATES
+      - QUESTIONS
+      - DEPARTS
+      - DISTINGUISHES
+      - CLARIFIES
+      - HARMONIZES
+      - FOLLOWS
+      - EXTENDS
+      - CITES
+      - OTHER
+      title: PrecedentTreatment
+      description: A more complete version of PrecedentInteraction.
+    LegalAuthoritiesJobStatus:
+      properties:
+        status:
+          type: string
+          title: Status
+        job_id:
+          type: string
+          title: Job Id
+        result:
+          anyOf:
+          - $ref: '#/components/schemas/LegalAuthoritiesJobResult'
+          - type: 'null'
+        error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error
+        error_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error Type
+      type: object
+      required:
+      - status
+      - job_id
+      title: LegalAuthoritiesJobStatus
+    AttachDocHubDocumentsRequest:
+      properties:
+        document_ids:
+          items:
+            type: string
+          type: array
+          minItems: 1
+          title: Document Ids
+          description: Doc-hub document IDs to attach
+        current_context_tokens:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Current Context Tokens
+          description: Current conversation token count (from frontend). When provided, skips server-side token counting.
+      type: object
+      required:
+      - document_ids
+      title: AttachDocHubDocumentsRequest
+      description: Request body for attaching doc-hub documents to a basic_bot conversation.
+    BasicBotControlPanelOptions:
+      properties:
+        creativity:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Creativity
+          default: 0
+        analysisDepth:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Analysisdepth
+          default: 1
+        legalFocus:
+          anyOf:
+          - type: boolean
+          - type: string
+          - type: 'null'
+          title: Legalfocus
+          default: 'True'
+        jurisdictions:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Jurisdictions
+          default: ''
+      type: object
+      title: BasicBotControlPanelOptions
+    BasicBotStatute:
+      properties:
+        statute_name:
+          type: string
+          title: Statute Name
+        citation:
+          type: string
+          title: Citation
+        jurisdiction:
+          type: string
+          title: Jurisdiction
+        summary:
+          type: string
+          title: Summary
+      type: object
+      required:
+      - statute_name
+      - citation
+      - jurisdiction
+      - summary
+      title: BasicBotStatute
+    CaseCitationRequest:
+      properties:
+        citation:
+          type: string
+          title: Citation
+      type: object
+      required:
+      - citation
+      title: CaseCitationRequest
+    BasicBotResearchRobustPrepResult:
+      properties:
+        key_issues:
+          items:
+            type: string
+          type: array
+          title: Key Issues
+        causes_of_action:
+          items:
+            type: string
+          type: array
+          title: Causes Of Action
+        affirmative_defenses:
+          items:
+            type: string
+          type: array
+          title: Affirmative Defenses
+        legal_questions_with_facts:
+          items:
+            additionalProperties:
+              items:
+                type: string
+              type: array
+            type: object
+          type: array
+          title: Legal Questions With Facts
+        legal_doctrines:
+          items:
+            type: string
+          type: array
+          title: Legal Doctrines
+        is_advanced_mode:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Advanced Mode
+          default: false
+      type: object
+      required:
+      - key_issues
+      - causes_of_action
+      - affirmative_defenses
+      - legal_questions_with_facts
+      - legal_doctrines
+      title: BasicBotResearchRobustPrepResult
+    FileUploadJobStatus:
+      properties:
+        status:
+          type: string
+          title: Status
+        job_id:
+          type: string
+          title: Job Id
+        progress:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Progress
+        result:
+          anyOf:
+          - $ref: '#/components/schemas/FileUploadJobResult'
+          - type: 'null'
+        error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error
+        error_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error Type
+      type: object
+      required:
+      - status
+      - job_id
+      title: FileUploadJobStatus
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ShepardizingSummary:
+      properties:
+        flag_color:
+          type: string
+          enum:
+          - red
+          - yellow
+          title: Flag Color
+        top_overruling:
+          $ref: '#/components/schemas/ShepardizingChainEntry'
+        chain:
+          items:
+            $ref: '#/components/schemas/ShepardizingChainEntry'
+          type: array
+          title: Chain
+      type: object
+      required:
+      - flag_color
+      - top_overruling
+      - chain
+      title: ShepardizingSummary
+    BasicBotResearchedCasesRequest:
+      properties:
+        allowed_cases:
+          items:
+            $ref: '#/components/schemas/CaseSearchResult'
+          type: array
+          title: Allowed Cases
+        allowed_statutes:
+          items:
+            additionalProperties:
+              type: string
+            type: object
+          type: array
+          title: Allowed Statutes
+        allowed_web_search:
+          items:
+            additionalProperties:
+              type: string
+            type: object
+          type: array
+          title: Allowed Web Search
+      type: object
+      required:
+      - allowed_cases
+      - allowed_statutes
+      - allowed_web_search
+      title: BasicBotResearchedCasesRequest
+    BasicBotLegalResearchResponse:
+      properties:
+        cases:
+          items:
+            $ref: '#/components/schemas/BasicBotCaseLaw'
+          type: array
+          title: Cases
+        statutes:
+          items:
+            $ref: '#/components/schemas/BasicBotStatute'
+          type: array
+          title: Statutes
+      type: object
+      required:
+      - cases
+      title: BasicBotLegalResearchResponse
+    ShepardizingChainEntry:
+      properties:
+        case_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Case Id
+        case_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Case Name
+        url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Url
+        treatment:
+          anyOf:
+          - $ref: '#/components/schemas/PrecedentTreatment'
+          - type: 'null'
+        analysis:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Analysis
+        confidence:
+          anyOf:
+          - $ref: '#/components/schemas/TreatmentConfidence'
+          - type: 'null'
+        depth:
+          type: integer
+          title: Depth
+          default: 0
+        color:
+          type: string
+          enum:
+          - red
+          - yellow
+          - gray
+          title: Color
+          default: gray
+      type: object
+      title: ShepardizingChainEntry
+    BasicBotResearchPrepLegalAuthorities:
+      properties:
+        request:
+          type: string
+          title: Request
+        conversationId:
+          type: string
+          title: Conversationid
+        history:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: History
+          default: []
+        control_options:
+          anyOf:
+          - $ref: '#/components/schemas/BasicBotControlPanelOptions'
+          - type: 'null'
+          default:
+            creativity: 0.0
+            analysisDepth: 1
+            legalFocus: 'True'
+            jurisdictions: ''
+        needs_citations:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Needs Citations
+        is_advanced_mode:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Advanced Mode
+          default: false
+        research_prep:
+          $ref: '#/components/schemas/BasicBotResearchRobustPrepResult'
+      type: object
+      required:
+      - request
+      - conversationId
+      - research_prep
+      title: BasicBotResearchPrepLegalAuthorities
+    BasicBotRequestRoot:
+      properties:
+        request:
+          type: string
+          title: Request
+        conversationId:
+          type: string
+          title: Conversationid
+        history:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: History
+          default: []
+        control_options:
+          anyOf:
+          - $ref: '#/components/schemas/BasicBotControlPanelOptions'
+          - type: 'null'
+          default:
+            creativity: 0.0
+            analysisDepth: 1
+            legalFocus: 'True'
+            jurisdictions: ''
+        needs_citations:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Needs Citations
+        is_advanced_mode:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Advanced Mode
+          default: false
+      type: object
+      required:
+      - request
+      - conversationId
+      title: BasicBotRequestRoot
+    LegalAuthoritiesJobResult:
+      properties:
+        job_id:
+          type: string
+          title: Job Id
+        cases:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Cases
+        statutes:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Statutes
+      type: object
+      required:
+      - job_id
+      - cases
+      - statutes
+      title: LegalAuthoritiesJobResult
+    TreatmentConfidence:
+      type: string
+      enum:
+      - EXTREMELY_LOW
+      - LOW
+      - MEDIUM
+      - HIGH
+      - EXTREMELY_HIGH
+      title: TreatmentConfidence
+    FileUploadJobStartResponse:
+      properties:
+        job_id:
+          type: string
+          title: Job Id
+      type: object
+      required:
+      - job_id
+      title: FileUploadJobStartResponse
+    AttachMatterContextRequest:
+      properties:
+        markdown:
+          type: string
+          maxLength: 100000
+          minLength: 1
+          title: Markdown
+          description: Context engine markdown output
+        filename:
+          type: string
+          maxLength: 255
+          title: Filename
+          description: Display name for the attached context
+          default: Matter Context
+      type: object
+      required:
+      - markdown
+      title: AttachMatterContextRequest
+      description: Request body for attaching matter context engine output to a basic_bot conversation.
+    LegalAuthoritiesJobStartResponse:
+      properties:
+        job_id:
+          type: string
+          title: Job Id
+      type: object
+      required:
+      - job_id
+      title: LegalAuthoritiesJobStartResponse
+    CaseSearchResult:
+      properties:
+        case_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Case Id
+        title:
+          type: string
+          title: Title
+        url:
+          type: string
+          title: Url
+        bluebook:
+          type: string
+          title: Bluebook
+          default: ''
+        snippet:
+          type: string
+          title: Snippet
+          default: ''
+        source:
+          type: string
+          title: Source
+          default: Unknown
+        jurisdiction:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Jurisdiction
+        holdings:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/HoldingModel'
+            type: array
+          - type: 'null'
+          title: Holdings
+        shepardizing:
+          anyOf:
+          - $ref: '#/components/schemas/ShepardizingSummary'
+          - type: 'null'
+        citator_status:
+          anyOf:
+          - type: string
+            const: unavailable
+          - type: 'null'
+          title: Citator Status
+      type: object
+      required:
+      - title
+      - url
+      title: CaseSearchResult
+    BasicBotOptionalResearchedCaseRequest:
+      properties:
+        request:
+          type: string
+          title: Request
+        conversationId:
+          type: string
+          title: Conversationid
+        history:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: History
+          default: []
+        control_options:
+          anyOf:
+          - $ref: '#/components/schemas/BasicBotControlPanelOptions'
+          - type: 'null'
+          default:
+            creativity: 0.0
+            analysisDepth: 1
+            legalFocus: 'True'
+            jurisdictions: ''
+        needs_citations:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Needs Citations
+        is_advanced_mode:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Advanced Mode
+          default: false
+        allowed_cases:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/CaseSearchResult'
+            type: array
+          - type: 'null'
+          title: Allowed Cases
+        allowed_statutes:
+          anyOf:
+          - items:
+              additionalProperties:
+                type: string
+              type: object
+            type: array
+          - type: 'null'
+          title: Allowed Statutes
+        allowed_web_search:
+          anyOf:
+          - items:
+              additionalProperties:
+                type: string
+              type: object
+            type: array
+          - type: 'null'
+          title: Allowed Web Search
+      type: object
+      required:
+      - request
+      - conversationId
+      title: BasicBotOptionalResearchedCaseRequest
+    HoldingModel:
+      properties:
+        holding:
+          type: string
+          title: Holding
+        generalized_holding:
+          type: string
+          title: Generalized Holding
+      type: object
+      required:
+      - holding
+      - generalized_holding
+      title: HoldingModel
+    FileUploadJobResult:
+      properties:
+        file_id:
+          type: string
+          title: File Id
+        job_id:
+          type: string
+          title: Job Id
+      type: object
+      required:
+      - file_id
+      - job_id
+      title: FileUploadJobResult
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError

@@ -1,0 +1,1394 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/callidus-legal-ai/main/json-schema/callidus-legal-ai-tax-document-response-schema.json",
+  "title": "TaxDocumentResponse",
+  "description": "Response model for tax documents",
+  "x-generated": "2026-10-06",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/callidus-legal-ai-openapi.json#/components/schemas/TaxDocumentResponse",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "title": "Id"
+    },
+    "dataset_id": {
+      "type": "integer",
+      "title": "Dataset Id"
+    },
+    "document_id": {
+      "type": "integer",
+      "title": "Document Id"
+    },
+    "document_type": {
+      "type": "string",
+      "title": "Document Type"
+    },
+    "tax_year": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Tax Year"
+    },
+    "extraction_confidence": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Extraction Confidence"
+    },
+    "processing_notes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Processing Notes"
+    },
+    "form_data": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Form Data"
+    },
+    "validation_findings": {
+      "anyOf": [
+        {
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Validation Findings"
+    },
+    "total_income": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Total Income"
+    },
+    "adjusted_gross_income": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Adjusted Gross Income"
+    },
+    "taxable_income": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Taxable Income"
+    },
+    "total_tax_liability": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Total Tax Liability"
+    },
+    "total_payments": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Total Payments"
+    },
+    "refund_amount": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Refund Amount"
+    },
+    "amount_owed": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Amount Owed"
+    },
+    "total_deductions": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Total Deductions"
+    },
+    "total_credits": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Total Credits"
+    },
+    "statement_date": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Statement Date"
+    },
+    "statement_period_start": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Statement Period Start"
+    },
+    "statement_period_end": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Statement Period End"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Created At"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Updated At"
+    },
+    "taxpayers": {
+      "items": {
+        "$ref": "#/$defs/datamodels__discovery__forensic__income__TaxPayerResponse"
+      },
+      "type": "array",
+      "title": "Taxpayers",
+      "default": []
+    },
+    "employers": {
+      "items": {
+        "$ref": "#/$defs/EmployerResponse"
+      },
+      "type": "array",
+      "title": "Employers",
+      "default": []
+    },
+    "income_records": {
+      "items": {
+        "$ref": "#/$defs/IncomeRecordResponse"
+      },
+      "type": "array",
+      "title": "Income Records",
+      "default": []
+    },
+    "deductions": {
+      "items": {
+        "$ref": "#/$defs/TaxDeductionResponse"
+      },
+      "type": "array",
+      "title": "Deductions",
+      "default": []
+    },
+    "credits": {
+      "items": {
+        "$ref": "#/$defs/TaxCreditResponse"
+      },
+      "type": "array",
+      "title": "Credits",
+      "default": []
+    },
+    "primary_taxpayer_name": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Primary Taxpayer Name"
+    },
+    "business_id": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Business Id"
+    },
+    "business": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BusinessResponse"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "display_type": {
+      "type": "string",
+      "title": "Display Type",
+      "readOnly": true
+    },
+    "is_tax_return": {
+      "type": "boolean",
+      "title": "Is Tax Return",
+      "readOnly": true
+    },
+    "is_income_statement": {
+      "type": "boolean",
+      "title": "Is Income Statement",
+      "readOnly": true
+    },
+    "is_income_source": {
+      "type": "boolean",
+      "title": "Is Income Source",
+      "description": "Document directly produces IncomeRecord rows (evidence of income).\n\nIncludes W-2/1099/pay stub plus the schedules whose source docs we treat\nas income evidence: Schedule C (self-employment), Schedule E Part I\n(direct rentals/royalties), and Schedule K-1 (pass-through). Excludes\ntax returns (1040, 1120, 1120-S, 1065) and validation-only schedules\n(Schedule 1/2/3/B/SE/8812). Used by the UI to populate the Income\nDocuments tab.",
+      "readOnly": true
+    },
+    "total_gross_income": {
+      "type": "string",
+      "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+      "title": "Total Gross Income",
+      "readOnly": true
+    },
+    "total_tax_withheld": {
+      "type": "string",
+      "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+      "title": "Total Tax Withheld",
+      "readOnly": true
+    },
+    "net_tax_position": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Net Tax Position",
+      "description": "Calculate net tax position (refund positive, owed negative)",
+      "readOnly": true
+    },
+    "statement_period_days": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Statement Period Days",
+      "readOnly": true
+    }
+  },
+  "type": "object",
+  "required": [
+    "id",
+    "dataset_id",
+    "document_id",
+    "document_type",
+    "created_at",
+    "updated_at",
+    "display_type",
+    "is_tax_return",
+    "is_income_statement",
+    "is_income_source",
+    "total_gross_income",
+    "total_tax_withheld",
+    "net_tax_position",
+    "statement_period_days"
+  ],
+  "$defs": {
+    "BusinessResponse": {
+      "properties": {
+        "id": {
+          "type": "integer",
+          "title": "Id"
+        },
+        "dataset_id": {
+          "type": "integer",
+          "title": "Dataset Id"
+        },
+        "name": {
+          "type": "string",
+          "title": "Name"
+        },
+        "ein": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Ein"
+        },
+        "ein_last4": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Ein Last4"
+        },
+        "taxpayer_id_kind": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TaxpayerIdKind"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "state_of_formation": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "State Of Formation"
+        },
+        "tax_classification": {
+          "$ref": "#/$defs/TaxClassification",
+          "default": "unknown"
+        },
+        "legal_entity_type": {
+          "$ref": "#/$defs/LegalEntityType",
+          "default": "unknown"
+        },
+        "source_tax_document_id": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Source Tax Document Id"
+        },
+        "source_document_type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Source Document Type"
+        },
+        "verified_by": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "title": "Verified By"
+        },
+        "principal_business_activity": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Principal Business Activity"
+        },
+        "naics_code": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Naics Code"
+        },
+        "accounting_method": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Accounting Method"
+        },
+        "formation_year": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Formation Year"
+        },
+        "is_active_this_year": {
+          "type": "boolean",
+          "title": "Is Active This Year",
+          "default": true
+        },
+        "business_address": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Business Address"
+        },
+        "taxpayer_ownership_pct": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Taxpayer Ownership Pct"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "title": "Created At"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time",
+          "title": "Updated At"
+        }
+      },
+      "type": "object",
+      "required": [
+        "id",
+        "dataset_id",
+        "name",
+        "created_at",
+        "updated_at"
+      ],
+      "title": "BusinessResponse",
+      "description": "Single business-entity record (any tax classification, any legal wrapper)."
+    },
+    "EmployerResponse": {
+      "properties": {
+        "id": {
+          "type": "integer",
+          "title": "Id"
+        },
+        "dataset_id": {
+          "type": "integer",
+          "title": "Dataset Id"
+        },
+        "tax_document_id": {
+          "type": "integer",
+          "title": "Tax Document Id"
+        },
+        "name": {
+          "type": "string",
+          "title": "Name"
+        },
+        "ein_last4": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Ein Last4"
+        },
+        "address": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Address"
+        },
+        "employee_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Employee Id"
+        },
+        "department": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Department"
+        },
+        "job_title": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Job Title"
+        },
+        "contact_info": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Contact Info"
+        },
+        "display_name": {
+          "type": "string",
+          "title": "Display Name",
+          "readOnly": true
+        },
+        "formatted_ein": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Formatted Ein",
+          "readOnly": true
+        }
+      },
+      "type": "object",
+      "required": [
+        "id",
+        "dataset_id",
+        "tax_document_id",
+        "name",
+        "display_name",
+        "formatted_ein"
+      ],
+      "title": "EmployerResponse",
+      "description": "Response model for employers/income payers"
+    },
+    "IncomeRecordResponse": {
+      "properties": {
+        "id": {
+          "type": "integer",
+          "title": "Id"
+        },
+        "dataset_id": {
+          "type": "integer",
+          "title": "Dataset Id"
+        },
+        "tax_document_id": {
+          "type": "integer",
+          "title": "Tax Document Id"
+        },
+        "taxpayer_id": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Taxpayer Id"
+        },
+        "employer_id": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Employer Id"
+        },
+        "income_type": {
+          "type": "string",
+          "title": "Income Type"
+        },
+        "gross_amount": {
+          "type": "string",
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "title": "Gross Amount"
+        },
+        "net_amount": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Net Amount"
+        },
+        "income_period_start": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Income Period Start"
+        },
+        "income_period_end": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Income Period End"
+        },
+        "pay_frequency": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Pay Frequency"
+        },
+        "payer_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Payer Name"
+        },
+        "payer_ein_last4": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Payer Ein Last4"
+        },
+        "payer_address": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Payer Address"
+        },
+        "federal_tax_withheld": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Federal Tax Withheld"
+        },
+        "state_tax_withheld": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "State Tax Withheld"
+        },
+        "social_security_tax": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Social Security Tax"
+        },
+        "medicare_tax": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Medicare Tax"
+        },
+        "other_withholdings": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Other Withholdings"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Description"
+        },
+        "box_numbers": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "type": "object"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Box Numbers"
+        },
+        "information_only": {
+          "type": "boolean",
+          "title": "Information Only",
+          "default": false
+        },
+        "taxpayer": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/datamodels__discovery__forensic__income__TaxPayerResponse"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "employer": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EmployerResponse"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "display_payer": {
+          "type": "string",
+          "title": "Display Payer",
+          "readOnly": true
+        },
+        "formatted_gross_amount": {
+          "type": "string",
+          "title": "Formatted Gross Amount",
+          "readOnly": true
+        },
+        "formatted_net_amount": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Formatted Net Amount",
+          "readOnly": true
+        },
+        "total_tax_withheld": {
+          "type": "string",
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "title": "Total Tax Withheld",
+          "readOnly": true
+        },
+        "total_payroll_taxes": {
+          "type": "string",
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "title": "Total Payroll Taxes",
+          "readOnly": true
+        },
+        "total_withholdings": {
+          "type": "string",
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "title": "Total Withholdings",
+          "readOnly": true
+        },
+        "estimated_annual_income": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Estimated Annual Income",
+          "description": "Calculate estimated annual income based on pay frequency",
+          "readOnly": true
+        },
+        "effective_tax_rate": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Effective Tax Rate",
+          "description": "Calculate effective tax rate from withholdings",
+          "readOnly": true
+        },
+        "period_length_days": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Period Length Days",
+          "readOnly": true
+        }
+      },
+      "type": "object",
+      "required": [
+        "id",
+        "dataset_id",
+        "tax_document_id",
+        "income_type",
+        "gross_amount",
+        "display_payer",
+        "formatted_gross_amount",
+        "formatted_net_amount",
+        "total_tax_withheld",
+        "total_payroll_taxes",
+        "total_withholdings",
+        "estimated_annual_income",
+        "effective_tax_rate",
+        "period_length_days"
+      ],
+      "title": "IncomeRecordResponse",
+      "description": "Response model for income records"
+    },
+    "LegalEntityType": {
+      "type": "string",
+      "enum": [
+        "individual",
+        "smllc",
+        "mmllc",
+        "corporation",
+        "limited_partnership",
+        "general_partnership",
+        "professional_corp",
+        "professional_llc",
+        "unknown"
+      ],
+      "title": "LegalEntityType",
+      "description": "What state law calls it (the wrapper).\n\nDrives asset-division logic — liability shield, separateness for property\ndistribution, professional-practice handling."
+    },
+    "TaxClassification": {
+      "type": "string",
+      "enum": [
+        "sole_proprietorship",
+        "disregarded_entity",
+        "s_corp",
+        "c_corp",
+        "partnership",
+        "qualified_joint_venture",
+        "unknown"
+      ],
+      "title": "TaxClassification",
+      "description": "How the business files with the IRS (federal substance).\n\nDrives extraction routing and downstream income-flow analysis."
+    },
+    "TaxCreditResponse": {
+      "properties": {
+        "id": {
+          "type": "integer",
+          "title": "Id"
+        },
+        "dataset_id": {
+          "type": "integer",
+          "title": "Dataset Id"
+        },
+        "tax_document_id": {
+          "type": "integer",
+          "title": "Tax Document Id"
+        },
+        "credit_type": {
+          "type": "string",
+          "title": "Credit Type"
+        },
+        "amount": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Amount"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Description"
+        },
+        "formatted_amount": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Formatted Amount",
+          "readOnly": true
+        },
+        "display_description": {
+          "type": "string",
+          "title": "Display Description",
+          "readOnly": true
+        }
+      },
+      "type": "object",
+      "required": [
+        "id",
+        "dataset_id",
+        "tax_document_id",
+        "credit_type",
+        "formatted_amount",
+        "display_description"
+      ],
+      "title": "TaxCreditResponse",
+      "description": "Response model for tax credits"
+    },
+    "TaxDeductionResponse": {
+      "properties": {
+        "id": {
+          "type": "integer",
+          "title": "Id"
+        },
+        "dataset_id": {
+          "type": "integer",
+          "title": "Dataset Id"
+        },
+        "tax_document_id": {
+          "type": "integer",
+          "title": "Tax Document Id"
+        },
+        "deduction_type": {
+          "type": "string",
+          "title": "Deduction Type"
+        },
+        "amount": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Amount"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Description"
+        },
+        "schedule_reference": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Schedule Reference"
+        },
+        "formatted_amount": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Formatted Amount",
+          "readOnly": true
+        },
+        "display_description": {
+          "type": "string",
+          "title": "Display Description",
+          "readOnly": true
+        }
+      },
+      "type": "object",
+      "required": [
+        "id",
+        "dataset_id",
+        "tax_document_id",
+        "deduction_type",
+        "formatted_amount",
+        "display_description"
+      ],
+      "title": "TaxDeductionResponse",
+      "description": "Response model for tax deductions"
+    },
+    "TaxpayerIdKind": {
+      "type": "string",
+      "enum": [
+        "ein",
+        "ssn",
+        "none"
+      ],
+      "title": "TaxpayerIdKind",
+      "description": "Which taxpayer identifier the business reports under."
+    },
+    "datamodels__discovery__forensic__income__TaxPayerResponse": {
+      "properties": {
+        "id": {
+          "type": "integer",
+          "title": "Id"
+        },
+        "dataset_id": {
+          "type": "integer",
+          "title": "Dataset Id"
+        },
+        "tax_document_id": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Tax Document Id"
+        },
+        "primary_name": {
+          "type": "string",
+          "title": "Primary Name",
+          "default": ""
+        },
+        "primary_ssn_status": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Primary Ssn Status"
+        },
+        "spouse_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Spouse Name"
+        },
+        "spouse_ssn_status": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Spouse Ssn Status"
+        },
+        "address": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Address"
+        },
+        "phone": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Phone"
+        },
+        "filing_status": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Filing Status"
+        },
+        "exemptions": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Exemptions"
+        },
+        "dependents": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Dependents"
+        },
+        "display_name": {
+          "type": "string",
+          "title": "Display Name",
+          "readOnly": true
+        },
+        "is_joint_filing": {
+          "type": "boolean",
+          "title": "Is Joint Filing",
+          "readOnly": true
+        },
+        "has_dependents": {
+          "type": "boolean",
+          "title": "Has Dependents",
+          "readOnly": true
+        },
+        "dependent_count": {
+          "type": "integer",
+          "title": "Dependent Count",
+          "readOnly": true
+        }
+      },
+      "type": "object",
+      "required": [
+        "id",
+        "dataset_id",
+        "display_name",
+        "is_joint_filing",
+        "has_dependents",
+        "dependent_count"
+      ],
+      "title": "TaxPayerResponse",
+      "description": "Response model for taxpayers.\n\nTolerates missing/invalid production data: primary_name and spouse_name\nare coerced from None to empty string so /discovery/forensic/.../income/documents\ndoes not 500 when DB has legacy or malformed rows."
+    }
+  }
+}

@@ -1,0 +1,375 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/callidus-legal-ai/main/json-schema/callidus-legal-ai-liability-account-response-schema.json",
+  "title": "LiabilityAccountResponse",
+  "description": "Response model for liability accounts",
+  "x-generated": "2026-10-06",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/callidus-legal-ai-openapi.json#/components/schemas/LiabilityAccountResponse",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "title": "Id"
+    },
+    "dataset_id": {
+      "type": "integer",
+      "title": "Dataset Id"
+    },
+    "institution_id": {
+      "type": "integer",
+      "title": "Institution Id",
+      "description": "ID of the financial institution"
+    },
+    "document_id": {
+      "type": "integer",
+      "title": "Document Id",
+      "description": "ID of the source document"
+    },
+    "account_number_masked": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Account Number Masked",
+      "description": "Masked account number in format ****1234 (four asterisks + last 4 digits)"
+    },
+    "account_number_full": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Account Number Full",
+      "description": "Full account number (use carefully)"
+    },
+    "liability_type": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Liability Type",
+      "description": "Type of liability (credit_card, personal_loan, auto_loan, etc.)"
+    },
+    "account_name": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Account Name",
+      "description": "Account nickname or branded name (e.g., 'Discover It Rewards', 'Chase Freedom')"
+    },
+    "primary_holder_name": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Primary Holder Name",
+      "description": "Name of the primary account holder"
+    },
+    "joint_holders": {
+      "anyOf": [
+        {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Joint Holders",
+      "description": "List of joint account holders"
+    },
+    "holder_kind": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Holder Kind",
+      "description": "Business-vs-personal classification: 'personal' / 'business' / null. Null marks legacy rows that pre-date the column."
+    },
+    "business_id": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Business Id",
+      "description": "FK to the resolved ``businesses`` row for business-titled accounts. Always NULL for personal accounts — the FE filter pivots on holder_kind."
+    },
+    "original_loan_amount": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Original Loan Amount",
+      "description": "Original loan amount for loans"
+    },
+    "opened_date": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Opened Date",
+      "description": "Date the account was opened"
+    },
+    "maturity_date": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Maturity Date",
+      "description": "Maturity date for loans"
+    },
+    "closed_date": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Closed Date",
+      "description": "Date the account was closed"
+    },
+    "is_active": {
+      "type": "boolean",
+      "title": "Is Active",
+      "description": "Whether the account is currently active",
+      "default": true
+    },
+    "interest_rate": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Interest Rate",
+      "description": "Annual interest rate as decimal (e.g., 18.99 for 18.99%)"
+    },
+    "interest_type": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Interest Type",
+      "description": "Type of interest (fixed, variable, promotional)"
+    },
+    "term_months": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Term Months",
+      "description": "Loan term in months"
+    },
+    "collateral_description": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Collateral Description",
+      "description": "Description of collateral for secured loans"
+    },
+    "collateral_value": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Collateral Value",
+      "description": "Value of collateral"
+    },
+    "currency": {
+      "type": "string",
+      "title": "Currency",
+      "description": "Currency code",
+      "default": "USD"
+    },
+    "metadata_ex": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Metadata Ex",
+      "description": "Additional account metadata"
+    },
+    "institution": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Institution"
+    },
+    "display_name": {
+      "type": "string",
+      "title": "Display Name",
+      "readOnly": true
+    },
+    "is_loan": {
+      "type": "boolean",
+      "title": "Is Loan",
+      "readOnly": true
+    },
+    "is_credit_card": {
+      "type": "boolean",
+      "title": "Is Credit Card",
+      "readOnly": true
+    },
+    "is_mortgage": {
+      "type": "boolean",
+      "title": "Is Mortgage",
+      "readOnly": true
+    },
+    "account_status": {
+      "type": "string",
+      "title": "Account Status",
+      "readOnly": true
+    },
+    "has_collateral": {
+      "type": "boolean",
+      "title": "Has Collateral",
+      "readOnly": true
+    },
+    "formatted_original_amount": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Formatted Original Amount",
+      "readOnly": true
+    },
+    "formatted_interest_rate": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Formatted Interest Rate",
+      "readOnly": true
+    },
+    "term_years": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Term Years",
+      "readOnly": true
+    },
+    "days_to_maturity": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Days To Maturity",
+      "readOnly": true
+    }
+  },
+  "type": "object",
+  "required": [
+    "id",
+    "dataset_id",
+    "institution_id",
+    "document_id",
+    "display_name",
+    "is_loan",
+    "is_credit_card",
+    "is_mortgage",
+    "account_status",
+    "has_collateral",
+    "formatted_original_amount",
+    "formatted_interest_rate",
+    "term_years",
+    "days_to_maturity"
+  ]
+}

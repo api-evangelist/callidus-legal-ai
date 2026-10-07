@@ -1,0 +1,821 @@
+openapi: 3.2.0
+info:
+  title: CallidusAI Authorization API
+  description: Callidus AI backend API
+  version: 0.1.0
+tags:
+- name: Authorization
+paths:
+  /authz/grants:
+    post:
+      tags:
+      - Authorization
+      summary: Create a permission grant
+      description: Grant a permission (OWNER, EDITOR, or VIEWER) to a subject on a resource.
+      operationId: create_grant_authz_grants_post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GrantPermissionRequest'
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GrantPermissionResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    put:
+      tags:
+      - Authorization
+      summary: Upsert a permission grant
+      description: Create or update a permission grant. If a grant exists, it will be updated with the new relation.
+      operationId: upsert_grant_authz_grants_put
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GrantPermissionRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GrantPermissionResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+      - Authorization
+      summary: Revoke a permission grant
+      description: Remove a permission grant from a subject on a resource.
+      operationId: revoke_grant_authz_grants_delete
+      parameters:
+      - name: subject_id
+        in: query
+        required: true
+        schema:
+          type: string
+          description: ID of the subject to revoke permission from
+          title: Subject Id
+        description: ID of the subject to revoke permission from
+      - name: relation
+        in: query
+        required: true
+        schema:
+          type: integer
+          maximum: 3
+          minimum: 1
+          description: 'Relation to revoke: 1=OWNER, 2=EDITOR, 3=VIEWER'
+          title: Relation
+        description: 'Relation to revoke: 1=OWNER, 2=EDITOR, 3=VIEWER'
+      - name: resource_type
+        in: query
+        required: true
+        schema:
+          type: integer
+          maximum: 4
+          minimum: 1
+          description: Resource type
+          title: Resource Type
+        description: Resource type
+      - name: resource_id
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Resource ID
+          title: Resource Id
+        description: Resource ID
+      - name: subject_type
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 2
+          minimum: 1
+          description: 'Subject type: 1=USER, 2=TEAM'
+          default: 1
+          title: Subject Type
+        description: 'Subject type: 1=USER, 2=TEAM'
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /authz/permissions/members:
+    get:
+      tags:
+      - Authorization
+      summary: Get resource members
+      description: 'Get all subjects who have access to a specific resource.
+
+
+        The requesting user must have can_view permission on the resource.'
+      operationId: get_resource_members_authz_permissions_members_get
+      deprecated: true
+      parameters:
+      - name: resource_type
+        in: query
+        required: true
+        schema:
+          type: integer
+          maximum: 4
+          minimum: 1
+          description: 'Resource type: 1=MATTER, 2=CONVERSATION, 3=DATASET, 4=DOCUMENT'
+          title: Resource Type
+        description: 'Resource type: 1=MATTER, 2=CONVERSATION, 3=DATASET, 4=DOCUMENT'
+      - name: resource_id
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Resource ID to view members for
+          title: Resource Id
+        description: Resource ID to view members for
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceMembersResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /authz/permissions/resources:
+    get:
+      tags:
+      - Authorization
+      summary: Get user resources
+      description: Get all resources that the current user has access to.
+      operationId: get_user_resources_endpoint_authz_permissions_resources_get
+      parameters:
+      - name: resource_type
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+            maximum: 4
+            minimum: 1
+          - type: 'null'
+          description: 'Optional filter by resource type: 1=MATTER, 2=CONVERSATION, 3=DATASET, 4=DOCUMENT'
+          title: Resource Type
+        description: 'Optional filter by resource type: 1=MATTER, 2=CONVERSATION, 3=DATASET, 4=DOCUMENT'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResourcesResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /authz/permissions/check-inherited:
+    get:
+      tags:
+      - Authorization
+      summary: Check inherited permissions
+      description: Check if the current user has a permission on a resource via Matter-level inheritance.
+      operationId: check_inherited_permissions_endpoint_authz_permissions_check_inherited_get
+      deprecated: true
+      parameters:
+      - name: resource_type
+        in: query
+        required: true
+        schema:
+          type: integer
+          maximum: 4
+          minimum: 1
+          description: 'Resource type: 1=MATTER, 2=CONVERSATION, 3=DATASET, 4=DOCUMENT'
+          title: Resource Type
+        description: 'Resource type: 1=MATTER, 2=CONVERSATION, 3=DATASET, 4=DOCUMENT'
+      - name: resource_id
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Resource ID to check permission for
+          title: Resource Id
+        description: Resource ID to check permission for
+      - name: permission
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Permission to check (can_view, can_edit, can_delete, can_manage_members)
+          title: Permission
+        description: Permission to check (can_view, can_edit, can_delete, can_manage_members)
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InheritedPermissionResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /authz/permissions/can:
+    get:
+      tags:
+      - Authorization
+      summary: Check if permission is allowed
+      description: 'Simple boolean check: can the current user perform a specific action on a resource?'
+      operationId: check_permission_allowed_authz_permissions_can_get
+      parameters:
+      - name: resource_type
+        in: query
+        required: true
+        schema:
+          type: integer
+          maximum: 4
+          minimum: 1
+          description: 'Resource type: 1=MATTER, 2=CONVERSATION, 3=DATASET, 4=DOCUMENT'
+          title: Resource Type
+        description: 'Resource type: 1=MATTER, 2=CONVERSATION, 3=DATASET, 4=DOCUMENT'
+      - name: resource_id
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Resource ID to check permission for
+          title: Resource Id
+        description: Resource ID to check permission for
+      - name: permission
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Permission to check (can_view, can_edit, can_delete, can_manage_members)
+          title: Permission
+        description: Permission to check (can_view, can_edit, can_delete, can_manage_members)
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionCanResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /authz/permissions:
+    get:
+      tags:
+      - Authorization
+      summary: View permissions (generic)
+      description: Generic endpoint for permission queries. Prefer /permissions/members, /permissions/resources, or /permissions/can for new integrations.
+      operationId: get_permissions_authz_permissions_get
+      deprecated: true
+      parameters:
+      - name: resource_type
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+            maximum: 4
+            minimum: 1
+          - type: 'null'
+          description: 'Resource type: 1=MATTER, 2=CONVERSATION, 3=DATASET, 4=DOCUMENT'
+          title: Resource Type
+        description: 'Resource type: 1=MATTER, 2=CONVERSATION, 3=DATASET, 4=DOCUMENT'
+      - name: resource_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Resource ID to view members for
+          title: Resource Id
+        description: Resource ID to view members for
+      - name: user_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: User ID to view accessible resources for (defaults to current user)
+          title: User Id
+        description: User ID to view accessible resources for (defaults to current user)
+      - name: subject_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Subject ID to check permissions for (Mode 3)
+          title: Subject Id
+        description: Subject ID to check permissions for (Mode 3)
+      - name: subject_type
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 2
+          minimum: 1
+          description: 'Subject type: 1=USER, 2=TEAM (used with subject_id for Mode 3)'
+          default: 1
+          title: Subject Type
+        description: 'Subject type: 1=USER, 2=TEAM (used with subject_id for Mode 3)'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionListResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    PermissionListResponse:
+      properties:
+        members:
+          items:
+            $ref: '#/components/schemas/PermissionMemberResponse'
+          type: array
+          title: Members
+          description: List of members/permissions for a resource
+        resources:
+          items:
+            $ref: '#/components/schemas/UserResourceResponse'
+          type: array
+          title: Resources
+          description: List of resources a user has access to
+        subject_permission:
+          anyOf:
+          - $ref: '#/components/schemas/SubjectPermissionResponse'
+          - type: 'null'
+          description: Permission info for a specific subject on a specific resource (Mode 3)
+        total:
+          type: integer
+          title: Total
+          description: Total count of items
+          default: 0
+      type: object
+      title: PermissionListResponse
+      description: Response model for listing permissions.
+    UserResourcesResponse:
+      properties:
+        resources:
+          items:
+            $ref: '#/components/schemas/UserResourceResponse'
+          type: array
+          title: Resources
+          description: List of resources the user has access to
+        user_id:
+          type: string
+          title: User Id
+          description: ID of the user
+        total:
+          type: integer
+          title: Total
+          description: Total count of resources
+      type: object
+      required:
+      - resources
+      - user_id
+      - total
+      title: UserResourcesResponse
+      description: Response for /permissions/resources - what resources a user can access.
+    GrantPermissionResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Unique ID of the permission record
+        subject_type:
+          type: integer
+          title: Subject Type
+          description: 'Subject type: 1=USER, 2=TEAM'
+        subject_type_name:
+          type: string
+          title: Subject Type Name
+          description: Human-readable subject type name
+        subject_id:
+          type: string
+          title: Subject Id
+          description: ID of the subject
+        relation:
+          type: integer
+          title: Relation
+          description: 'Relation type: 1=OWNER, 2=EDITOR, 3=VIEWER'
+        relation_name:
+          type: string
+          title: Relation Name
+          description: Human-readable relation name
+        resource_type:
+          type: integer
+          title: Resource Type
+          description: 'Resource type: 1=MATTER, 2=CONVERSATION, 3=DATASET, 4=DOCUMENT'
+        resource_type_name:
+          type: string
+          title: Resource Type Name
+          description: Human-readable resource type name
+        resource_id:
+          type: string
+          title: Resource Id
+          description: ID of the resource
+        created_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Created At
+          description: When the permission was created
+        created_by:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Created By
+          description: Who created this permission
+      type: object
+      required:
+      - id
+      - subject_type
+      - subject_type_name
+      - subject_id
+      - relation
+      - relation_name
+      - resource_type
+      - resource_type_name
+      - resource_id
+      title: GrantPermissionResponse
+      description: Response model for a created/updated permission grant.
+    ResourceMembersResponse:
+      properties:
+        members:
+          items:
+            $ref: '#/components/schemas/PermissionMemberResponse'
+          type: array
+          title: Members
+          description: List of members/permissions for this resource
+        resource_type:
+          type: integer
+          title: Resource Type
+          description: 'Resource type: 1=MATTER, 2=CONVERSATION, 3=DATASET, 4=DOCUMENT'
+        resource_type_name:
+          type: string
+          title: Resource Type Name
+          description: Human-readable resource type name
+        resource_id:
+          type: string
+          title: Resource Id
+          description: ID of the resource
+        total:
+          type: integer
+          title: Total
+          description: Total count of members
+      type: object
+      required:
+      - members
+      - resource_type
+      - resource_type_name
+      - resource_id
+      - total
+      title: ResourceMembersResponse
+      description: Response for /permissions/members - who has access to a resource.
+    UserResourceResponse:
+      properties:
+        resource_type:
+          type: integer
+          title: Resource Type
+          description: 'Resource type: 1=MATTER, 2=CONVERSATION, 3=DATASET, 4=DOCUMENT'
+        resource_type_name:
+          type: string
+          title: Resource Type Name
+          description: Human-readable resource type name
+        resource_id:
+          type: string
+          title: Resource Id
+          description: ID of the resource
+        relation:
+          type: integer
+          title: Relation
+          description: 'Relation type: 1=OWNER, 2=EDITOR, 3=VIEWER'
+        relation_name:
+          type: string
+          title: Relation Name
+          description: Human-readable relation name
+        permissions:
+          items:
+            type: string
+          type: array
+          title: Permissions
+          description: List of derived permissions (can_view, can_edit, etc.)
+      type: object
+      required:
+      - resource_type
+      - resource_type_name
+      - resource_id
+      - relation
+      - relation_name
+      title: UserResourceResponse
+      description: Response model for a resource that a user has access to.
+    SubjectPermissionResponse:
+      properties:
+        subject_type:
+          type: integer
+          title: Subject Type
+          description: 'Subject type: 1=USER, 2=TEAM'
+        subject_type_name:
+          type: string
+          title: Subject Type Name
+          description: Human-readable subject type name
+        subject_id:
+          type: string
+          title: Subject Id
+          description: ID of the subject
+        resource_type:
+          type: integer
+          title: Resource Type
+          description: 'Resource type: 1=MATTER, 2=CONVERSATION, 3=DATASET, 4=DOCUMENT'
+        resource_type_name:
+          type: string
+          title: Resource Type Name
+          description: Human-readable resource type name
+        resource_id:
+          type: string
+          title: Resource Id
+          description: ID of the resource
+        relation:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Relation
+          description: 'Relation type: 1=OWNER, 2=EDITOR, 3=VIEWER (None if no direct grant)'
+        relation_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Relation Name
+          description: Human-readable relation name
+        permissions:
+          items:
+            type: string
+          type: array
+          title: Permissions
+          description: List of derived permissions (can_view, can_edit, etc.)
+        has_access:
+          type: boolean
+          title: Has Access
+          description: Whether the subject has any access to the resource
+      type: object
+      required:
+      - subject_type
+      - subject_type_name
+      - subject_id
+      - resource_type
+      - resource_type_name
+      - resource_id
+      - has_access
+      title: SubjectPermissionResponse
+      description: Response model for checking a specific subject's permissions on a resource.
+    GrantPermissionRequest:
+      properties:
+        subject_id:
+          type: string
+          title: Subject Id
+          description: ID of the subject (user or team) to grant permission to
+          examples:
+          - user-123
+          - alice@example.com
+        relation:
+          type: integer
+          maximum: 3.0
+          minimum: 1.0
+          title: Relation
+          description: 'Relation type: 1=OWNER, 2=EDITOR, 3=VIEWER'
+          examples:
+          - 1
+          - 2
+          - 3
+        resource_type:
+          type: integer
+          maximum: 4.0
+          minimum: 1.0
+          title: Resource Type
+          description: 'Resource type: 1=MATTER, 2=CONVERSATION, 3=DATASET, 4=DOCUMENT'
+          examples:
+          - 1
+        resource_id:
+          type: string
+          title: Resource Id
+          description: ID of the resource to grant permission on
+          examples:
+          - matter-456
+        subject_type:
+          type: integer
+          maximum: 2.0
+          minimum: 1.0
+          title: Subject Type
+          description: 'Subject type: 1=USER, 2=TEAM (default: USER)'
+          default: 1
+          examples:
+          - 1
+      type: object
+      required:
+      - subject_id
+      - relation
+      - resource_type
+      - resource_id
+      title: GrantPermissionRequest
+      description: Request model for creating or updating a permission grant.
+    PermissionMemberResponse:
+      properties:
+        subject_type:
+          type: integer
+          title: Subject Type
+          description: 'Subject type: 1=USER, 2=TEAM'
+        subject_type_name:
+          type: string
+          title: Subject Type Name
+          description: Human-readable subject type name
+        subject_id:
+          type: string
+          title: Subject Id
+          description: ID of the subject
+        relation:
+          type: integer
+          title: Relation
+          description: 'Relation type: 1=OWNER, 2=EDITOR, 3=VIEWER'
+        relation_name:
+          type: string
+          title: Relation Name
+          description: Human-readable relation name
+        permissions:
+          items:
+            type: string
+          type: array
+          title: Permissions
+          description: List of derived permissions (can_view, can_edit, etc.)
+        created_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Created At
+          description: When the permission was created (ISO format)
+        created_by:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Created By
+          description: Who created this permission
+      type: object
+      required:
+      - subject_type
+      - subject_type_name
+      - subject_id
+      - relation
+      - relation_name
+      title: PermissionMemberResponse
+      description: Response model for a single permission/member entry.
+    InheritedPermissionResponse:
+      properties:
+        allowed:
+          type: boolean
+          title: Allowed
+          description: Whether the permission is granted via inheritance
+        permission:
+          type: string
+          title: Permission
+          description: The permission that was checked
+        resource_type:
+          type: integer
+          title: Resource Type
+          description: 'Resource type: 1=MATTER, 2=CONVERSATION, 3=DATASET, 4=DOCUMENT'
+        resource_type_name:
+          type: string
+          title: Resource Type Name
+          description: Human-readable resource type name
+        resource_id:
+          type: string
+          title: Resource Id
+          description: ID of the resource
+        inherited_via:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Inherited Via
+          description: How permission was inherited (e.g., 'MATTER' if via Matter-level sharing)
+      type: object
+      required:
+      - allowed
+      - permission
+      - resource_type
+      - resource_type_name
+      - resource_id
+      title: InheritedPermissionResponse
+      description: Response for /permissions/check-inherited - check inherited permission via Matter.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    PermissionCanResponse:
+      properties:
+        allowed:
+          type: boolean
+          title: Allowed
+          description: Whether the permission is granted
+        permission:
+          type: string
+          title: Permission
+          description: The permission that was checked
+        resource_type:
+          type: integer
+          title: Resource Type
+          description: 'Resource type: 1=MATTER, 2=CONVERSATION, 3=DATASET, 4=DOCUMENT'
+        resource_type_name:
+          type: string
+          title: Resource Type Name
+          description: Human-readable resource type name
+        resource_id:
+          type: string
+          title: Resource Id
+          description: ID of the resource
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Reason for access (e.g., 'EDITOR on MATTER:matter-456')
+      type: object
+      required:
+      - allowed
+      - permission
+      - resource_type
+      - resource_type_name
+      - resource_id
+      title: PermissionCanResponse
+      description: Response for /permissions/can - simple boolean permission check.

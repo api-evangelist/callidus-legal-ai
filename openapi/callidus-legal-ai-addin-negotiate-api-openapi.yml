@@ -1,0 +1,810 @@
+openapi: 3.2.0
+info:
+  title: CallidusAI Addin Negotiate API
+  description: Callidus AI backend API
+  version: 0.1.0
+tags:
+- name: Addin-Negotiate
+paths:
+  /addin/negotiate/metadata:
+    post:
+      tags:
+      - Addin-Negotiate
+      summary: Negotiate
+      description: 'Extract contract metadata (is_contract, industry, parties).
+
+
+        Args:
+
+        request: FastAPI request object
+
+        query: Request containing paragraphs to analyze
+
+        task_tracker: Task tracker for monitoring
+
+        session: Redis session
+
+
+        Returns:
+
+        JSONResponse with contract metadata'
+      operationId: negotiate_addin_negotiate_metadata_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddinNegotiate'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /addin/negotiate/terms:
+    post:
+      tags:
+      - Addin-Negotiate
+      summary: Negotiate Terms
+      description: 'Negotiate contract terms.
+
+
+        Args:
+
+        request: FastAPI request object
+
+        query: Request containing paragraphs to analyze for terms
+
+        task_tracker: Task tracker for monitoring
+
+        session: Redis session
+
+        stream_handler: Handler for streaming LLM responses
+
+        event_generator: Generator for streaming events
+
+
+        Returns:
+
+        EventSourceResponse streaming term negotiation results'
+      operationId: negotiate_terms_addin_negotiate_terms_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddinNegotiate'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /addin/negotiate/defined-terms:
+    post:
+      tags:
+      - Addin-Negotiate
+      summary: Negotiate Defined Terms
+      description: 'Extract and negotiate defined terms from contract paragraphs.
+
+
+        Args:
+
+        request: FastAPI request object
+
+        query: Request containing paragraphs to analyze for defined terms
+
+        session: Redis session
+
+
+        Returns:
+
+        JSONResponse with defined terms analysis
+
+
+        Raises:
+
+        HTTPException: If session data retrieval fails'
+      operationId: negotiate_defined_terms_addin_negotiate_defined_terms_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddinNegotiate'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /addin/negotiate/relevant-documents:
+    post:
+      tags:
+      - Addin-Negotiate
+      summary: Negotiate Relevant Documents
+      description: 'Upload and process relevant documents for contract negotiation.
+
+
+        Args:
+
+        request: FastAPI request object
+
+        file0-file4: Optional uploaded files (up to 5 files)
+
+        fileType0-fileType4: Optional file type identifiers for each file
+
+        session: Redis session
+
+        state: Application state
+
+
+        Returns:
+
+        JSONResponse with file type mapping
+
+
+        Raises:
+
+        HTTPException: If session data retrieval fails or unsupported file type
+
+        ValueError: If file extension is not supported'
+      operationId: negotiate_relevant_documents_addin_negotiate_relevant_documents_post
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Body_negotiate_relevant_documents_addin_negotiate_relevant_documents_post'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /addin/negotiate/review:
+    post:
+      tags:
+      - Addin-Negotiate
+      summary: Negotiate Review Sections
+      description: 'Review and negotiate contract sections.
+
+
+        Args:
+
+        request: FastAPI request object
+
+        data: JSON string containing industry, parties, paragraphs, representingParty, and additionalGuidance
+
+        session: Redis session
+
+        state: Application state
+
+
+        Returns:
+
+        JSONResponse with review results or status indicating next step
+
+
+        Raises:
+
+        HTTPException: If data parsing fails or review error occurs'
+      operationId: negotiate_review_sections_addin_negotiate_review_post
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Body_negotiate_review_sections_addin_negotiate_review_post'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /addin/negotiate/review/process_files:
+    post:
+      tags:
+      - Addin-Negotiate
+      summary: Negotiate Review Process Files
+      description: 'Process review files for contract negotiation.
+
+
+        Args:
+
+        request: FastAPI request object
+
+        data: JSON string containing data_dict and main_result
+
+        session: Redis session
+
+        state: Application state
+
+
+        Returns:
+
+        JSONResponse with combined review results
+
+
+        Raises:
+
+        HTTPException: If processing fails'
+      operationId: negotiate_review_process_files_addin_negotiate_review_process_files_post
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Body_negotiate_review_process_files_addin_negotiate_review_process_files_post'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /addin/negotiate/review/playbook:
+    post:
+      tags:
+      - Addin-Negotiate
+      summary: Negotiate Review Playbook
+      description: 'Run a contract review driven entirely by an uploaded playbook document.
+
+
+        The playbook replaces internal review prompts as the sole instruction set.
+
+        Upload a document via /addin/negotiate/relevant-documents with file_type=''playbook-prompt''
+
+        before calling this endpoint.
+
+
+        Args:
+
+        request: FastAPI request object
+
+        data: JSON string containing industry, parties, paragraphs, representingParty, and additionalGuidance
+
+        session: Redis session
+
+        state: Application state
+
+
+        Returns:
+
+        JSONResponse with review results using the same suggestion schema as /review
+
+
+        Raises:
+
+        HTTPException: If no playbook is found in the session, other doc types are also present,
+
+        or review fails'
+      operationId: negotiate_review_playbook_addin_negotiate_review_playbook_post
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Body_negotiate_review_playbook_addin_negotiate_review_playbook_post'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /addin/negotiate/summary:
+    post:
+      tags:
+      - Addin-Negotiate
+      summary: Negotiate Summary
+      description: 'Generate a summary of negotiation results.
+
+
+        Args:
+
+        request: FastAPI request object
+
+        query: Request containing paragraphs to summarize
+
+        session: Redis session
+
+        stream_handler: Handler for streaming LLM responses
+
+        event_generator: Generator for streaming events
+
+
+        Returns:
+
+        EventSourceResponse streaming negotiation summary
+
+
+        Raises:
+
+        HTTPException: If session data retrieval fails'
+      operationId: negotiate_summary_addin_negotiate_summary_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddinNegotiate'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /addin/negotiate/missing_provisions:
+    post:
+      tags:
+      - Addin-Negotiate
+      summary: Negotiate Missing Provisions
+      description: 'Identify missing provisions by comparing user''s document with gold standard file.
+
+
+        Args:
+
+        request: FastAPI request object
+
+        query: Request containing user''s document text
+
+        session: Redis session
+
+        stream_handler: Handler for streaming LLM responses
+
+        event_generator: Generator for streaming events
+
+
+        Returns:
+
+        EventSourceResponse streaming missing provisions analysis
+
+
+        Raises:
+
+        HTTPException: If session data retrieval fails or gold standard file not found'
+      operationId: negotiate_missing_provisions_addin_negotiate_missing_provisions_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddinNegotiate'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /addin/negotiate/missing_provisions/playbook:
+    post:
+      tags:
+      - Addin-Negotiate
+      summary: Negotiate Missing Provisions Playbook
+      description: 'Identify missing provisions required by a playbook document.
+
+
+        Compares the full contract against the playbook''s required clauses.
+
+        Only call this endpoint when a playbook is uploaded.
+
+
+        Args:
+
+        query: Request containing the full contract text
+
+        session: Redis session
+
+
+        Returns:
+
+        EventSourceResponse streaming missing provisions analysis'
+      operationId: negotiate_missing_provisions_playbook_addin_negotiate_missing_provisions_playbook_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddinNegotiate'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /addin/negotiate/explain:
+    post:
+      tags:
+      - Addin-Negotiate
+      summary: Negotiate Explain
+      description: 'Explain a contract term in various ways.
+
+
+        Args:
+
+        request: FastAPI request object
+
+        query: Request containing question type, term_text, and contract_text
+
+        session: Redis session
+
+        stream_handler: Handler for streaming LLM responses
+
+        event_generator: Generator for streaming events
+
+
+        Returns:
+
+        EventSourceResponse streaming term explanation
+
+
+        Note:
+
+        Question types: "explain", "purpose", "compare", "influence", "integration"'
+      operationId: negotiate_explain_addin_negotiate_explain_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddinNegotiate'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /addin/negotiate/rewrite:
+    post:
+      tags:
+      - Addin-Negotiate
+      summary: Negotiate Rewrite
+      description: 'Rewrite a contract term based on specified rewrite type.
+
+
+        Args:
+
+        request: FastAPI request object
+
+        query: Request containing rewrite_type, term_text, contract_text, and optional custom_instructions
+
+        session: Redis session
+
+
+        Returns:
+
+        JSONResponse with rewritten term
+
+
+        Note:
+
+        Rewrite types: "simplify", "align", "robust", "market", "mutual", "custom"'
+      operationId: negotiate_rewrite_addin_negotiate_rewrite_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddinNegotiate'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /addin/negotiate/calculate-diff:
+    post:
+      tags:
+      - Addin-Negotiate
+      summary: Calculate Diff Negotiate
+      description: 'Calculate diffs for negotiate flow.
+
+
+        Calculates diffs between original text and suggested text from negotiate review.
+
+        Designed for the negotiate flow where we have paragraphIndex, originalText, and suggestedText.
+
+
+        Use cases:
+
+        - Apply negotiate review suggestions to documents
+
+        - Calculate diffs for contract rewrites
+
+        - Track changes from negotiate analysis
+
+
+        Args:
+
+        request: Dictionary containing paragraph_index, original_text, and suggested_text
+
+
+        Returns:
+
+        Dictionary with success status and diff_list or error message
+
+
+        Returns only the diffs array for simple integration in the negotiate frontend.'
+      operationId: calculate_diff_negotiate_addin_negotiate_calculate_diff_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+              title: Request
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    Body_negotiate_review_playbook_addin_negotiate_review_playbook_post:
+      properties:
+        data:
+          type: string
+          title: Data
+      type: object
+      required:
+      - data
+      title: Body_negotiate_review_playbook_addin_negotiate_review_playbook_post
+    Body_negotiate_relevant_documents_addin_negotiate_relevant_documents_post:
+      properties:
+        file0:
+          anyOf:
+          - type: string
+            contentMediaType: application/octet-stream
+          - type: 'null'
+          title: File0
+        file1:
+          anyOf:
+          - type: string
+            contentMediaType: application/octet-stream
+          - type: 'null'
+          title: File1
+        file2:
+          anyOf:
+          - type: string
+            contentMediaType: application/octet-stream
+          - type: 'null'
+          title: File2
+        file3:
+          anyOf:
+          - type: string
+            contentMediaType: application/octet-stream
+          - type: 'null'
+          title: File3
+        file4:
+          anyOf:
+          - type: string
+            contentMediaType: application/octet-stream
+          - type: 'null'
+          title: File4
+        file_type0:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: File Type0
+        file_type1:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: File Type1
+        file_type2:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: File Type2
+        file_type3:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: File Type3
+        file_type4:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: File Type4
+      type: object
+      title: Body_negotiate_relevant_documents_addin_negotiate_relevant_documents_post
+    AddinNegotiate:
+      properties:
+        paragraphs:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Paragraphs
+          default: {}
+        industry:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Industry
+          default: ''
+        parties:
+          anyOf:
+          - items:
+              additionalProperties:
+                type: string
+              type: object
+            type: array
+          - type: 'null'
+          title: Parties
+          default: []
+        text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Text
+          default: ''
+        contract_text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Contract Text
+          default: ''
+        term_text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Term Text
+          default: ''
+        question:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Question
+          default: ''
+        rewrite_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Rewrite Type
+          default: ''
+        custom_instructions:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Custom Instructions
+          default: ''
+        representing_party:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Representing Party
+          default: ''
+      type: object
+      title: AddinNegotiate
+    Body_negotiate_review_sections_addin_negotiate_review_post:
+      properties:
+        data:
+          type: string
+          title: Data
+      type: object
+      required:
+      - data
+      title: Body_negotiate_review_sections_addin_negotiate_review_post
+    Body_negotiate_review_process_files_addin_negotiate_review_process_files_post:
+      properties:
+        data:
+          type: string
+          title: Data
+      type: object
+      required:
+      - data
+      title: Body_negotiate_review_process_files_addin_negotiate_review_process_files_post
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError

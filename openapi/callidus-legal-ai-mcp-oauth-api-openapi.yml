@@ -1,0 +1,349 @@
+openapi: 3.2.0
+info:
+  title: CallidusAI MCP OAuth API
+  description: Callidus AI backend API
+  version: 0.1.0
+tags:
+- name: MCP OAuth
+paths:
+  /oauth/register:
+    post:
+      tags:
+      - MCP OAuth
+      summary: Register Client
+      description: 'Register a new OAuth client dynamically (RFC 7591).
+
+
+        MCP clients (e.g. mcp-remote) call this before starting the OAuth flow.
+
+        We accept any client and return a client_id. Since we use PKCE for security
+
+        (not client secrets), the registration is lightweight — we just assign an ID.
+
+
+        Redirect URIs are validated against the origin allowlist at registration time
+
+        and stored in the oauth_sessions table. The /authorize endpoint then checks
+
+        that the redirect_uri matches one of the registered URIs for that client_id.'
+      operationId: register_client_oauth_register_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /oauth/authorize:
+    get:
+      tags:
+      - MCP OAuth
+      summary: Authorize
+      description: 'Start the OAuth authorization code flow.
+
+
+        Validates the OAuth params, stores them in the oauth_sessions table, and
+
+        redirects to the frontend login page. The frontend renders the login form
+
+        and submits credentials back to POST /oauth/authorize on this backend.'
+      operationId: authorize_oauth_authorize_get
+      parameters:
+      - name: response_type
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Response Type
+      - name: client_id
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Client Id
+      - name: redirect_uri
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Redirect Uri
+      - name: code_challenge
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Code Challenge
+      - name: code_challenge_method
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Code Challenge Method
+      - name: state
+        in: query
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: State
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+      - MCP OAuth
+      summary: Authorize Submit
+      description: Verify credentials and redirect back to the client with an authorization code.
+      operationId: authorize_submit_oauth_authorize_post
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Body_authorize_submit_oauth_authorize_post'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /oauth/google/start:
+    get:
+      tags:
+      - MCP OAuth
+      summary: Google Start
+      description: 'Start the Google SSO flow for MCP login.
+
+
+        Validates the MCP session, then redirects to Google''s authorization page.
+
+        The oauth_session ID is embedded in the HMAC-signed state parameter so the
+
+        callback can resume the MCP flow.'
+      operationId: google_start_oauth_google_start_get
+      parameters:
+      - name: oauth_session
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Oauth Session
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /oauth/google/callback:
+    get:
+      tags:
+      - MCP OAuth
+      summary: Google Callback
+      description: 'Handle the callback from Google after user authorizes.
+
+
+        Exchanges the Google auth code for user info, validates the user against
+
+        the MCP allowlist and subscription status, then completes the MCP
+
+        authorization code flow (same as the password path).
+
+
+        Uses explicit short-lived DB sessions rather than Depends(get_database_session)
+
+        to avoid holding a pooled connection open during the Google HTTP round-trip.'
+      operationId: google_callback_oauth_google_callback_get
+      parameters:
+      - name: code
+        in: query
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Code
+      - name: state
+        in: query
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: State
+      - name: error
+        in: query
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Error
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /oauth/token:
+    post:
+      tags:
+      - MCP OAuth
+      summary: Token Exchange
+      description: Exchange an authorization code or refresh token for a JWT access token.
+      operationId: token_exchange_oauth_token_post
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Body_token_exchange_oauth_token_post'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /.well-known/oauth-protected-resource:
+    get:
+      tags:
+      - MCP OAuth
+      summary: Protected Resource Metadata
+      description: 'RFC 9728 — Protected Resource Metadata.
+
+
+        Tells MCP clients where to find the authorization server.'
+      operationId: protected_resource_metadata__well_known_oauth_protected_resource_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /.well-known/oauth-authorization-server:
+    get:
+      tags:
+      - MCP OAuth
+      summary: Authorization Server Metadata
+      description: 'RFC 8414 — Authorization Server Metadata.
+
+
+        Advertises the OAuth endpoints and supported flows.'
+      operationId: authorization_server_metadata__well_known_oauth_authorization_server_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+components:
+  schemas:
+    Body_token_exchange_oauth_token_post:
+      properties:
+        grant_type:
+          type: string
+          title: Grant Type
+        code:
+          type: string
+          title: Code
+          default: ''
+        code_verifier:
+          type: string
+          title: Code Verifier
+          default: ''
+        redirect_uri:
+          type: string
+          title: Redirect Uri
+          default: ''
+        client_id:
+          type: string
+          title: Client Id
+          default: ''
+        refresh_token:
+          type: string
+          title: Refresh Token
+          default: ''
+      type: object
+      required:
+      - grant_type
+      title: Body_token_exchange_oauth_token_post
+    Body_authorize_submit_oauth_authorize_post:
+      properties:
+        email:
+          type: string
+          title: Email
+        password:
+          type: string
+          title: Password
+        oauth_session:
+          type: string
+          title: Oauth Session
+      type: object
+      required:
+      - email
+      - password
+      - oauth_session
+      title: Body_authorize_submit_oauth_authorize_post
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError

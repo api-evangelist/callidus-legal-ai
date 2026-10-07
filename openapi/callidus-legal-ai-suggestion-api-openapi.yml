@@ -1,0 +1,172 @@
+openapi: 3.2.0
+info:
+  title: CallidusAI Suggestion API
+  description: Callidus AI backend API
+  version: 0.1.0
+tags:
+- name: Suggestion
+paths:
+  /suggestion/assess/:
+    post:
+      tags:
+      - Suggestion
+      summary: Assess Endpoint
+      description: 'Score text quality and return improvement suggestions.
+
+
+        Fast call intended to be debounced while the user is typing.'
+      operationId: assess_endpoint_suggestion_assess__post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SuggestionRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssessmentResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /suggestion/rewrite/:
+    post:
+      tags:
+      - Suggestion
+      summary: Rewrite Endpoint
+      description: 'Return a tightened rewrite of the provided text.
+
+
+        Slower call — trigger on blur/focus-leave, not on keystrokes.'
+      operationId: rewrite_endpoint_suggestion_rewrite__post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SuggestionRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RewriteResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    SuggestionRequest:
+      properties:
+        suggestion_key:
+          $ref: '#/components/schemas/SuggestionKey'
+        text:
+          type: string
+          maxLength: 50000
+          minLength: 1
+          title: Text
+      type: object
+      required:
+      - suggestion_key
+      - text
+      title: SuggestionRequest
+      description: Incoming request for a writing suggestion.
+    RewriteResponse:
+      properties:
+        rewrite:
+          type: string
+          title: Rewrite
+          description: Concise polished version using only information from the original text
+        suggestion_key:
+          type: string
+          title: Suggestion Key
+          description: Echo of the request key
+      type: object
+      required:
+      - rewrite
+      - suggestion_key
+      title: RewriteResponse
+      description: Tightened rewrite — returned on blur/focus-leave.
+    SuggestionKey:
+      type: string
+      enum:
+      - suggest_timeline_case_background
+      - suggest_timeline_cause_of_action
+      - suggest_relevance_case_background
+      - suggest_relevance_cause_of_action
+      - suggest_familylaw_case_summary
+      - suggest_matter_details
+      - suggest_matter_cause_of_action
+      title: SuggestionKey
+      description: Identifies which prompt template to use for the suggestion.
+    AssessmentResponse:
+      properties:
+        score:
+          type: integer
+          maximum: 5.0
+          minimum: 1.0
+          title: Score
+          description: Quality score 1-5
+        suggestions:
+          items:
+            type: string
+          type: array
+          maxItems: 3
+          title: Suggestions
+          description: Top 3 most impactful gaps or improvements
+        suggestion_key:
+          type: string
+          title: Suggestion Key
+          description: Echo of the request key
+      type: object
+      required:
+      - score
+      - suggestions
+      - suggestion_key
+      title: AssessmentResponse
+      description: Score and improvement suggestions — returned on debounce while typing.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError

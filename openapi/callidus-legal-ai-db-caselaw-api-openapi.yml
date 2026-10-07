@@ -1,0 +1,2106 @@
+openapi: 3.2.0
+info:
+  title: CallidusAI DB Caselaw API
+  description: Callidus AI backend API
+  version: 0.1.0
+tags:
+- name: DB Caselaw
+paths:
+  /db_caselaw/queue/populate:
+    post:
+      tags:
+      - DB Caselaw
+      summary: Queue Opinions
+      description: Populate the parse queue with clusterids.
+      operationId: queue_opinions_db_caselaw_queue_populate_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchJobQueue'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /db_caselaw/batch/upload/openai:
+    post:
+      tags:
+      - DB Caselaw
+      summary: Upload Batch Job
+      description: Upload a batch job to OpenAI for parsing dispositions.
+      operationId: upload_batch_job_db_caselaw_batch_upload_openai_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UploadBatchJobs'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /db_caselaw/batch/start/openai:
+    post:
+      tags:
+      - DB Caselaw
+      summary: Start Batch Job
+      description: Start the batch jobs.
+      operationId: start_batch_job_db_caselaw_batch_start_openai_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartBatchJobs'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /db_caselaw/batch/process/openai:
+    post:
+      tags:
+      - DB Caselaw
+      summary: Process Batch Job
+      description: Process the results of a batch completion.
+      operationId: process_batch_job_db_caselaw_batch_process_openai_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProcessBatchJobs'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /db_caselaw/batch/list/vertex:
+    post:
+      tags:
+      - DB Caselaw
+      summary: List Batch Jobs Vertex
+      description: 'List all batch jobs.
+
+
+        If `job_names` is provided, the diff is returned.'
+      operationId: list_batch_jobs_vertex_db_caselaw_batch_list_vertex_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProcessBatchJobVertex'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /db_caselaw/fetch_dispositions:
+    post:
+      tags:
+      - DB Caselaw
+      summary: Get Disposition
+      description: Fetch disposition for a given cluster_id.
+      operationId: get_disposition_db_caselaw_fetch_dispositions_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DispositionBatchRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /db_caselaw/dispositions:
+    post:
+      tags:
+      - DB Caselaw
+      summary: Get Dispositions
+      description: Fetch hydrated dispositions for the given case ids.
+      operationId: get_dispositions_db_caselaw_dispositions_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CaseDBBatchRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  anyOf:
+                  - $ref: '#/components/schemas/HydratedDisposition'
+                  - $ref: '#/components/schemas/HydratedNonSubStantiveDisposition'
+                propertyNames:
+                  format: uuid
+                type: object
+                title: Response Get Dispositions Db Caselaw Dispositions Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /db_caselaw/fetch/hydrated_dispositions:
+    post:
+      tags:
+      - DB Caselaw
+      summary: Get Hydrated Disposition
+      description: Fetch disposition for a given case_id.
+      operationId: get_hydrated_disposition_db_caselaw_fetch_hydrated_dispositions_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CaseDBBatchRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /db_caselaw/parse_disposition:
+    post:
+      tags:
+      - DB Caselaw
+      summary: Parse Request
+      description: Parse disposition for a given cluster_id.
+      operationId: parse_request_db_caselaw_parse_disposition_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DispositionRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /db_caselaw/delete_dispositions:
+    post:
+      tags:
+      - DB Caselaw
+      summary: Delete Disposition
+      description: Delete dispositions for given cluster_ids.
+      operationId: delete_disposition_db_caselaw_delete_dispositions_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteDispositionsRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /db_caselaw/fetch/modifying_precedents:
+    post:
+      tags:
+      - DB Caselaw
+      summary: Fetch Incoming Modifying Precedents
+      description: Fetch the modifying precedents for the given case ids.
+      operationId: fetch_incoming_modifying_precedents_db_caselaw_fetch_modifying_precedents_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CaseDBBatchRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /db_caselaw/generate_embeddings:
+    post:
+      tags:
+      - DB Caselaw
+      summary: Generate Embeddings
+      description: Generate embeddings for db_caselaw.
+      operationId: generate_embeddings_db_caselaw_generate_embeddings_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateEmbeddings'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /db_caselaw/generate_tsvectors:
+    post:
+      tags:
+      - DB Caselaw
+      summary: Generate Tsvectors
+      description: Generate tsvectors for db_caselaw.
+      operationId: generate_tsvectors_db_caselaw_generate_tsvectors_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateTSVectors'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /db_caselaw/add_slugs:
+    post:
+      tags:
+      - DB Caselaw
+      summary: Copy Slugs In
+      description: Copy slugs from cl to db_caselaw.
+      operationId: copy_slugs_in_db_caselaw_add_slugs_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /db_caselaw/add_cite_data:
+    post:
+      tags:
+      - DB Caselaw
+      summary: Copy Cite Data In
+      description: Copy cite data from cl to db_caselaw.
+      operationId: copy_cite_data_in_db_caselaw_add_cite_data_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /db_caselaw/add_case_names:
+    post:
+      tags:
+      - DB Caselaw
+      summary: Copy Case Names In
+      description: Copy case_names from cl to db_caselaw.
+      operationId: copy_case_names_in_db_caselaw_add_case_names_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /db_caselaw/add_bluebook_names:
+    post:
+      tags:
+      - DB Caselaw
+      summary: Add Bluebook Names
+      description: Derive Bluebook case names (full + short) for cases in db_caselaw missing them.
+      operationId: add_bluebook_names_db_caselaw_add_bluebook_names_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    PersonalAndFamilyLawSubAreasEnum:
+      type: string
+      enum:
+      - Trusts and Estate Planning Law
+      - Custody Law
+      - Juvenile Law
+      - Matrimonial Law
+      - Immigration Law
+      - Adoption, Surrogacy, and Paternity Law
+      - Probate Law
+      title: PersonalAndFamilyLawSubAreasEnum
+    CaseDBBatchRequest:
+      properties:
+        case_ids:
+          items:
+            type: string
+            format: uuid
+          type: array
+          title: Case Ids
+          description: a list of case ids
+      type: object
+      required:
+      - case_ids
+      title: CaseDBBatchRequest
+    BankingLawSubAreasEnum:
+      type: string
+      enum:
+      - Cryptocurrency Law
+      - Bank Secrecy and Anti-Money Laundering Law
+      - Banking Operations Law
+      title: BankingLawSubAreasEnum
+    PersonalInjuryAndTortLawSubAreasEnum:
+      type: string
+      enum:
+      - Personal Property Law
+      - Product Liability Law
+      - Defamation Law
+      - Mass Torts Law
+      - Negligence and Malpractice Law
+      - Assault Law
+      - Fraud and Economic Torts Law
+      title: PersonalInjuryAndTortLawSubAreasEnum
+    PublicAndAdministrativeLawSubAreasEnum:
+      type: string
+      enum:
+      - Indigenous People's Law
+      - Military and Veterans Law
+      - Project Finance Law
+      - Public Health and Welfare Law
+      - Public Finance Law
+      - Public Policy and Government Affairs Law
+      - Government Contracts Law
+      - Election Law
+      title: PublicAndAdministrativeLawSubAreasEnum
+    LegalForumType:
+      type: string
+      enum:
+      - Admiralty
+      - Asbestos
+      - Bankruptcy
+      - Chemical Dependency
+      - Child Dependency
+      - Child Support
+      - Civil
+      - Criminal
+      - Family
+      - Housing
+      - Immigration
+      - Juvenile
+      - Military
+      - Multi-District
+      - Municipal
+      - Probate
+      - Provincial
+      - Small Claims
+      - State
+      - Tax
+      - Traffic
+      - Tribal
+      - Veterans
+      - Other
+      title: LegalForumType
+    ReporterCitation:
+      properties:
+        volume:
+          type: string
+          title: Volume
+          description: The volume number of the reporter.
+        reporter:
+          type: string
+          title: Reporter
+          description: The name of the reporter in which the case is published.
+        page:
+          type: string
+          title: Page
+          description: The page number in the volume.
+      type: object
+      required:
+      - volume
+      - reporter
+      - page
+      title: ReporterCitation
+      description: The minimal identifier for the citation of a published case (opinion / order / judgment).
+    LaborAndEmploymentLawSubAreasEnum:
+      type: string
+      enum:
+      - Reduction in Force Law
+      - Employment Law
+      - Substance Abuse and Drug Testing Law
+      - Labor Law
+      - Employment Immigration Law
+      - Wage and Hour Law
+      - Employment Discrimination Law
+      - Employment Health and Safety Law
+      - Pay Equity Law
+      - Termination Law
+      - Unemployment Benefits Law
+      - Employee Pension and Benefits Law
+      - Employment Contracts Law
+      - Independent Contractor Law
+      - Workers Compensation Law
+      title: LaborAndEmploymentLawSubAreasEnum
+    HydratedDisposition:
+      properties:
+        db_id:
+          type: string
+          format: uuid
+          title: Db Id
+        parties:
+          items:
+            $ref: '#/components/schemas/HydratedParty'
+          type: array
+          minItems: 1
+          title: Parties
+        facts:
+          items:
+            $ref: '#/components/schemas/HydratedFact'
+          type: array
+          title: Facts
+        procedural_history:
+          items:
+            $ref: '#/components/schemas/HydratedStep'
+          type: array
+          title: Procedural History
+        causes_of_action:
+          items:
+            $ref: '#/components/schemas/HydratedCauseOfAction'
+          type: array
+          title: Causes Of Action
+        legal_reasoning:
+          type: string
+          title: Legal Reasoning
+        outcome:
+          type: string
+          title: Outcome
+        legal_authorities_cited:
+          items:
+            $ref: '#/components/schemas/HydratedAuthority'
+          type: array
+          title: Legal Authorities Cited
+        winning_party:
+          anyOf:
+          - $ref: '#/components/schemas/Party-Output'
+          - type: 'null'
+        disposition_metadata:
+          $ref: '#/components/schemas/HydratedMetadata'
+        modifying_precedents:
+          items:
+            $ref: '#/components/schemas/HydratedModifyingPrecedent'
+          type: array
+          title: Modifying Precedents
+      type: object
+      required:
+      - db_id
+      - parties
+      - facts
+      - procedural_history
+      - causes_of_action
+      - legal_reasoning
+      - outcome
+      - legal_authorities_cited
+      - disposition_metadata
+      - modifying_precedents
+      title: HydratedDisposition
+    TaxAndRevenueLawSubAreasEnum:
+      type: string
+      enum:
+      - Estates, Gifts, and Trusts Law
+      - Non-Profit and Tax-Exempt Organizations Law
+      - Tax Law
+      title: TaxAndRevenueLawSubAreasEnum
+    RealPropertyLawSubAreasEnum:
+      type: string
+      enum:
+      - Condominium Law
+      - Property Rights and Transactions Law
+      - Construction and Development Law
+      - Eminent Domain Law
+      - Landlord Tenant Law
+      - Land Use and Zoning Law
+      title: RealPropertyLawSubAreasEnum
+    EnergyLawSubAreasEnum:
+      type: string
+      enum:
+      - Renewable Energy Law
+      - Nuclear Law
+      - Energy Sales and Transmission Law
+      - Oil and Gas Law
+      title: EnergyLawSubAreasEnum
+    ProcessBatchJobs:
+      properties:
+        batch_ids:
+          items:
+            type: string
+          type: array
+          title: Batch Ids
+          description: The batch id to process
+        parse_model:
+          type: string
+          enum:
+          - text-embedding-ada-002
+          - text-embedding-3-large
+          - text-davinci-003
+          - gpt-35-turbo-0613
+          - gpt-35-turbo-1106
+          - gpt-35-turbo-16k-0613
+          - gpt-35-turbo-0125
+          - gpt-4-0613
+          - gpt-4-32k-0613
+          - gpt-4-turbo-0125
+          - gpt-4o-0524
+          - gpt-4o-2024-08-06
+          - gpt-4o-mini
+          - o1-mini-2024-09-12
+          - gpt-3.5-turbo-instruct
+          - gpt-3.5-turbo-0613
+          - gpt-3.5-turbo-1106
+          - gpt-3.5-turbo-0125
+          - gpt-3.5-turbo-16k-0613
+          - gpt-4-turbo-preview
+          - gpt-4.5-preview-2025-02-27
+          - gpt-4o-2024-05-13
+          - gpt-4o-2024-11-20
+          - chatgpt-4o-latest
+          - gpt-4o-search-preview
+          - gpt-4o-mini-2024-07-18
+          - o1-preview-2024-09-12
+          - o1-2024-12-17
+          - o3-mini-2025-01-31
+          - o3-2025-04-16
+          - o4-mini-2025-04-16
+          - gpt-4.1-2025-04-14
+          - gpt-4.1-mini-2025-04-14
+          - gpt-5-2025-08-07
+          - gpt-5-mini-2025-08-07
+          - gpt-5.4-mini
+          - gpt-5.1-2025-11-13
+          - gpt-5.2-2025-12-11
+          - gpt-5.4-2026-03-05
+          - gpt-5.5-2026-04-23
+          - gpt-5.6-luna
+          - claude-sonnet-4-20250514
+          - claude-sonnet-4-5-20250929
+          - claude-haiku-4-5-20251001
+          - claude-opus-4-1-20250805
+          - claude-opus-4-1@20250805
+          - claude-opus-4-6
+          - claude-sonnet-4-6
+          - claude-sonnet-5-5
+          - deepseek-chat
+          - gemini-2.5-flash
+          - gemini-2.5-pro
+          - gemini-3-flash-preview
+          - gemini-3.5-flash
+          - gemini-3.6-flash
+          - gemini-3.8-flash
+          - gemini-3.1-pro-preview
+          - deepseek/deepseek-chat
+          - google/gemma-2-9b-it
+          - meta-llama/llama-3.1-8b-instruct
+          - meta-llama/llama-3.1-70b-instruct
+          - meta-llama/llama-3.2-11b-vision-instruct
+          - meta-llama/llama-3.3-70b-instruct
+          - mistralai/mistral-large
+          - mistralai/mistral-large-2407
+          - mistralai/mistral-large-2411
+          - mistralai/mistral-medium-3
+          - mistralai/mistral-medium-3.1
+          - mistralai/mixtral-8x7b-instruct
+          - mistralai/mistral-nemo
+          - qwen/qwen-2.5-72b-instruct
+          - qwen/qwen-2.5-coder-32b-instruct
+          - nvidia/llama-3.1-nemotron-70b-instruct
+          - meta-llama/llama-4-scout
+          - x-ai/grok-4.3
+          - x-ai/grok-4.20
+          - grok-3-mini
+          - grok-4.3
+          - grok-4.20-non-reasoning
+          title: Parse Model
+          description: The language model to use for parsing
+          default: o1-mini-2024-09-12
+      type: object
+      required:
+      - batch_ids
+      title: ProcessBatchJobs
+    HydratedNonSubStantiveDisposition:
+      properties:
+        db_id:
+          type: string
+          format: uuid
+          title: Db Id
+        disposition_metadata:
+          $ref: '#/components/schemas/HydratedMetadata'
+        outcome:
+          type: string
+          title: Outcome
+      type: object
+      required:
+      - db_id
+      - disposition_metadata
+      - outcome
+      title: HydratedNonSubStantiveDisposition
+    CommercialAndTradeLawSubAreasEnum:
+      type: string
+      enum:
+      - Trade Law
+      - Commercial Transactions Law
+      - Admiralty and Maritime Law
+      - Consumer Protection Law
+      - Franchise Law
+      - Antitrust and Competition Law
+      title: CommercialAndTradeLawSubAreasEnum
+    GenerateEmbeddings:
+      properties:
+        batch_size:
+          type: integer
+          title: Batch Size
+      type: object
+      required:
+      - batch_size
+      title: GenerateEmbeddings
+    GenerateTSVectors:
+      properties:
+        batch_size:
+          type: integer
+          title: Batch Size
+        num_batches:
+          type: integer
+          title: Num Batches
+      type: object
+      required:
+      - batch_size
+      - num_batches
+      title: GenerateTSVectors
+    PrecedentTreatment:
+      type: string
+      enum:
+      - OVERRULES_FULLY
+      - OVERRULES_PARTIALLY
+      - LIMITS
+      - REVERSES
+      - VACATES
+      - QUESTIONS
+      - DEPARTS
+      - DISTINGUISHES
+      - CLARIFIES
+      - HARMONIZES
+      - FOLLOWS
+      - EXTENDS
+      - CITES
+      - OTHER
+      title: PrecedentTreatment
+      description: A more complete version of PrecedentInteraction.
+    BatchJobQueue:
+      properties:
+        opinion_cluster_ids:
+          items:
+            type: integer
+          type: array
+          title: Opinion Cluster Ids
+          description: The opinion cluster ids to queue
+        parse_status:
+          $ref: '#/components/schemas/ParseStatus'
+          description: The parse status to use
+          default: PENDING
+      type: object
+      required:
+      - opinion_cluster_ids
+      title: BatchJobQueue
+    DispositionType:
+      type: string
+      enum:
+      - Summary Judgment
+      - Dismissal
+      - Directed Verdict
+      - New Trial
+      - JNOV
+      - Suppression
+      - In Limine
+      - Compel
+      - Sanctions
+      - Quash
+      - Opinion Affirming the Judgment
+      - Opinion Reversing the Judgment
+      - Opinion Vacating the Judgment
+      - Opinion Vacating and Remanding the Judgment
+      - Opinion Remanding the Case
+      - Opinion Remanding for Further Proceedings
+      - Opinion Affirming in Part and Reversing in Part
+      - Opinion Granting a New Trial
+      - Opinion Dismissing the Appeal
+      - Default Judgment
+      - Consent Judgment
+      - Declaratory Judgment
+      - Interlocutory Judgment
+      - Other
+      title: DispositionType
+    CorporateLawSubAreasEnum:
+      type: string
+      enum:
+      - Business Organizations Law
+      - Corporate Governance Law
+      - Mergers and Acquisitions Law
+      title: CorporateLawSubAreasEnum
+    HydratedModifyingPrecedent:
+      properties:
+        db_id:
+          type: string
+          format: uuid
+          title: Db Id
+        modifying_case_id:
+          type: string
+          format: uuid
+          title: Modifying Case Id
+        modifying_holding_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Modifying Holding Id
+        modified_holding_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Modified Holding Id
+        overruled_holding_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Overruled Holding Id
+        interaction_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Interaction Type
+        treatment:
+          anyOf:
+          - $ref: '#/components/schemas/PrecedentTreatment'
+          - type: 'null'
+        analysis:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Analysis
+        confidence:
+          anyOf:
+          - $ref: '#/components/schemas/TreatmentConfidence'
+          - type: 'null'
+        root_overruled_case_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Root Overruled Case Id
+        depth:
+          type: integer
+          title: Depth
+          default: 0
+        modifying_case_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Modifying Case Name
+        modifying_case_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Modifying Case Url
+      type: object
+      required:
+      - db_id
+      - modifying_case_id
+      title: HydratedModifyingPrecedent
+    TrialPhase:
+      type: string
+      enum:
+      - Filing
+      - Discovery
+      - Pretrial
+      - Trial
+      - Post-Trial
+      title: TrialPhase
+    IntellectualPropertyLawSubAreasEnum:
+      type: string
+      enum:
+      - Patent Law
+      - Trade Secret Law
+      - Trademark and Trade Dress Law
+      - Copyright Law
+      title: IntellectualPropertyLawSubAreasEnum
+    InsuranceLawSubAreasEnum:
+      type: string
+      enum:
+      - Disability Insurance Law
+      - Accident Benefits Law
+      - Captive Insurance Law
+      title: InsuranceLawSubAreasEnum
+    LitigationStage:
+      type: string
+      enum:
+      - State Trial Court
+      - State Court of Appeals
+      - State Supreme Court
+      - Federal District Court
+      - Federal Court of Appeals
+      - U.S. Supreme Court
+      - Federal Specialized Court
+      - Other
+      title: LitigationStage
+    CourtlistenerJurisdiction:
+      type: string
+      enum:
+      - F
+      - FD
+      - FB
+      - FBP
+      - FS
+      - S
+      - SA
+      - ST
+      - SS
+      - SAG
+      - TRS
+      - TRA
+      - TRT
+      - TRX
+      - TS
+      - TA
+      - TT
+      - TSP
+      - MA
+      - MT
+      - C
+      - I
+      - T
+      title: CourtlistenerJurisdiction
+    PublicationStatus:
+      type: string
+      enum:
+      - Published
+      - Slip Opinion
+      title: PublicationStatus
+      description: Derived at hydration from reporter_citations presence — not a stored column (ENG-18892).
+    ContractLawSubAreasEnum:
+      type: string
+      enum:
+      - Property Rights and Transactions Law
+      - Civil Contract Law
+      - Commercial Transactions Law
+      - Government Contracts Law
+      - Employment Contracts Law
+      - Independent Contractor Law
+      title: ContractLawSubAreasEnum
+    LegalAuthorityType:
+      type: string
+      enum:
+      - Federal Constitution
+      - Federal Statute
+      - State Constitution
+      - State Statute
+      - Administrative Regulation
+      - Executive Order
+      - International Treaty
+      - Case Law
+      - Common Law
+      - Other
+      title: LegalAuthorityType
+    DispositionRequest:
+      properties:
+        cluster_id:
+          type: integer
+          title: Cluster Id
+      type: object
+      required:
+      - cluster_id
+      title: DispositionRequest
+    BankruptcyInsolvencyAndRestructuringLawSubAreasEnum:
+      type: string
+      enum:
+      - Personal Insolvency Law
+      - Corporate Insolvency Law
+      title: BankruptcyInsolvencyAndRestructuringLawSubAreasEnum
+    HydratedAuthority:
+      properties:
+        authority_type:
+          $ref: '#/components/schemas/LegalAuthorityType'
+        legal_citation:
+          type: string
+          title: Legal Citation
+          description: The bluebook citation of the legal authority.
+        applied_provisions:
+          items:
+            type: string
+          type: array
+          title: Applied Provisions
+          description: The specific provisions of the legal authority that were applied by the present court.
+        db_id:
+          type: string
+          format: uuid
+          title: Db Id
+        cited_case_opinioncluster_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Cited Case Opinioncluster Id
+        cited_case_slug:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Cited Case Slug
+      type: object
+      required:
+      - authority_type
+      - legal_citation
+      - applied_provisions
+      - db_id
+      title: HydratedAuthority
+    HydratedScope:
+      properties:
+        jurisdictional_level:
+          $ref: '#/components/schemas/JurisdictionalLevel'
+          default: State
+        jurisdiction:
+          type: string
+          title: Jurisdiction
+        db_id:
+          type: string
+          format: uuid
+          title: Db Id
+      type: object
+      required:
+      - jurisdiction
+      - db_id
+      title: HydratedScope
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    CriminalLawSubAreasEnum:
+      type: string
+      enum:
+      - Prison Law
+      - Anti-Corruption Law
+      - Asset Forfeiture Law
+      - Organized Crime Law
+      - Business and Financial Crimes Law
+      - Cybercrime Law
+      title: CriminalLawSubAreasEnum
+    DispositionBatchRequest:
+      properties:
+        cluster_ids:
+          items:
+            type: integer
+          type: array
+          title: Cluster Ids
+      type: object
+      required:
+      - cluster_ids
+      title: DispositionBatchRequest
+    JurisdictionalLevel:
+      type: string
+      enum:
+      - Federal
+      - State
+      - Tribal
+      - Other
+      title: JurisdictionalLevel
+    ReligiousLawSubAreasEnum:
+      type: string
+      enum:
+      - Islamic Law
+      - Jewish Law
+      - Indigenous and Tribal Religious Laws
+      - Canon Law
+      - Sikh Law
+      - Hindu Law
+      - Buddhist Law
+      title: ReligiousLawSubAreasEnum
+    InformationSecurityLawSubAreasEnum:
+      type: string
+      enum:
+      - Cybersecurity Law
+      - Privacy Law
+      - Government Access and Disclosure Law
+      title: InformationSecurityLawSubAreasEnum
+    StartBatchJobs:
+      properties:
+        batch_ids:
+          items:
+            type: string
+          type: array
+          title: Batch Ids
+          description: The batch ids to start
+      type: object
+      required:
+      - batch_ids
+      title: StartBatchJobs
+    Party-Output:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: The name or label for the party.
+          default: ''
+        description:
+          type: string
+          title: Description
+          description: A concise description of the party, emphasizing the nature of their involvement in the dispute and any relevant legal status or characteristics.
+          default: ''
+        roles:
+          items:
+            type: string
+          type: array
+          title: Roles
+          description: An exhaustive List of legal roles that the party plays in the case.
+      type: object
+      title: Party
+    HydratedHolding:
+      properties:
+        db_id:
+          type: string
+          format: uuid
+          title: Db Id
+        holding:
+          type: string
+          title: Holding
+        generalized_holding:
+          type: string
+          title: Generalized Holding
+        verbatim_quotes:
+          items:
+            $ref: '#/components/schemas/HydratedQuote'
+          type: array
+          minItems: 1
+          title: Verbatim Quotes
+        in_favor_of:
+          anyOf:
+          - $ref: '#/components/schemas/HydratedParty'
+          - type: 'null'
+        material_facts:
+          items:
+            $ref: '#/components/schemas/HydratedFact'
+          type: array
+          title: Material Facts
+        material_procedural_history:
+          items:
+            $ref: '#/components/schemas/HydratedStep'
+          type: array
+          title: Material Procedural History
+        legal_authorities:
+          items:
+            $ref: '#/components/schemas/HydratedAuthority'
+          type: array
+          title: Legal Authorities
+        jurisdictional_scopes:
+          items:
+            $ref: '#/components/schemas/HydratedScope'
+          type: array
+          title: Jurisdictional Scopes
+        overruled:
+          items:
+            $ref: '#/components/schemas/HydratedOverRuling'
+          type: array
+          title: Overruled
+        pincites:
+          items:
+            $ref: '#/components/schemas/Pincite'
+          type: array
+          title: Pincites
+        modifying_precedents:
+          items:
+            $ref: '#/components/schemas/HydratedModifyingPrecedent'
+          type: array
+          title: Modifying Precedents
+      type: object
+      required:
+      - db_id
+      - holding
+      - generalized_holding
+      - verbatim_quotes
+      - material_facts
+      - material_procedural_history
+      - legal_authorities
+      - jurisdictional_scopes
+      - overruled
+      - pincites
+      - modifying_precedents
+      title: HydratedHolding
+    AreasOfLaw:
+      type: string
+      enum:
+      - Constitutional and Civil Rights Law
+      - Personal Injury and Tort Law
+      - Information Security Law
+      - Banking Law
+      - Municipal Law
+      - Public and Administrative Law
+      - Bankruptcy, Insolvency, and Restructuring Law
+      - Law of Obligations
+      - Food and Drug Law
+      - Energy Law
+      - Transportation Law
+      - Personal and Family Law
+      - Religious Law
+      - Cannabis Law
+      - Gaming Law
+      - Securities and Financial Instruments Law
+      - Contract Law
+      - Labor and Employment Law
+      - Education Law
+      - Insurance Law
+      - Real Property Law
+      - Intellectual Property Law
+      - Finance and Lending Law
+      - Corporate Law
+      - Criminal Law
+      - Environmental and Natural Resource Law
+      - Agriculture Law
+      - Tax and Revenue Law
+      - Health Law
+      - Telecommunications, Media, and Entertainment Law
+      - Commercial and Trade Law
+      title: AreasOfLaw
+    HydratedQuestion:
+      properties:
+        db_id:
+          type: string
+          format: uuid
+          title: Db Id
+        question:
+          type: string
+          title: Question
+        holdings:
+          items:
+            $ref: '#/components/schemas/HydratedHolding'
+          type: array
+          minItems: 1
+          title: Holdings
+      type: object
+      required:
+      - db_id
+      - question
+      - holdings
+      title: HydratedQuestion
+    CaseEntryType:
+      type: string
+      enum:
+      - Substantive
+      - Non Substantive
+      title: CaseEntryType
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    EnvironmentalAndNaturalResourceLawSubAreasEnum:
+      type: string
+      enum:
+      - Water Resources and Wetlands Law
+      - Forest Resources Law
+      - Contaminant Cleanup Law
+      - Waste Management Law
+      - Air Quality Law
+      - Water Quality Law
+      - Mineral Resources Law
+      - Environmental, Social, and Governance Law
+      - Chemical Safety Law
+      - Fish and Game Law
+      - Impact Assessment Law
+      - Wildlife and Plants Law
+      title: EnvironmentalAndNaturalResourceLawSubAreasEnum
+    HydratedStep:
+      properties:
+        step_type:
+          $ref: '#/components/schemas/StepType'
+          default: primary_judicial_process
+        step_description:
+          type: string
+          title: Step Description
+        db_id:
+          type: string
+          format: uuid
+          title: Db Id
+      type: object
+      required:
+      - step_description
+      - db_id
+      title: HydratedStep
+    HydratedOverRuling:
+      properties:
+        case_citation:
+          $ref: '#/components/schemas/ReporterCitation'
+          description: The citation of the case that was overruled.
+        interaction:
+          $ref: '#/components/schemas/PrecedentInteraction'
+          description: The type of interaction between the present case and the overruled case.
+        db_id:
+          type: string
+          format: uuid
+          title: Db Id
+        overruled_case_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Overruled Case Id
+        overruled_case_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Overruled Case Name
+      type: object
+      required:
+      - case_citation
+      - interaction
+      - db_id
+      title: HydratedOverRuling
+    HydratedAffirmativeDefense:
+      properties:
+        defense:
+          type: string
+          title: Defense
+        db_id:
+          type: string
+          format: uuid
+          title: Db Id
+      type: object
+      required:
+      - defense
+      - db_id
+      title: HydratedAffirmativeDefense
+    HydratedMetadata:
+      properties:
+        present_court_name:
+          type: string
+          title: Present Court Name
+        litigation_stage:
+          $ref: '#/components/schemas/LitigationStage'
+          description: The stage of litigation in which the disposition was issued.
+        trial_stage:
+          $ref: '#/components/schemas/TrialPhase'
+          description: The phase of the trial in which the disposition was issued.
+        forum_type:
+          $ref: '#/components/schemas/LegalForumType'
+          description: The type of forum in which the disposition was issued.
+        disposition_type:
+          $ref: '#/components/schemas/DispositionType'
+          description: The type of ruling or judgment issued by the present court.
+        date_created:
+          type: string
+          format: date-time
+          title: Date Created
+        parsed_with:
+          type: string
+          minLength: 1
+          title: Parsed With
+        entry_type:
+          $ref: '#/components/schemas/CaseEntryType'
+        opinioncluster_id:
+          type: integer
+          title: Opinioncluster Id
+        docket_id:
+          type: integer
+          title: Docket Id
+        court_id:
+          type: string
+          minLength: 1
+          title: Court Id
+        slug:
+          type: string
+          minLength: 1
+          title: Slug
+        case_name:
+          type: string
+          minLength: 1
+          title: Case Name
+        case_name_bluebook:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Case Name Bluebook
+        case_name_short_bluebook:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Case Name Short Bluebook
+        year_filed:
+          type: integer
+          title: Year Filed
+        n_cited:
+          type: integer
+          title: N Cited
+        yearly_cites:
+          type: number
+          title: Yearly Cites
+        court_name:
+          type: string
+          minLength: 1
+          title: Court Name
+        court_citation_string:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Court Citation String
+        cl_jurisdiction:
+          anyOf:
+          - $ref: '#/components/schemas/CourtlistenerJurisdiction'
+          - type: 'null'
+        court_state:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Court State
+        docket_number:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Docket Number
+        date_filed:
+          anyOf:
+          - type: string
+            format: date
+          - type: 'null'
+          title: Date Filed
+        summary:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Summary
+        reporter_citations:
+          items:
+            $ref: '#/components/schemas/ReporterCitation'
+          type: array
+          title: Reporter Citations
+        bluebook:
+          type: string
+          title: Bluebook
+          description: Full Bluebook citation of the form "case_name, volume reporter page (year)", e.g. "Smith v. Jones, 123 F.3d 456 (1999)".
+          readOnly: true
+        publication_status:
+          $ref: '#/components/schemas/PublicationStatus'
+          description: 'SLIP_OPINION ⇔ no reporter citation on file — drives the FE tag (ENG-18892).
+
+
+            computed_field so it reaches the OpenAPI schema and FE codegen (this model IS
+
+            the read model for the hydrated-dispositions endpoints).'
+          readOnly: true
+      type: object
+      required:
+      - present_court_name
+      - litigation_stage
+      - trial_stage
+      - forum_type
+      - disposition_type
+      - date_created
+      - parsed_with
+      - entry_type
+      - opinioncluster_id
+      - docket_id
+      - court_id
+      - slug
+      - case_name
+      - year_filed
+      - n_cited
+      - yearly_cites
+      - court_name
+      - summary
+      - reporter_citations
+      - bluebook
+      - publication_status
+      title: HydratedMetadata
+      description: Hydrated metadata that makes parent class fields optional.
+    ConstitutionalAndCivilRightsLawSubAreasEnum:
+      type: string
+      enum:
+      - Individual Rights Law
+      - Environmental, Social, and Governance Law
+      - Discrimination Law
+      - Political Rights Law
+      title: ConstitutionalAndCivilRightsLawSubAreasEnum
+    FinanceAndLendingLawSubAreasEnum:
+      type: string
+      enum:
+      - Commercial Finance Law
+      - Lender Liability Law
+      - Debt Collection Law
+      - Structured Finance Law
+      title: FinanceAndLendingLawSubAreasEnum
+    TransportationLawSubAreasEnum:
+      type: string
+      enum:
+      - Motor Vehicle Law
+      - Aviation Law
+      - Railway Law
+      title: TransportationLawSubAreasEnum
+    ProcessBatchJobVertex:
+      properties:
+        job_names:
+          items:
+            type: string
+          type: array
+          title: Job Names
+        parse_model:
+          type: string
+          enum:
+          - text-embedding-ada-002
+          - text-embedding-3-large
+          - text-davinci-003
+          - gpt-35-turbo-0613
+          - gpt-35-turbo-1106
+          - gpt-35-turbo-16k-0613
+          - gpt-35-turbo-0125
+          - gpt-4-0613
+          - gpt-4-32k-0613
+          - gpt-4-turbo-0125
+          - gpt-4o-0524
+          - gpt-4o-2024-08-06
+          - gpt-4o-mini
+          - o1-mini-2024-09-12
+          - gpt-3.5-turbo-instruct
+          - gpt-3.5-turbo-0613
+          - gpt-3.5-turbo-1106
+          - gpt-3.5-turbo-0125
+          - gpt-3.5-turbo-16k-0613
+          - gpt-4-turbo-preview
+          - gpt-4.5-preview-2025-02-27
+          - gpt-4o-2024-05-13
+          - gpt-4o-2024-11-20
+          - chatgpt-4o-latest
+          - gpt-4o-search-preview
+          - gpt-4o-mini-2024-07-18
+          - o1-preview-2024-09-12
+          - o1-2024-12-17
+          - o3-mini-2025-01-31
+          - o3-2025-04-16
+          - o4-mini-2025-04-16
+          - gpt-4.1-2025-04-14
+          - gpt-4.1-mini-2025-04-14
+          - gpt-5-2025-08-07
+          - gpt-5-mini-2025-08-07
+          - gpt-5.4-mini
+          - gpt-5.1-2025-11-13
+          - gpt-5.2-2025-12-11
+          - gpt-5.4-2026-03-05
+          - gpt-5.5-2026-04-23
+          - gpt-5.6-luna
+          - claude-sonnet-4-20250514
+          - claude-sonnet-4-5-20250929
+          - claude-haiku-4-5-20251001
+          - claude-opus-4-1-20250805
+          - claude-opus-4-1@20250805
+          - claude-opus-4-6
+          - claude-sonnet-4-6
+          - claude-sonnet-5-5
+          - deepseek-chat
+          - gemini-2.5-flash
+          - gemini-2.5-pro
+          - gemini-3-flash-preview
+          - gemini-3.5-flash
+          - gemini-3.6-flash
+          - gemini-3.8-flash
+          - gemini-3.1-pro-preview
+          - deepseek/deepseek-chat
+          - google/gemma-2-9b-it
+          - meta-llama/llama-3.1-8b-instruct
+          - meta-llama/llama-3.1-70b-instruct
+          - meta-llama/llama-3.2-11b-vision-instruct
+          - meta-llama/llama-3.3-70b-instruct
+          - mistralai/mistral-large
+          - mistralai/mistral-large-2407
+          - mistralai/mistral-large-2411
+          - mistralai/mistral-medium-3
+          - mistralai/mistral-medium-3.1
+          - mistralai/mixtral-8x7b-instruct
+          - mistralai/mistral-nemo
+          - qwen/qwen-2.5-72b-instruct
+          - qwen/qwen-2.5-coder-32b-instruct
+          - nvidia/llama-3.1-nemotron-70b-instruct
+          - meta-llama/llama-4-scout
+          - x-ai/grok-4.3
+          - x-ai/grok-4.20
+          - grok-3-mini
+          - grok-4.3
+          - grok-4.20-non-reasoning
+          title: Parse Model
+          description: The language model to use for parsing
+          default: gemini-2.5-flash
+      type: object
+      required:
+      - job_names
+      title: ProcessBatchJobVertex
+    UploadBatchJobs:
+      properties:
+        batch_size:
+          type: integer
+          title: Batch Size
+          description: The number of opinions to parse per batch
+          default: 20
+        parse_model:
+          type: string
+          enum:
+          - text-embedding-ada-002
+          - text-embedding-3-large
+          - text-davinci-003
+          - gpt-35-turbo-0613
+          - gpt-35-turbo-1106
+          - gpt-35-turbo-16k-0613
+          - gpt-35-turbo-0125
+          - gpt-4-0613
+          - gpt-4-32k-0613
+          - gpt-4-turbo-0125
+          - gpt-4o-0524
+          - gpt-4o-2024-08-06
+          - gpt-4o-mini
+          - o1-mini-2024-09-12
+          - gpt-3.5-turbo-instruct
+          - gpt-3.5-turbo-0613
+          - gpt-3.5-turbo-1106
+          - gpt-3.5-turbo-0125
+          - gpt-3.5-turbo-16k-0613
+          - gpt-4-turbo-preview
+          - gpt-4.5-preview-2025-02-27
+          - gpt-4o-2024-05-13
+          - gpt-4o-2024-11-20
+          - chatgpt-4o-latest
+          - gpt-4o-search-preview
+          - gpt-4o-mini-2024-07-18
+          - o1-preview-2024-09-12
+          - o1-2024-12-17
+          - o3-mini-2025-01-31
+          - o3-2025-04-16
+          - o4-mini-2025-04-16
+          - gpt-4.1-2025-04-14
+          - gpt-4.1-mini-2025-04-14
+          - gpt-5-2025-08-07
+          - gpt-5-mini-2025-08-07
+          - gpt-5.4-mini
+          - gpt-5.1-2025-11-13
+          - gpt-5.2-2025-12-11
+          - gpt-5.4-2026-03-05
+          - gpt-5.5-2026-04-23
+          - gpt-5.6-luna
+          - claude-sonnet-4-20250514
+          - claude-sonnet-4-5-20250929
+          - claude-haiku-4-5-20251001
+          - claude-opus-4-1-20250805
+          - claude-opus-4-1@20250805
+          - claude-opus-4-6
+          - claude-sonnet-4-6
+          - claude-sonnet-5-5
+          - deepseek-chat
+          - gemini-2.5-flash
+          - gemini-2.5-pro
+          - gemini-3-flash-preview
+          - gemini-3.5-flash
+          - gemini-3.6-flash
+          - gemini-3.8-flash
+          - gemini-3.1-pro-preview
+          - deepseek/deepseek-chat
+          - google/gemma-2-9b-it
+          - meta-llama/llama-3.1-8b-instruct
+          - meta-llama/llama-3.1-70b-instruct
+          - meta-llama/llama-3.2-11b-vision-instruct
+          - meta-llama/llama-3.3-70b-instruct
+          - mistralai/mistral-large
+          - mistralai/mistral-large-2407
+          - mistralai/mistral-large-2411
+          - mistralai/mistral-medium-3
+          - mistralai/mistral-medium-3.1
+          - mistralai/mixtral-8x7b-instruct
+          - mistralai/mistral-nemo
+          - qwen/qwen-2.5-72b-instruct
+          - qwen/qwen-2.5-coder-32b-instruct
+          - nvidia/llama-3.1-nemotron-70b-instruct
+          - meta-llama/llama-4-scout
+          - x-ai/grok-4.3
+          - x-ai/grok-4.20
+          - grok-3-mini
+          - grok-4.3
+          - grok-4.20-non-reasoning
+          title: Parse Model
+          description: The language model to use for parsing
+          default: o1-mini-2024-09-12
+      type: object
+      title: UploadBatchJobs
+    BatchRequest:
+      properties:
+        batch_size:
+          type: integer
+          title: Batch Size
+        num_batches:
+          type: integer
+          title: Num Batches
+      type: object
+      required:
+      - batch_size
+      - num_batches
+      title: BatchRequest
+    ParseStatus:
+      type: string
+      enum:
+      - PENDING
+      - UPLOADING
+      - IN_PROGRESS
+      - FAILED
+      title: ParseStatus
+    HydratedFact:
+      properties:
+        fact:
+          type: string
+          title: Fact
+        db_id:
+          type: string
+          format: uuid
+          title: Db Id
+      type: object
+      required:
+      - fact
+      - db_id
+      title: HydratedFact
+    TreatmentConfidence:
+      type: string
+      enum:
+      - EXTREMELY_LOW
+      - LOW
+      - MEDIUM
+      - HIGH
+      - EXTREMELY_HIGH
+      title: TreatmentConfidence
+    StepType:
+      type: string
+      enum:
+      - primary_judicial_process
+      - alternative_dispute_resolution
+      - judicial_review
+      - other
+      title: StepType
+    DeleteDispositionsRequest:
+      properties:
+        cluster_ids:
+          anyOf:
+          - items:
+              type: integer
+            type: array
+          - type: 'null'
+          title: Cluster Ids
+        start_index:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Start Index
+        end_index:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: End Index
+        invalid:
+          anyOf:
+          - type: string
+            enum:
+            - all
+            - detached_holdings
+            - orphans_only
+          - type: 'null'
+          title: Invalid
+        parse_model:
+          anyOf:
+          - type: string
+            enum:
+            - text-embedding-ada-002
+            - text-embedding-3-large
+            - text-davinci-003
+            - gpt-35-turbo-0613
+            - gpt-35-turbo-1106
+            - gpt-35-turbo-16k-0613
+            - gpt-35-turbo-0125
+            - gpt-4-0613
+            - gpt-4-32k-0613
+            - gpt-4-turbo-0125
+            - gpt-4o-0524
+            - gpt-4o-2024-08-06
+            - gpt-4o-mini
+            - o1-mini-2024-09-12
+            - gpt-3.5-turbo-instruct
+            - gpt-3.5-turbo-0613
+            - gpt-3.5-turbo-1106
+            - gpt-3.5-turbo-0125
+            - gpt-3.5-turbo-16k-0613
+            - gpt-4-turbo-preview
+            - gpt-4.5-preview-2025-02-27
+            - gpt-4o-2024-05-13
+            - gpt-4o-2024-11-20
+            - chatgpt-4o-latest
+            - gpt-4o-search-preview
+            - gpt-4o-mini-2024-07-18
+            - o1-preview-2024-09-12
+            - o1-2024-12-17
+            - o3-mini-2025-01-31
+            - o3-2025-04-16
+            - o4-mini-2025-04-16
+            - gpt-4.1-2025-04-14
+            - gpt-4.1-mini-2025-04-14
+            - gpt-5-2025-08-07
+            - gpt-5-mini-2025-08-07
+            - gpt-5.4-mini
+            - gpt-5.1-2025-11-13
+            - gpt-5.2-2025-12-11
+            - gpt-5.4-2026-03-05
+            - gpt-5.5-2026-04-23
+            - gpt-5.6-luna
+            - claude-sonnet-4-20250514
+            - claude-sonnet-4-5-20250929
+            - claude-haiku-4-5-20251001
+            - claude-opus-4-1-20250805
+            - claude-opus-4-1@20250805
+            - claude-opus-4-6
+            - claude-sonnet-4-6
+            - claude-sonnet-5-5
+            - deepseek-chat
+            - gemini-2.5-flash
+            - gemini-2.5-pro
+            - gemini-3-flash-preview
+            - gemini-3.5-flash
+            - gemini-3.6-flash
+            - gemini-3.8-flash
+            - gemini-3.1-pro-preview
+            - deepseek/deepseek-chat
+            - google/gemma-2-9b-it
+            - meta-llama/llama-3.1-8b-instruct
+            - meta-llama/llama-3.1-70b-instruct
+            - meta-llama/llama-3.2-11b-vision-instruct
+            - meta-llama/llama-3.3-70b-instruct
+            - mistralai/mistral-large
+            - mistralai/mistral-large-2407
+            - mistralai/mistral-large-2411
+            - mistralai/mistral-medium-3
+            - mistralai/mistral-medium-3.1
+            - mistralai/mixtral-8x7b-instruct
+            - mistralai/mistral-nemo
+            - qwen/qwen-2.5-72b-instruct
+            - qwen/qwen-2.5-coder-32b-instruct
+            - nvidia/llama-3.1-nemotron-70b-instruct
+            - meta-llama/llama-4-scout
+            - x-ai/grok-4.3
+            - x-ai/grok-4.20
+            - grok-3-mini
+            - grok-4.3
+            - grok-4.20-non-reasoning
+          - type: 'null'
+          title: Parse Model
+        parsed_after:
+          anyOf:
+          - type: string
+            format: date
+          - type: 'null'
+          title: Parsed After
+      type: object
+      title: DeleteDispositionsRequest
+    PrecedentInteraction:
+      type: string
+      enum:
+      - Departs
+      - Distinguishes
+      - Clarifies
+      - Other
+      title: PrecedentInteraction
+    HydratedQuote:
+      properties:
+        quote:
+          type: string
+          title: Quote
+        db_id:
+          type: string
+          format: uuid
+          title: Db Id
+        pincites:
+          items:
+            $ref: '#/components/schemas/Pincite'
+          type: array
+          title: Pincites
+      type: object
+      required:
+      - quote
+      - db_id
+      - pincites
+      title: HydratedQuote
+    SecuritiesAndFinancialInstrumentsLawSubAreasEnum:
+      type: string
+      enum:
+      - Investment Advisor Law
+      - Derivatives and Futures Law
+      - Investment Companies Law
+      - Cryptocurrency Law
+      - Exchanges Law
+      - Structured Finance Law
+      - Commodities Law
+      - Security Offerings and Capital Markets Law
+      - Broker-Dealer Law
+      - Private Equity, Hedge Funds and Venture Capital Law
+      title: SecuritiesAndFinancialInstrumentsLawSubAreasEnum
+    Pincite:
+      properties:
+        db_id:
+          type: string
+          format: uuid
+          title: Db Id
+        reporter_citation:
+          $ref: '#/components/schemas/ReporterCitation'
+          description: The citation of the case that was pincited
+        locator:
+          type: string
+          title: Locator
+          description: The location in the text where the pincite occurred
+      type: object
+      required:
+      - db_id
+      - reporter_citation
+      - locator
+      title: Pincite
+    HydratedParty:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: The name or label for the party.
+          default: ''
+        description:
+          type: string
+          title: Description
+          description: A concise description of the party, emphasizing the nature of their involvement in the dispute and any relevant legal status or characteristics.
+          default: ''
+        roles:
+          items:
+            type: string
+          type: array
+          title: Roles
+          description: An exhaustive List of legal roles that the party plays in the case.
+        db_id:
+          type: string
+          format: uuid
+          title: Db Id
+      type: object
+      required:
+      - db_id
+      title: HydratedParty
+    TelecommunicationsMediaAndEntertainmentLawSubAreasEnum:
+      type: string
+      enum:
+      - Entertainment Law
+      - Telecommunications Law
+      - Sports Law
+      - Advertising Law
+      title: TelecommunicationsMediaAndEntertainmentLawSubAreasEnum
+    HydratedCauseOfAction:
+      properties:
+        db_id:
+          type: string
+          format: uuid
+          title: Db Id
+        cause_of_action:
+          type: string
+          title: Cause Of Action
+        affirmative_defenses:
+          items:
+            $ref: '#/components/schemas/HydratedAffirmativeDefense'
+          type: array
+          title: Affirmative Defenses
+        questions:
+          items:
+            $ref: '#/components/schemas/HydratedQuestion'
+          type: array
+          title: Questions
+        sali_area_of_law:
+          $ref: '#/components/schemas/AreasOfLaw'
+        sali_sub_area_of_law:
+          anyOf:
+          - $ref: '#/components/schemas/ConstitutionalAndCivilRightsLawSubAreasEnum'
+          - $ref: '#/components/schemas/PersonalInjuryAndTortLawSubAreasEnum'
+          - $ref: '#/components/schemas/InformationSecurityLawSubAreasEnum'
+          - $ref: '#/components/schemas/BankingLawSubAreasEnum'
+          - $ref: '#/components/schemas/PublicAndAdministrativeLawSubAreasEnum'
+          - $ref: '#/components/schemas/BankruptcyInsolvencyAndRestructuringLawSubAreasEnum'
+          - $ref: '#/components/schemas/EnergyLawSubAreasEnum'
+          - $ref: '#/components/schemas/TransportationLawSubAreasEnum'
+          - $ref: '#/components/schemas/PersonalAndFamilyLawSubAreasEnum'
+          - $ref: '#/components/schemas/ReligiousLawSubAreasEnum'
+          - $ref: '#/components/schemas/SecuritiesAndFinancialInstrumentsLawSubAreasEnum'
+          - $ref: '#/components/schemas/ContractLawSubAreasEnum'
+          - $ref: '#/components/schemas/LaborAndEmploymentLawSubAreasEnum'
+          - $ref: '#/components/schemas/InsuranceLawSubAreasEnum'
+          - $ref: '#/components/schemas/RealPropertyLawSubAreasEnum'
+          - $ref: '#/components/schemas/IntellectualPropertyLawSubAreasEnum'
+          - $ref: '#/components/schemas/FinanceAndLendingLawSubAreasEnum'
+          - $ref: '#/components/schemas/CorporateLawSubAreasEnum'
+          - $ref: '#/components/schemas/CriminalLawSubAreasEnum'
+          - $ref: '#/components/schemas/EnvironmentalAndNaturalResourceLawSubAreasEnum'
+          - $ref: '#/components/schemas/TaxAndRevenueLawSubAreasEnum'
+          - $ref: '#/components/schemas/TelecommunicationsMediaAndEntertainmentLawSubAreasEnum'
+          - $ref: '#/components/schemas/CommercialAndTradeLawSubAreasEnum'
+          - type: 'null'
+          title: Sali Sub Area Of Law
+      type: object
+      required:
+      - db_id
+      - cause_of_action
+      - affirmative_defenses
+      - questions
+      - sali_area_of_law
+      - sali_sub_area_of_law
+      title: HydratedCauseOfAction

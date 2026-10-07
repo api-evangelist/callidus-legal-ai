@@ -1,0 +1,2238 @@
+openapi: 3.2.0
+info:
+  title: CallidusAI Integrations API
+  description: Callidus AI backend API
+  version: 0.1.0
+tags:
+- name: Integrations
+paths:
+  /integrations/clio/connect:
+    get:
+      tags:
+      - Integrations
+      summary: Connect Clio
+      description: Redirect user to Clio's OAuth consent screen.
+      operationId: connect_clio_integrations_clio_connect_get
+      parameters:
+      - name: return_to
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: URL path to redirect to after OAuth completes
+          title: Return To
+        description: URL path to redirect to after OAuth completes
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /integrations/clio/callback:
+    get:
+      tags:
+      - Integrations
+      summary: Clio Callback
+      description: 'Handle Clio''s OAuth redirect — exchange code for tokens.
+
+
+        No JWT required — the user identity is extracted from the HMAC-signed
+
+        state param that was created during the /connect redirect.'
+      operationId: clio_callback_integrations_clio_callback_get
+      parameters:
+      - name: code
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Code
+      - name: state
+        in: query
+        required: true
+        schema:
+          type: string
+          title: State
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /integrations/clio/status:
+    get:
+      tags:
+      - Integrations
+      summary: Clio Status
+      description: Check if the current user has an active Clio connection.
+      operationId: clio_status_integrations_clio_status_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectionStatus'
+  /integrations/clio/matters:
+    get:
+      tags:
+      - Integrations
+      summary: List Clio Matters
+      description: Fetch matters from the user's connected Clio account.
+      operationId: list_clio_matters_integrations_clio_matters_get
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          default: open
+          title: Status
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 500
+          default: 200
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+          title: Offset
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClioMattersResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /integrations/clio/documents:
+    get:
+      tags:
+      - Integrations
+      summary: List Clio Documents
+      description: Fetch documents for a Clio matter.
+      operationId: list_clio_documents_integrations_clio_documents_get
+      parameters:
+      - name: matter_id
+        in: query
+        required: true
+        schema:
+          type: integer
+          description: Clio matter ID
+          title: Matter Id
+        description: Clio matter ID
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          default: 200
+          title: Limit
+      - name: page_token
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Page Token
+      - name: folder_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: Clio folder ID to browse into
+          title: Folder Id
+        description: Clio folder ID to browse into
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClioDocumentsResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /integrations/clio/disconnect:
+    delete:
+      tags:
+      - Integrations
+      summary: Disconnect Clio
+      description: Revoke Clio connection and tokens.
+      operationId: disconnect_clio_integrations_clio_disconnect_delete
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /integrations/microsoft/connect:
+    get:
+      tags:
+      - Integrations
+      summary: Connect Microsoft
+      description: 'Send the user to Microsoft''s consent screen.
+
+
+        ``switch_account`` asks Microsoft for its account picker. Without it, a
+
+        browser already signed in to Microsoft is sent straight back with the same
+
+        account — so "use a different account" would silently reconnect the one
+
+        already linked.'
+      operationId: connect_microsoft_integrations_microsoft_connect_get
+      parameters:
+      - name: return_to
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: In-app path to return to once the connection completes
+          title: Return To
+        description: In-app path to return to once the connection completes
+      - name: switch_account
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: Force Microsoft's account picker so a different mailbox can be chosen
+          default: false
+          title: Switch Account
+        description: Force Microsoft's account picker so a different mailbox can be chosen
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /integrations/microsoft/callback:
+    get:
+      tags:
+      - Integrations
+      summary: Microsoft Callback
+      description: 'Handle Microsoft''s redirect back.
+
+
+        No JWT here — the caller is Microsoft, and the user''s identity comes from
+
+        the HMAC-signed state issued during ``/connect``.'
+      operationId: microsoft_callback_integrations_microsoft_callback_get
+      parameters:
+      - name: state
+        in: query
+        required: true
+        schema:
+          type: string
+          title: State
+      - name: code
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Code
+      - name: error
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /integrations/microsoft/status:
+    get:
+      tags:
+      - Integrations
+      summary: Microsoft Status
+      description: Whether this user has an active Microsoft connection.
+      operationId: microsoft_status_integrations_microsoft_status_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectionStatus'
+  /integrations/microsoft/disconnect:
+    delete:
+      tags:
+      - Integrations
+      summary: Microsoft Disconnect
+      description: 'Drop this user''s Microsoft connection.
+
+
+        Folder links go first, exactly as they do when a different mailbox is
+
+        connected: left behind, they would point at a connection with no tokens and
+
+        fail every later sync with nothing telling the user why. Emails already
+
+        imported stay in their matters — they are files there, not views into the
+
+        mailbox.
+
+
+        Microsoft exposes no OAuth revocation endpoint, so the provider config
+
+        carries no revoke URL and this marks the connection revoked locally. Access
+
+        is withdrawn fully from the user''s Microsoft account page.'
+      operationId: microsoft_disconnect_integrations_microsoft_disconnect_delete
+      responses:
+        '204':
+          description: Successful Response
+  /integrations/outlook/folders:
+    get:
+      tags:
+      - Integrations
+      summary: List Outlook Folders
+      description: 'Every mail folder in the connected mailbox, with display paths.
+
+
+        The whole mailbox is returned and the picker renders what it is given, so
+
+        narrowing the offer — to Inbox and its children, say — is a change here
+
+        rather than anywhere downstream.
+
+
+        Takes no request-scoped session on purpose. Walking a mailbox is a paginated
+
+        network traversal, and a session injected by ``Depends`` stays checked out
+
+        for the whole request — holding a pooled connection idle for the duration.
+
+        The token is resolved in a short-lived session that closes before any Graph
+
+        traffic begins.'
+      operationId: list_outlook_folders_integrations_outlook_folders_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OutlookFoldersResponse'
+  /integrations/outlook/link/{matter_id}:
+    get:
+      tags:
+      - Integrations
+      summary: Get Outlook Link
+      description: A matter's Outlook connection state, for the Overview row and emails view.
+      operationId: get_outlook_link_integrations_outlook_link__matter_id__get
+      parameters:
+      - name: matter_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Matter Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OutlookLinkStatusResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+      - Integrations
+      summary: Unlink Outlook Folder
+      description: 'Stop syncing this matter''s folder and take its emails out of the matter.
+
+
+        The emails and the attachments extracted from them leave this matter only —
+
+        the files stay in Doc Hub, other matters are untouched, and reconnecting the
+
+        same folder brings everything back (ENG-23077). The client confirms with the
+
+        user first; nothing here can put a removed email back except a re-sync.
+
+
+        Returns 204, so the 403 is raised rather than returned: a response model
+
+        inferred from a ``... | JSONResponse`` annotation is rejected on a
+
+        body-less status code.'
+      operationId: unlink_outlook_folder_integrations_outlook_link__matter_id__delete
+      parameters:
+      - name: matter_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Matter Id
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /integrations/outlook/emails/{matter_id}:
+    get:
+      tags:
+      - Integrations
+      summary: List Matter Emails
+      description: 'The matter''s synced emails, newest first.
+
+
+        Paged only when ``page`` is given. Without it the response is what it has
+
+        always been — the newest ``limit`` emails — so a client from before paging,
+
+        still loaded in a tab while this deploys, keeps showing its list.'
+      operationId: list_matter_emails_integrations_outlook_emails__matter_id__get
+      parameters:
+      - name: matter_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Matter Id
+      - name: search
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter by subject, sender, or message body
+          title: Search
+        description: Filter by subject, sender, or message body
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 500
+          minimum: 1
+          default: 200
+          title: Limit
+      - name: page
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+            maximum: 100000
+            minimum: 1
+          - type: 'null'
+          description: 1-based page of list rows. Omit for the newest `limit` emails, unpaged.
+          title: Page
+        description: 1-based page of list rows. Omit for the newest `limit` emails, unpaged.
+      - name: page_size
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 50
+          title: Page Size
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatterEmailsResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /integrations/outlook/link:
+    post:
+      tags:
+      - Integrations
+      summary: Link Outlook Folder
+      description: 'Link a folder to a matter and leave it ready for its first sync.
+
+
+        Returns 202: the link exists immediately, but the emails behind it do not —
+
+        the backfill runs separately and the response reports ``syncing``.'
+      operationId: link_outlook_folder_integrations_outlook_link_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LinkOutlookFolderRequest'
+        required: true
+      responses:
+        '202':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OutlookLinkStatusResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /integrations/outlook/sync/{matter_id}:
+    post:
+      tags:
+      - Integrations
+      summary: Sync Outlook Now
+      description: Sync this matter's folder now, rather than waiting for the schedule.
+      operationId: sync_outlook_now_integrations_outlook_sync__matter_id__post
+      parameters:
+      - name: matter_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Matter Id
+      responses:
+        '202':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OutlookSyncStartedResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /integrations/outlook/sync-status/{matter_id}:
+    get:
+      tags:
+      - Integrations
+      summary: Get Outlook Sync Progress
+      description: 'Progress of the running sync, for the first backfill''s progress display.
+
+
+        Reports ``idle`` once Temporal no longer holds the run — the workflow is
+
+        reaped after completion, and the durable outcome is on the link itself.'
+      operationId: get_outlook_sync_progress_integrations_outlook_sync_status__matter_id__get
+      parameters:
+      - name: matter_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Matter Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OutlookSyncProgressResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /integrations/connections:
+    get:
+      tags:
+      - Integrations
+      summary: List Connections
+      description: List all active integration connections for the authenticated user.
+      operationId: list_connections_integrations_connections_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectionListResponse'
+  /integrations/matters:
+    get:
+      tags:
+      - Integrations
+      summary: List Integration Matters
+      description: Fetch matters from a connected integration, mapped to the StrongSuit matter shape.
+      operationId: list_integration_matters_integrations_matters_get
+      parameters:
+      - name: provider
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Integration provider id (e.g. 'clio')
+          title: Provider
+        description: Integration provider id (e.g. 'clio')
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          default: open
+          title: Status
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          default: 50
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+          title: Offset
+      - name: query
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Wildcard name search
+          title: Query
+        description: Wildcard name search
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportableMattersResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /integrations/documents:
+    get:
+      tags:
+      - Integrations
+      summary: List Integration Documents
+      description: 'Fetch documents from a connected integration.
+
+
+        Provide either ``matter_id`` (StrongSuit ID, resolved via integration link)
+
+        or ``external_matter_id`` (provider-side ID, used directly for browsing).'
+      operationId: list_integration_documents_integrations_documents_get
+      parameters:
+      - name: provider
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Integration provider id (e.g. 'clio')
+          title: Provider
+        description: Integration provider id (e.g. 'clio')
+      - name: matter_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: StrongSuit matter ID (resolves via integration link)
+          title: Matter Id
+        description: StrongSuit matter ID (resolves via integration link)
+      - name: external_matter_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: External matter ID (used directly)
+          title: External Matter Id
+        description: External matter ID (used directly)
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          default: 200
+          title: Limit
+      - name: page_token
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Page Token
+      - name: folder_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: External folder ID to browse into
+          title: Folder Id
+        description: External folder ID to browse into
+      - name: contact_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: External contact ID to browse documents for
+          title: Contact Id
+        description: External contact ID to browse documents for
+      - name: query
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Wildcard name search
+          title: Query
+        description: Wildcard name search
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportableDocumentsResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /integrations/documents/download:
+    post:
+      tags:
+      - Integrations
+      summary: Download Integration Documents
+      description: 'Download documents from an external provider and upload them to Azure.
+
+
+        Returns blob metadata per document so the FE can feed them into the
+
+        existing ``POST /document/add-documents`` pipeline.'
+      operationId: download_integration_documents_integrations_documents_download_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DownloadIntegrationDocumentsRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DownloadIntegrationDocumentsResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /integrations/matters/{external_id}/sync-status:
+    get:
+      tags:
+      - Integrations
+      summary: Check Matter Sync Status
+      description: Check if a linked matter has updates in the external provider.
+      operationId: check_matter_sync_status_integrations_matters__external_id__sync_status_get
+      parameters:
+      - name: external_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: External Id
+      - name: provider
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Integration provider id (e.g. 'clio')
+          title: Provider
+        description: Integration provider id (e.g. 'clio')
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatterSyncStatusResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /integrations/matters/enrich:
+    post:
+      tags:
+      - Integrations
+      summary: Enrich Integration Matter
+      description: Re-fetch a single matter, run deterministic + LLM enrichment.
+      operationId: enrich_integration_matter_integrations_matters_enrich_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnrichMatterRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportableMatter'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /integrations/clio/import-all-documents:
+    post:
+      tags:
+      - Integrations
+      summary: Start Clio Document Import
+      description: 'Start a Temporal workflow to import all documents from a Clio matter.
+
+
+        Returns 202 with a workflow_id the frontend can poll for progress.'
+      operationId: start_clio_document_import_integrations_clio_import_all_documents_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartClioDocumentImportRequest'
+        required: true
+      responses:
+        '202':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /integrations/clio/import-status/{workflow_id}:
+    get:
+      tags:
+      - Integrations
+      summary: Get Clio Import Status
+      description: Poll the status of a Clio document import workflow via Temporal query.
+      operationId: get_clio_import_status_integrations_clio_import_status__workflow_id__get
+      parameters:
+      - name: workflow_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Workflow Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    ImportableDocument:
+      properties:
+        provider:
+          type: string
+          title: Provider
+        external_id:
+          type: string
+          title: External Id
+        name:
+          type: string
+          title: Name
+        filename:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Filename
+        content_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Content Type
+        size_bytes:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Size Bytes
+        created_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Created At
+        updated_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Updated At
+        version_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Version Id
+        parent_folder_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Parent Folder Name
+      type: object
+      required:
+      - provider
+      - external_id
+      - name
+      title: ImportableDocument
+      description: A document from an external provider, shaped for import selection.
+    DownloadDocumentItem:
+      properties:
+        external_id:
+          type: string
+          title: External Id
+        name:
+          type: string
+          title: Name
+        version_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Version Id
+      type: object
+      required:
+      - external_id
+      - name
+      title: DownloadDocumentItem
+      description: A single document to download from an external provider.
+    ClioDocumentVersion:
+      properties:
+        id:
+          type: integer
+          title: Id
+        uuid:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Uuid
+        content_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Content Type
+        filename:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Filename
+        size:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Size
+        created_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Created At
+        updated_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Updated At
+      type: object
+      required:
+      - id
+      title: ClioDocumentVersion
+      description: A single version of a Clio document.
+    ImportableMatter:
+      properties:
+        provider:
+          type: string
+          title: Provider
+        external_id:
+          type: string
+          title: External Id
+        status:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Status
+        open_date:
+          anyOf:
+          - type: string
+            format: date
+          - type: 'null'
+          title: Open Date
+        already_linked:
+          type: boolean
+          title: Already Linked
+          default: false
+        linked_by_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Linked By Name
+        linked_matter_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Linked Matter Id
+        updated_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Updated At
+        clio_group_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Clio Group Id
+        suggested_team_member_ids:
+          items:
+            type: string
+          type: array
+          title: Suggested Team Member Ids
+        title:
+          type: string
+          title: Title
+        short_description:
+          type: string
+          title: Short Description
+        matter_details:
+          type: string
+          title: Matter Details
+        matter_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Matter Type
+        parties:
+          items:
+            $ref: '#/components/schemas/PartyEntry'
+          type: array
+          title: Parties
+        clients:
+          items:
+            $ref: '#/components/schemas/ClientInput'
+          type: array
+          title: Clients
+        known_causes:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Known Causes
+        jurisdiction:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Jurisdiction
+        court_system:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Court System
+        court_level:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Court Level
+        governing_jurisdiction:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Governing Jurisdiction
+      type: object
+      required:
+      - provider
+      - external_id
+      - title
+      - short_description
+      - matter_details
+      title: ImportableMatter
+      description: 'A matter from an external provider, shaped for direct form pre-fill.
+
+
+        The CreateMatterRequest-compatible fields can be spread into the matter
+
+        form without further mapping.  The display-only fields (``provider``,
+
+        ``external_id``, ``status``, ``open_date``) are used by the list UI and
+
+        ignored at form submission time.'
+    ImportableContact:
+      properties:
+        provider:
+          type: string
+          title: Provider
+        external_id:
+          type: string
+          title: External Id
+        name:
+          type: string
+          title: Name
+        type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Type
+      type: object
+      required:
+      - provider
+      - external_id
+      - name
+      title: ImportableContact
+      description: A contact associated with a matter from an external provider.
+    ClioMatter:
+      properties:
+        id:
+          type: integer
+          title: Id
+        display_number:
+          type: string
+          title: Display Number
+        custom_number:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Custom Number
+        description:
+          type: string
+          title: Description
+        status:
+          type: string
+          title: Status
+        client:
+          anyOf:
+          - $ref: '#/components/schemas/ClioContact'
+          - type: 'null'
+        practice_area:
+          anyOf:
+          - $ref: '#/components/schemas/ClioPracticeArea'
+          - type: 'null'
+        location:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Location
+        open_date:
+          anyOf:
+          - type: string
+            format: date
+          - type: 'null'
+          title: Open Date
+        close_date:
+          anyOf:
+          - type: string
+            format: date
+          - type: 'null'
+          title: Close Date
+        pending_date:
+          anyOf:
+          - type: string
+            format: date
+          - type: 'null'
+          title: Pending Date
+        client_reference:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Client Reference
+        billing_method:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Billing Method
+        billable:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Billable
+        maildrop_address:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Maildrop Address
+        last_activity_date:
+          anyOf:
+          - type: string
+            format: date
+          - type: 'null'
+          title: Last Activity Date
+        shared:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Shared
+        matter_stage:
+          anyOf:
+          - $ref: '#/components/schemas/ClioNamedRef'
+          - type: 'null'
+        statute_of_limitations:
+          anyOf:
+          - $ref: '#/components/schemas/ClioStatuteOfLimitations'
+          - type: 'null'
+        originating_attorney:
+          anyOf:
+          - $ref: '#/components/schemas/ClioNamedRef'
+          - type: 'null'
+        responsible_attorney:
+          anyOf:
+          - $ref: '#/components/schemas/ClioNamedRef'
+          - type: 'null'
+        responsible_staff:
+          anyOf:
+          - $ref: '#/components/schemas/ClioNamedRef'
+          - type: 'null'
+        folder:
+          anyOf:
+          - $ref: '#/components/schemas/ClioIdNameRef'
+          - type: 'null'
+        group:
+          anyOf:
+          - $ref: '#/components/schemas/ClioIdNameRef'
+          - type: 'null'
+        relationships:
+          items:
+            $ref: '#/components/schemas/ClioRelationship'
+          type: array
+          title: Relationships
+          default: []
+        custom_field_values:
+          items:
+            $ref: '#/components/schemas/ClioCustomFieldValue'
+          type: array
+          title: Custom Field Values
+          default: []
+        updated_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Updated At
+      type: object
+      required:
+      - id
+      - display_number
+      - description
+      - status
+      title: ClioMatter
+      description: A single matter from the Clio API.
+    DownloadDocumentResult:
+      properties:
+        external_id:
+          type: string
+          title: External Id
+        blob_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Blob Name
+        hash:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Hash
+        original_filename:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Original Filename
+        content_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Content Type
+        size:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Size
+        error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error
+      type: object
+      required:
+      - external_id
+      title: DownloadDocumentResult
+      description: Result of downloading a single document to Azure.
+    OutlookLinkStatusResponse:
+      properties:
+        matter_id:
+          type: string
+          title: Matter Id
+        state:
+          type: string
+          title: State
+          description: not_connected | syncing | synced | failed
+        mailbox_address:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Mailbox Address
+        folder_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Folder Id
+          description: Graph folder id, so the picker can reopen on the current selection
+        folder_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Folder Path
+        last_synced_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Synced At
+        email_count:
+          type: integer
+          title: Email Count
+          default: 0
+        error_message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error Message
+      type: object
+      required:
+      - matter_id
+      - state
+      title: OutlookLinkStatusResponse
+      description: 'A matter''s Outlook connection, as the UI renders it.
+
+
+        ``state`` mirrors the frontend''s union exactly — ``not_connected`` covers
+
+        both "no folder linked" and "the user has no Microsoft connection", because
+
+        the row treats them the same.'
+    PartyEntry:
+      properties:
+        name:
+          type: string
+          title: Name
+          default: ''
+        roles:
+          items:
+            type: string
+          type: array
+          title: Roles
+        client:
+          type: boolean
+          title: Client
+          description: Marks this party as a client of the firm on this matter. Multiple parties may be flagged client=True to represent joint clients. The legacy party_role / party_name columns are derived from the first client-flagged party only; they are left unset (party_role='N/A', party_name=None) when no party is flagged. Consumers that need all clients should read the full parties array.
+          default: false
+      type: object
+      title: PartyEntry
+      description: A single party entry with name and roles.
+    LinkOutlookFolderRequest:
+      properties:
+        matter_id:
+          type: string
+          title: Matter Id
+        folder_id:
+          type: string
+          title: Folder Id
+          description: Graph mail folder id
+        folder_path:
+          type: string
+          title: Folder Path
+          description: Display path, cached for the UI
+      type: object
+      required:
+      - matter_id
+      - folder_id
+      - folder_path
+      title: LinkOutlookFolderRequest
+      description: Link one Outlook folder to a matter.
+    ClioCustomFieldValue:
+      properties:
+        field_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Field Name
+        value:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Value
+      type: object
+      title: ClioCustomFieldValue
+      description: "A single custom field value from a Clio matter.\n\nClio custom fields can return different JSON types depending on the\n``field_type`` configured in Clio:\n\n- ``text_line``, ``text_area``, ``date``, ``url``, ``email``, ``picklist``\n  → ``string`` (handled natively)\n- ``numeric``, ``currency`` → ``number`` (coerced to str by the validator below)\n- ``checkbox`` → ``boolean``\n- ``multi_picklist`` → ``array`` of strings\n- ``contact``, ``matter`` → ``object`` with ``id`` + ``name``/``display_number``\n\nThe validator below coerces all non-string types to ``str`` so that a\nsingle unexpected field type never crashes the entire matter parse."
+    ConnectionListResponse:
+      properties:
+        connections:
+          items:
+            $ref: '#/components/schemas/ConnectionStatus'
+          type: array
+          title: Connections
+      type: object
+      required:
+      - connections
+      title: ConnectionListResponse
+      description: Response for listing all active connections for a user.
+    DownloadIntegrationDocumentsRequest:
+      properties:
+        provider:
+          type: string
+          title: Provider
+        documents:
+          items:
+            $ref: '#/components/schemas/DownloadDocumentItem'
+          type: array
+          maxItems: 20
+          minItems: 1
+          title: Documents
+        matter_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Matter Id
+          description: StrongSuit matter ID — when provided, downloaded docs are recorded in integration_document_links for sync tracking
+      type: object
+      required:
+      - provider
+      - documents
+      title: DownloadIntegrationDocumentsRequest
+      description: Request body for downloading documents from an integration provider.
+    ClioParseWarning:
+      properties:
+        matter_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Matter Id
+        display_number:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Display Number
+        detail:
+          type: string
+          title: Detail
+      type: object
+      required:
+      - detail
+      title: ClioParseWarning
+      description: A matter that could not be parsed from Clio.
+    GraphMailFolder:
+      properties:
+        id:
+          type: string
+          title: Id
+        name:
+          type: string
+          title: Name
+        path:
+          type: string
+          title: Path
+          description: Full display path, e.g. 'Inbox / Clients / Smith'
+        parent_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Parent Id
+        message_count:
+          type: integer
+          title: Message Count
+          description: Messages directly in this folder
+          default: 0
+        total_message_count:
+          type: integer
+          title: Total Message Count
+          description: Messages in this folder and everything beneath it
+          default: 0
+      type: object
+      required:
+      - id
+      - name
+      - path
+      title: GraphMailFolder
+      description: One mail folder, as the picker needs it.
+    ImportWarning:
+      properties:
+        external_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: External Id
+        label:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Label
+        detail:
+          type: string
+          title: Detail
+      type: object
+      required:
+      - detail
+      title: ImportWarning
+      description: An item that could not be imported from the provider.
+    MatterEmailsResponse:
+      properties:
+        emails:
+          items:
+            $ref: '#/components/schemas/MatterEmail'
+          type: array
+          title: Emails
+        total_count:
+          type: integer
+          title: Total Count
+          description: Total in the matter, ignoring any active search
+        row_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Row Count
+          description: 'Rows the pagination walks: reply threads, or matching emails while searching. Set only on a paged request.'
+      type: object
+      required:
+      - emails
+      - total_count
+      title: MatterEmailsResponse
+      description: A page of a matter's synced emails.
+    MatterEmail:
+      properties:
+        id:
+          type: string
+          title: Id
+        subject:
+          type: string
+          title: Subject
+        from_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: From Name
+        from_address:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: From Address
+        received_at:
+          type: string
+          title: Received At
+        web_link:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Web Link
+        source_mailbox:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Source Mailbox
+        source_folder_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Source Folder Path
+        document_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Document Id
+        conversation_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Conversation Id
+        attachments:
+          anyOf:
+          - $ref: '#/components/schemas/MatterEmailAttachments'
+          - type: 'null'
+      type: object
+      required:
+      - id
+      - subject
+      - received_at
+      title: MatterEmail
+      description: One synced email, as the matter's emails list renders it.
+    OutlookSyncStartedResponse:
+      properties:
+        workflow_id:
+          type: string
+          title: Workflow Id
+        status:
+          type: string
+          title: Status
+          description: started | already_running
+      type: object
+      required:
+      - workflow_id
+      - status
+      title: OutlookSyncStartedResponse
+      description: Acknowledgement that a sync is under way.
+    ClioDocumentsResponse:
+      properties:
+        documents:
+          items:
+            $ref: '#/components/schemas/ClioDocument'
+          type: array
+          title: Documents
+        total_count:
+          type: integer
+          title: Total Count
+        has_more:
+          type: boolean
+          title: Has More
+        next_page_token:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Next Page Token
+      type: object
+      required:
+      - documents
+      - total_count
+      - has_more
+      title: ClioDocumentsResponse
+      description: Paginated list of Clio documents.
+    OutlookFoldersResponse:
+      properties:
+        folders:
+          items:
+            $ref: '#/components/schemas/GraphMailFolder'
+          type: array
+          title: Folders
+      type: object
+      required:
+      - folders
+      title: OutlookFoldersResponse
+      description: Response for the folder-tree endpoint.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    StartClioDocumentImportRequest:
+      properties:
+        matter_id:
+          type: string
+          title: Matter Id
+          description: StrongSuit matter ID
+        external_matter_id:
+          type: string
+          title: External Matter Id
+          description: Clio matter ID
+      type: object
+      required:
+      - matter_id
+      - external_matter_id
+      title: StartClioDocumentImportRequest
+      description: Request body for triggering a bulk Clio document import.
+    ClioIdNameRef:
+      properties:
+        id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Id
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+      type: object
+      title: ClioIdNameRef
+      description: A Clio object with both id and name (e.g. group with member lookup).
+    ClioStatuteOfLimitations:
+      properties:
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+        due_at:
+          anyOf:
+          - type: string
+            format: date
+          - type: 'null'
+          title: Due At
+      type: object
+      title: ClioStatuteOfLimitations
+      description: Statute of limitations from a Clio matter.
+    ClioContact:
+      properties:
+        id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Id
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+        first_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: First Name
+        last_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Name
+        type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Type
+        primary_email_address:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Primary Email Address
+        primary_phone_number:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Primary Phone Number
+      type: object
+      title: ClioContact
+      description: Parsed client contact from a Clio matter.
+    ConnectionStatus:
+      properties:
+        connected:
+          type: boolean
+          title: Connected
+        provider:
+          type: string
+          title: Provider
+        provider_user_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Provider User Id
+        provider_email:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Provider Email
+        connected_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Connected At
+      type: object
+      required:
+      - connected
+      - provider
+      title: ConnectionStatus
+      description: Public-facing connection status returned to the frontend.
+    ClientInput:
+      properties:
+        first_name:
+          type: string
+          minLength: 1
+          title: First Name
+        last_name:
+          type: string
+          minLength: 1
+          title: Last Name
+        email:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Email
+        phone:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Phone
+        company_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Company Name
+        role:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Role
+      type: object
+      required:
+      - first_name
+      - last_name
+      title: ClientInput
+      description: Client input for matter creation (no id).
+    MatterEmailAttachments:
+      properties:
+        total:
+          type: integer
+          title: Total
+        extracted:
+          type: integer
+          title: Extracted
+        skipped:
+          items:
+            $ref: '#/components/schemas/MatterEmailSkippedAttachment'
+          type: array
+          title: Skipped
+      type: object
+      required:
+      - total
+      - extracted
+      title: MatterEmailAttachments
+      description: 'How an email''s attachments were handled at ingestion.
+
+
+        ``skipped`` carries each left-out file with its reason, so an attachment the
+
+        user can see in Outlook but not in the matter is explained rather than missing.'
+    MatterSyncStatusResponse:
+      properties:
+        external_updated_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: External Updated At
+        last_synced_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Synced At
+        has_updates:
+          type: boolean
+          title: Has Updates
+          default: false
+        has_new_documents:
+          type: boolean
+          title: Has New Documents
+          default: false
+        new_document_count:
+          type: integer
+          title: New Document Count
+          default: 0
+        has_outdated_documents:
+          type: boolean
+          title: Has Outdated Documents
+          default: false
+        outdated_document_count:
+          type: integer
+          title: Outdated Document Count
+          default: 0
+        doc_check_failed:
+          type: boolean
+          title: Doc Check Failed
+          default: false
+      type: object
+      title: MatterSyncStatusResponse
+      description: Response for the sync status check endpoint.
+    MatterEmailSkippedAttachment:
+      properties:
+        name:
+          type: string
+          title: Name
+        reason:
+          type: string
+          title: Reason
+        size:
+          type: integer
+          title: Size
+          default: 0
+      type: object
+      required:
+      - name
+      - reason
+      title: MatterEmailSkippedAttachment
+      description: One attachment that did not become a document, and why.
+    EnrichMatterRequest:
+      properties:
+        provider:
+          type: string
+          title: Provider
+        external_id:
+          type: string
+          title: External Id
+      type: object
+      required:
+      - provider
+      - external_id
+      title: EnrichMatterRequest
+      description: Request body for the enrich endpoint.
+    ClioMattersResponse:
+      properties:
+        matters:
+          items:
+            $ref: '#/components/schemas/ClioMatter'
+          type: array
+          title: Matters
+        total_count:
+          type: integer
+          title: Total Count
+        has_more:
+          type: boolean
+          title: Has More
+        warnings:
+          items:
+            $ref: '#/components/schemas/ClioParseWarning'
+          type: array
+          title: Warnings
+      type: object
+      required:
+      - matters
+      - total_count
+      - has_more
+      title: ClioMattersResponse
+      description: Paginated list of Clio matters.
+    ImportableDocumentsResponse:
+      properties:
+        documents:
+          items:
+            $ref: '#/components/schemas/ImportableDocument'
+          type: array
+          title: Documents
+        folders:
+          items:
+            $ref: '#/components/schemas/ImportableFolder'
+          type: array
+          title: Folders
+        unassigned_folders:
+          items:
+            $ref: '#/components/schemas/ImportableFolder'
+          type: array
+          title: Unassigned Folders
+        client:
+          anyOf:
+          - $ref: '#/components/schemas/ImportableContact'
+          - type: 'null'
+        related_contacts:
+          items:
+            $ref: '#/components/schemas/ImportableContact'
+          type: array
+          title: Related Contacts
+        matter_folder_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Matter Folder Id
+        total_count:
+          type: integer
+          title: Total Count
+        has_more:
+          type: boolean
+          title: Has More
+        next_page_token:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Next Page Token
+        imported_doc_ids:
+          items:
+            type: string
+          type: array
+          title: Imported Doc Ids
+        outdated_doc_ids:
+          items:
+            type: string
+          type: array
+          title: Outdated Doc Ids
+      type: object
+      required:
+      - documents
+      - total_count
+      - has_more
+      title: ImportableDocumentsResponse
+      description: Paginated list of importable documents from a single provider.
+    OutlookSyncProgressResponse:
+      properties:
+        phase:
+          type: string
+          title: Phase
+          description: idle | listing | downloading | registering | completed | failed
+        total_messages:
+          type: integer
+          title: Total Messages
+          default: 0
+        synced:
+          type: integer
+          title: Synced
+          default: 0
+        failed:
+          type: integer
+          title: Failed
+          default: 0
+        truncated:
+          type: boolean
+          title: Truncated
+          default: false
+        message:
+          type: string
+          title: Message
+          default: ''
+      type: object
+      required:
+      - phase
+      title: OutlookSyncProgressResponse
+      description: 'Live progress of a running sync, for the first backfill.
+
+
+        ``phase`` is ``idle`` once Temporal no longer holds the run — the workflow
+
+        is reaped after it completes, and the durable outcome lives on the link.'
+    ImportableFolder:
+      properties:
+        provider:
+          type: string
+          title: Provider
+        external_id:
+          type: string
+          title: External Id
+        name:
+          type: string
+          title: Name
+        document_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Document Count
+      type: object
+      required:
+      - provider
+      - external_id
+      - name
+      title: ImportableFolder
+      description: A folder from an external provider, shaped for folder browsing.
+    ClioRelationship:
+      properties:
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+      type: object
+      title: ClioRelationship
+      description: A relationship entry from a Clio matter.
+    ClioNamedRef:
+      properties:
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+      type: object
+      title: ClioNamedRef
+      description: A Clio object with just a name (matter_stage, folder, group, attorneys).
+    ImportableMattersResponse:
+      properties:
+        matters:
+          items:
+            $ref: '#/components/schemas/ImportableMatter'
+          type: array
+          title: Matters
+        clients:
+          items:
+            $ref: '#/components/schemas/ImportableContact'
+          type: array
+          title: Clients
+        total_count:
+          type: integer
+          title: Total Count
+        has_more:
+          type: boolean
+          title: Has More
+        warnings:
+          items:
+            $ref: '#/components/schemas/ImportWarning'
+          type: array
+          title: Warnings
+      type: object
+      required:
+      - matters
+      - total_count
+      - has_more
+      title: ImportableMattersResponse
+      description: Paginated list of importable matters from a single provider.
+    ClioDocument:
+      properties:
+        id:
+          type: integer
+          title: Id
+        name:
+          type: string
+          title: Name
+        content_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Content Type
+        created_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Created At
+        updated_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Updated At
+        parent:
+          anyOf:
+          - $ref: '#/components/schemas/ClioIdNameRef'
+          - type: 'null'
+        latest_document_version:
+          anyOf:
+          - $ref: '#/components/schemas/ClioDocumentVersion'
+          - type: 'null'
+      type: object
+      required:
+      - id
+      - name
+      title: ClioDocument
+      description: A single document from the Clio API.
+    ClioPracticeArea:
+      properties:
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+        category:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category
+      type: object
+      title: ClioPracticeArea
+      description: Parsed practice area from a Clio matter.
+    DownloadIntegrationDocumentsResponse:
+      properties:
+        results:
+          items:
+            $ref: '#/components/schemas/DownloadDocumentResult'
+          type: array
+          title: Results
+      type: object
+      required:
+      - results
+      title: DownloadIntegrationDocumentsResponse
+      description: Response for the batch document download endpoint.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError

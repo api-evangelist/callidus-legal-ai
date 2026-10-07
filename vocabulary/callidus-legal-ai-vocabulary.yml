@@ -1,0 +1,420 @@
+generated: '2026-10-06'
+method: derived
+generator: derive-vocabulary.py
+source: openapi/callidus-legal-ai-openapi.json
+vocabulary:
+  name: Callidus Legal AI Domain Vocabulary
+  description: 'Terms declared by Callidus Legal AI''s own API contract: its resource groups, objects and enumerations, with the contract''s definitions.
+    Derived, not authored.'
+  version: '2026-10-06'
+  terms:
+  - term: ADStepResponse
+    definition: 'Object declared by the contract with fields: status, suggestion, selection.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/ADStepResponse
+  - term: AICaseSearch
+    definition: 'Object declared by the contract with fields: query.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AICaseSearch
+  - term: AccountBalanceListResponse
+    definition: List response for account balances
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AccountBalanceListResponse
+  - term: AccountBalanceResponse
+    definition: Response model for account balances
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AccountBalanceResponse
+  - term: AccountSummaryResponse
+    definition: Summary statistics for an account
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AccountSummaryResponse
+  - term: AccountValueListResponse
+    definition: List response for account values
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AccountValueListResponse
+  - term: AccountValueResponse
+    definition: Response model for account values
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AccountValueResponse
+  - term: ActAsCandidate
+    definition: A user the switcher can offer, and whether it can actually be chosen.
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/ActAsCandidate
+  - term: ActAsRequest
+    definition: 'Object declared by the contract with fields: target_user_id.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/ActAsRequest
+  - term: ActAsResponse
+    definition: A customer-scoped access token. No refresh token, by design; see ``act_as``.
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/ActAsResponse
+  - term: ActAsSearchRequest
+    definition: 'Object declared by the contract with fields: query.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/ActAsSearchRequest
+  - term: ActAsSearchResponse
+    definition: 'Object declared by the contract with fields: users, has_more.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/ActAsSearchResponse
+  - term: AdAuthorityStepResponse
+    definition: 'Object declared by the contract with fields: status, suggestion, selection.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AdAuthorityStepResponse
+  - term: AddADRequest
+    definition: 'Object declared by the contract with fields: name.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddADRequest
+  - term: AddAdAuthorityRequest
+    definition: 'Object declared by the contract with fields: authority_name, bluebook, description.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddAdAuthorityRequest
+  - term: AddAuthorityRequest
+    definition: 'Object declared by the contract with fields: authority_name, bluebook, description.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddAuthorityRequest
+  - term: AddCOARequest
+    definition: 'Object declared by the contract with fields: cause_of_action_name, court_scope.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddCOARequest
+  - term: AddCasesRequest
+    definition: 'Object declared by the contract with fields: db_caselaw_case_ids.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddCasesRequest
+  - term: AddDocumentRequest
+    definition: 'Object declared by the contract with fields: filename, hash, original_filename, task_id, lr, matter_id, source, chunking_strategy,
+      file_content_type, purpose, archive_member_names_url_encoded, archive_member_path_prefix. (5 more)'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddDocumentRequest
+  - term: AddDocumentResponse
+    definition: 'Object declared by the contract with fields: success, document_id, task_linked, matter_linked.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddDocumentResponse
+  - term: AddDocumentToMatterRequest
+    definition: 'Object declared by the contract with fields: doc_id, matter_id.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddDocumentToMatterRequest
+  - term: AddDocumentToMatterResponse
+    definition: Response for add-document-to-matter. Includes whether the link already existed.
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddDocumentToMatterResponse
+  - term: AddDocumentToTaskRequest
+    definition: 'Object declared by the contract with fields: doc_id, task_id.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddDocumentToTaskRequest
+  - term: AddDocumentToTaskResponse
+    definition: Response for add-document-to-task. Includes whether the link already existed.
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddDocumentToTaskResponse
+  - term: AddDocumentsToMatterRequest
+    definition: 'Object declared by the contract with fields: doc_ids, matter_id.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddDocumentsToMatterRequest
+  - term: AddDocumentsToMatterResponse
+    definition: 'Object declared by the contract with fields: success, added, already_linked.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddDocumentsToMatterResponse
+  - term: AddDocumentsToTaskRequest
+    definition: 'Object declared by the contract with fields: doc_ids, task_id, batch_id.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddDocumentsToTaskRequest
+  - term: AddDocumentsToTaskResponse
+    definition: 'Object declared by the contract with fields: success, added, already_linked, failed.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddDocumentsToTaskResponse
+  - term: AddDocumentsV2Request
+    definition: 'Request for POST /document/add-documents-v2: fire-and-forget manifest-based registration.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddDocumentsV2Request
+  - term: AddDocumentsV2Response
+    definition: Response for POST /document/add-documents-v2.
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddDocumentsV2Response
+  - term: AddFoldersToMatterRequest
+    definition: 'Object declared by the contract with fields: matter_id, folder_ids, doc_ids, target_directory_id, include_subfolders.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddFoldersToMatterRequest
+  - term: AddFoldersToMatterResponse
+    definition: 'Object declared by the contract with fields: added_doc_count, folder_count, skipped_count.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddFoldersToMatterResponse
+  - term: AddFoldersToTaskRequest
+    definition: Expand folders server-side and link the resulting docs to a task (ENG-22527).
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddFoldersToTaskRequest
+  - term: AddFoldersToTaskResponse
+    definition: 'Object declared by the contract with fields: success, added, already_linked, resolved_doc_count, resolved_doc_ids.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddFoldersToTaskResponse
+  - term: AddKeyQuestionRequest
+    definition: 'Object declared by the contract with fields: question, question_label.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddKeyQuestionRequest
+  - term: AddParagraphRequest
+    definition: 'Object declared by the contract with fields: text, persuasive_text, favorability.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddParagraphRequest
+  - term: AddSubQuestionRequest
+    definition: 'Object declared by the contract with fields: question, question_label.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddSubQuestionRequest
+  - term: AddTeamMembersRequest
+    definition: Request body for adding team members to a matter.
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddTeamMembersRequest
+  - term: AddTeamMembersResponse
+    definition: Response with per-member statuses for add team members operations.
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddTeamMembersResponse
+  - term: AddinBatchVerifyCitationsRequest
+    definition: Request model for batch citation verification endpoint. Extracts and verifies all citations in a document (no specific citation
+      required). Frontend sends paragraphs directly - no need to split text. Citation details are extracted later.
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddinBatchVerifyCitationsRequest
+  - term: AddinCaseChatRequest
+    definition: Request model for case chat endpoint.
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddinCaseChatRequest
+  - term: AddinCaseDetailsResponse
+    definition: Response model for case details from HydratedDisposition.
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddinCaseDetailsResponse
+  - term: AddinCaseLookupRequest
+    definition: Request model for unified case lookup endpoint.
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddinCaseLookupRequest
+  - term: AddinCaseSearchRequest
+    definition: Request model for add-in case search using deep search.
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddinCaseSearchRequest
+  - term: AddinCaseSearchResponse
+    definition: Response model for add-in case search results endpoint.
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddinCaseSearchResponse
+  - term: AddinCaseSearchResult
+    definition: Case search result formatted for add-in frontend.
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddinCaseSearchResult
+  - term: AddinCaseSearchWithFiltersRequest
+    definition: Request model for filtered add-in case search.
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddinCaseSearchWithFiltersRequest
+  - term: AddinDraftInputs
+    definition: 'Object declared by the contract with fields: paragraphs.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddinDraftInputs
+  - term: AddinFilteredCaseSearchRequest
+    definition: 'Object declared by the contract with fields: query, jurisdiction, year_start, year_end, court_level, area_of_law, subcategory.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddinFilteredCaseSearchRequest
+  - term: AddinFindByCaseNameRequest
+    definition: Request model for finding case by name.
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddinFindByCaseNameRequest
+  - term: AddinGenerateOutline
+    definition: 'Object declared by the contract with fields: document, paragraphs, conversation_id, usage_data.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddinGenerateOutline
+  - term: AddinLiveEditing
+    definition: Request model for conversational document editing. Takes user message and paragraphs, returns either conversational response or
+      edits.
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddinLiveEditing
+  - term: AddinNamesAndDefinitions
+    definition: 'Object declared by the contract with fields: document.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddinNamesAndDefinitions
+  - term: AddinNegotiate
+    definition: 'Object declared by the contract with fields: paragraphs, industry, parties, text, contract_text, term_text, question, rewrite_type,
+      custom_instructions, representing_party.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddinNegotiate
+  - term: AddinProofRead
+    definition: 'Object declared by the contract with fields: document, paragraphs, ai_strength, query, mode, legal_authorities, add_points, document_type,
+      concise_robust, standard_grammar, clarity, legal_writing_lens. (8 more)'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddinProofRead
+  - term: AddinReferenceDoc
+    definition: 'Object declared by the contract with fields: document, paragraphs, outline, contract_type, industry, party1, party1_defined,
+      party2, party2_defined, governing_law, general_guidance, favor_level. (7 more)'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddinReferenceDoc
+  - term: AddinVerifyCitationRequest
+    definition: 'Unified request model for citation and case name verification. Supports three verification modes: 1. Citation verification (with
+      optional pincite validation) 2. Case name verification 3. Both citation and case name (verifies they match the same case) At least one of
+      citation or case_name must be provided.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AddinVerifyCitationRequest
+  - term: AdminCaseAnalysisArtifactsResponse
+    definition: 'Object declared by the contract with fields: analysis_id, tasks.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AdminCaseAnalysisArtifactsResponse
+  - term: AdminCaseAnalysisDetailResponse
+    definition: 'Object declared by the contract with fields: analysis_id, executions, tasks.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AdminCaseAnalysisDetailResponse
+  - term: AdminCaseAnalysisItem
+    definition: 'Object declared by the contract with fields: analysis_id, matter_id, matter_name, user_id, stage, error, workflow_kicked_off,
+      tasks_complete, tasks_total, created_at, updated_at, tasks.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AdminCaseAnalysisItem
+  - term: AdminCaseAnalysisOverviewResponse
+    definition: 'Object declared by the contract with fields: items, total, page, page_size.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AdminCaseAnalysisOverviewResponse
+  - term: AdminCaseAnalysisTaskSummary
+    definition: 'Object declared by the contract with fields: task_type, status, error, started_at, completed_at.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AdminCaseAnalysisTaskSummary
+  - term: AdminCreateSkillRequest
+    definition: Admin request to create a public, reviewed skill owned by the system account.
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AdminCreateSkillRequest
+  - term: AdminFailedDocItem
+    definition: One FAILED_NO_RETRY DocHub file for the admin failed-ingest tool.
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AdminFailedDocItem
+  - term: AdminFailedDocsUser
+    definition: Customer whose FAILED_NO_RETRY docs are listed.
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AdminFailedDocsUser
+  - term: AdminFailedIngestDownloadItem
+    definition: 'Object declared by the contract with fields: id, name, url, expires_at.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AdminFailedIngestDownloadItem
+  - term: AdminFailedIngestDownloadRequest
+    definition: 'Object declared by the contract with fields: target_user_id, document_ids.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AdminFailedIngestDownloadRequest
+  - term: AdminFailedIngestDownloadResponse
+    definition: 'Object declared by the contract with fields: items, skipped.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AdminFailedIngestDownloadResponse
+  - term: AdminFailedIngestListResponse
+    definition: 'Object declared by the contract with fields: user, documents, total_failed, retryable_count, permanent_count, empty_blob_count,
+      alias_count, truncated.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AdminFailedIngestListResponse
+  - term: AdminFailedIngestRequeueRequest
+    definition: 'Object declared by the contract with fields: target_user_id, document_ids.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AdminFailedIngestRequeueRequest
+  - term: AdminFailedIngestRequeueResponse
+    definition: 'Object declared by the contract with fields: requeued, skipped.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AdminFailedIngestRequeueResponse
+  - term: AdminFailedIngestSkip
+    definition: 'Object declared by the contract with fields: id, reason.'
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AdminFailedIngestSkip
+  - term: AdminIngestHealthCompleted
+    definition: INGEST jobs that reached a terminal state inside the window.
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AdminIngestHealthCompleted
+  - term: AdminIngestHealthQueue
+    definition: Current INGEST queue shape — depth, wait, concentration and stall signals.
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AdminIngestHealthQueue
+  - term: AdminIngestHealthResponse
+    definition: Platform-wide Doc Hub ingestion health for the alerting monitor.
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AdminIngestHealthResponse
+  - term: AdminSetSkillHiddenRequest
+    definition: Admin request to set whether a skill's prompt is hidden from non-creators.
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AdminSetSkillHiddenRequest
+  - term: AdminUpdateSkillRequest
+    definition: Admin partial update that creates the next immutable skill version.
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AdminUpdateSkillRequest
+  - term: AdminUploadSummaryResponse
+    definition: Upload outcomes for one customer over a time window (Doc Hub alert triage).
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AdminUploadSummaryResponse
+  - term: AdultAllocationMember
+    definition: Share percentages for one adult (maps to taxpayers table).
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AdultAllocationMember
+  - term: AffectedMatter
+    definition: A matter that at least one about-to-be-deleted file is linked to.
+    tags:
+    - Object
+    source: openapi/callidus-legal-ai-openapi.json#/components/schemas/AffectedMatter

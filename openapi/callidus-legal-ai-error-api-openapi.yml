@@ -1,0 +1,117 @@
+openapi: 3.2.0
+info:
+  title: CallidusAI Error API
+  description: Callidus AI backend API
+  version: 0.1.0
+tags:
+- name: error
+paths:
+  /error/json:
+    post:
+      tags:
+      - error
+      summary: Json Error
+      description: Raises a 400 or 500 error in JSON format.
+      operationId: json_error_error_json_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorModel'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /error/streamed:
+    post:
+      tags:
+      - error
+      summary: Streamed Error
+      description: 'Raises a 400 or 500 error in streamed format.
+
+
+        Opens a stream and raises a 400 or 500 error immediately. Then wait 1 second, optionally resets the stream, and finally closes the stream.'
+      operationId: streamed_error_error_streamed_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorModel'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    ErrorModel:
+      properties:
+        status_code:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Status Code
+          description: The status code of the error either 400 or 500.
+        stream_action:
+          anyOf:
+          - type: string
+            enum:
+            - reset
+            - close
+          - type: 'null'
+          title: Stream Action
+          description: The action to perform after raising the error. Either just close the stream, or reset the stream and then close it.
+      type: object
+      title: ErrorModel
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError

@@ -1,0 +1,24 @@
+openapi: 3.2.0
+info:
+  title: CallidusAI API
+  description: Callidus AI backend API
+  version: 0.1.0
+tags:
+- name: CallidusAI API
+paths:
+  /:
+    get:
+      summary: Helloworld
+      operationId: helloworld__get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+                title: Response Helloworld  Get
+      tags:
+      - CallidusAI API

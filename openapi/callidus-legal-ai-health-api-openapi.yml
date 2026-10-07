@@ -1,0 +1,122 @@
+openapi: 3.2.0
+info:
+  title: CallidusAI Health API
+  description: Callidus AI backend API
+  version: 0.1.0
+tags:
+- name: Health
+paths:
+  /health:
+    get:
+      summary: Healthcheck
+      operationId: healthcheck_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+                title: Response Healthcheck Health Get
+      tags:
+      - Health
+  /health/temporal-workers:
+    get:
+      tags:
+      - Health
+      summary: Temporal Workers Aggregate Health
+      description: 'Check each configured Temporal worker base URL''s ``GET /ready``.
+
+
+        **Configuration:** set env ``TEMPORAL_WORKER_HEALTH_BASE_URLS`` to a comma-separated list of
+
+        HTTPS bases (no path), e.g. both law and order for each worker type:
+
+
+        ``https://temporal-file-processor-law....io,https://temporal-file-processor-order....io,...``
+
+
+        **Pass rule (blue/green):** for each worker family (e.g. ``file-processor`` derived from the
+
+        hostname), **at least one** side must return JSON ``{ "ready": true }``. Standalone sides that
+
+        are intentionally standby will not be ready; the opposite color must be polling Temporal.
+
+
+        **Auth:** ``TEMPORAL_AGGREGATE_HEALTH_TOKEN`` must be set to a non-empty secret; send header
+
+        ``Authorization: Bearer `` on every request. If the env var is missing or blank, this
+
+        endpoint returns ``503`` with an empty JSON body.
+
+
+        **Status codes:** ``200`` if every family has at least one ready worker; ``503`` if workers are
+
+        unhealthy or if ``TEMPORAL_AGGREGATE_HEALTH_TOKEN`` is not configured (empty body in the
+
+        latter case).
+
+        If ``TEMPORAL_WORKER_HEALTH_BASE_URLS`` is unset, returns ``200`` with ``status: disabled``
+
+        (still requires a valid Bearer token).'
+      operationId: temporal_workers_aggregate_health_health_temporal_workers_get
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError

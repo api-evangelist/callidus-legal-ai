@@ -1,0 +1,23 @@
+openapi: 3.2.0
+info:
+  title: CallidusAI Summarize Full Details API
+  description: Callidus AI backend API
+  version: 0.1.0
+tags:
+- name: Summarize Full Details
+paths:
+  /summarize_full_details:
+    post:
+      summary: Summarize Full Details
+      operationId: summarize_full_details_summarize_full_details_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Summarize Full Details Summarize Full Details Post
+      tags:
+      - Summarize Full Details

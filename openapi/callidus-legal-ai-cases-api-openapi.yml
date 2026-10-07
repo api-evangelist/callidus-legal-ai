@@ -1,0 +1,2699 @@
+openapi: 3.2.0
+info:
+  title: CallidusAI Cases API
+  description: Callidus AI backend API
+  version: 0.1.0
+tags:
+- name: Cases
+paths:
+  /cases/find-by-citation:
+    post:
+      tags:
+      - Cases
+      summary: Find Case By Citation
+      description: 'Find a case by citation text directly.
+
+
+        Also extracts pincite information (specific page references) if present
+
+        in the citation.
+
+
+        Args:
+
+        request: Citation text to look up.
+
+        session: Redis session dictionary.
+
+        case_name: Optional expected case name. When provided, the DB
+
+        result is validated against this name to avoid returning a
+
+        wrong case (e.g. when a short-form pincite matches the wrong
+
+        opinion in the same volume).'
+      operationId: find_case_by_citation_cases_find_by_citation_post
+      parameters:
+      - name: case_name
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Case Name
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FindByCitationRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                anyOf:
+                - type: object
+                  additionalProperties: true
+                - type: 'null'
+                title: Response Find Case By Citation Cases Find By Citation Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /cases/find-by-case-name:
+    post:
+      tags:
+      - Cases
+      summary: Find Case By Name
+      description: 'Find a case by case name (mirrors find_case_by_citation structure).
+
+
+        Returns single case details using HydratedDisposition.
+
+        Designed to mainly be used by the add-in litigation endpoints.'
+      operationId: find_case_by_name_cases_find_by_case_name_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddinFindByCaseNameRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                anyOf:
+                - $ref: '#/components/schemas/AddinCaseDetailsResponse'
+                - type: 'null'
+                title: Response Find Case By Name Cases Find By Case Name Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /cases/addin_case_lookup:
+    post:
+      tags:
+      - Cases
+      summary: Addin Case Lookup
+      description: 'Unified case lookup endpoint that auto-detects query type and routes appropriately.
+
+
+        Uses QueryParser to detect if query is a citation or case name,
+
+        then routes to the appropriate lookup function.
+
+
+        Add-In Case Lookup endpoint designed to mainly be used by the add-in litigation endpoints.
+
+
+        Args:
+
+        request: Contains query string (can be citation or case name)
+
+        session: Redis session dictionary
+
+
+        Returns:
+
+        Case details response model or None if not found'
+      operationId: addin_case_lookup_cases_addin_case_lookup_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddinCaseLookupRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                anyOf:
+                - $ref: '#/components/schemas/AddinCaseDetailsResponse'
+                - type: 'null'
+                title: Response Addin Case Lookup Cases Addin Case Lookup Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /cases/search-citation:
+    get:
+      tags:
+      - Cases
+      summary: Search Cases By Citation
+      description: 'Search for cases by citation string and return raw case metadata.
+
+
+        This endpoint performs exact and fuzzy matching on citation strings
+
+        and returns case metadata including court_name and year_filed.
+
+
+        Public endpoint - no authentication required.'
+      operationId: search_cases_by_citation_cases_search_citation_get
+      parameters:
+      - name: citation
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Citation string to search for (e.g., '123 F.3d 456')
+          title: Citation
+        description: Citation string to search for (e.g., '123 F.3d 456')
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          description: Maximum number of results to return
+          default: 10
+          title: Limit
+        description: Maximum number of results to return
+      - name: threshold
+        in: query
+        required: false
+        schema:
+          type: number
+          maximum: 1.0
+          minimum: 0.0
+          description: Similarity threshold for fuzzy matching
+          default: 0.3
+          title: Threshold
+        description: Similarity threshold for fuzzy matching
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CitationSearchResult'
+                title: Response Search Cases By Citation Cases Search Citation Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /cases/search-openlaws:
+    post:
+      tags:
+      - Cases
+      summary: Search Openlaws Authorities
+      description: 'Standalone OpenLaws statute/regulation search for the case-search module.
+
+
+        Restores the search the frontend lost when #5286 removed the legacy
+
+        /legal_research/legal_authorities/search_openlaws route. Intentionally NOT research-scoped —
+
+        the case-search statute tab has no matter context — and reuses the maintained OpenLaws
+
+        resource rather than the deleted legacy httpx helpers.'
+      operationId: search_openlaws_authorities_cases_search_openlaws_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthoritySearchRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthoritySearchResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /cases/full-text:
+    post:
+      tags:
+      - Cases
+      summary: Get Case Full Text
+      description: 'Retrieve the full text HTML with citations for a case from CourtListener.
+
+
+        Args:
+
+        request: FindCasesRequest containing the cluster_id of the case
+
+
+        Returns:
+
+        The HTML with citations or None if not available'
+      operationId: get_case_full_text_cases_full_text_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FindCasesRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /cases/find:
+    post:
+      tags:
+      - Cases
+      summary: Find Cases
+      description: 'Find cases by query text.
+
+
+        This endpoint searches for cases matching the query text and returns
+
+        a list of matching cases with their metadata.'
+      operationId: find_cases_cases_find_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FindCasesRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Find Cases Cases Find Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /cases/find-cases-by-hd:
+    post:
+      tags:
+      - Cases
+      summary: Find Cases By Hydrated Disposition
+      description: 'Find cases by cluster_id using HydratedDisposition (add-in litigation endpoint).
+
+
+        This endpoint uses find_cases_hydrated_disposition which calls fetch_hydrated_disposition
+
+        and maps it to our chosen output format, providing a dedicated endpoint for add-in litigation flows.'
+      operationId: find_cases_by_hydrated_disposition_cases_find_cases_by_hd_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FindCasesRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                anyOf:
+                - additionalProperties: true
+                  type: object
+                - type: 'null'
+                title: Response Find Cases By Hydrated Disposition Cases Find Cases By Hd Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /cases/addin-case-search:
+    post:
+      tags:
+      - Cases
+      summary: Addin Case Search
+      description: 'Add-in case search endpoint that intelligently routes queries based on type.
+
+
+        This endpoint intelligently routes queries based on their type:
+
+        - Case names (e.g., "Smith v. Jones") → Direct case name search
+
+        - Citations (e.g., "123 U.S. 456") → Direct citation search
+
+        - General queries → Full deep search workflow
+
+
+        This endpoint starts a case search and returns immediately with a job_id.
+
+        The frontend should poll GET /cases/addin-case-search/{job_id} for results.
+
+
+        Args:
+
+        request: Add-in case search request with query, jurisdictions, and max_cases
+
+        session: Redis session
+
+        temporal_client: Temporal client for workflows
+
+
+        Returns:
+
+        DeepSearchResponse with job_id for polling results'
+      operationId: addin_case_search_cases_addin_case_search_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              anyOf:
+              - $ref: '#/components/schemas/AddinCaseSearchRequest'
+              - $ref: '#/components/schemas/AddinCaseSearchWithFiltersRequest'
+              title: Request
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeepSearchResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /cases/addin-case-search/{job_id}:
+    get:
+      tags:
+      - Cases
+      summary: Get Addin Case Search Result Endpoint
+      description: 'Retrieve add-in case search results by job ID.
+
+
+        This endpoint returns results in the add-in frontend format, transformed
+
+        from the deep search results. The frontend should poll this endpoint
+
+        periodically until status is "done" or "failed".
+
+
+        Note: This endpoint does not perform any polling itself - it simply reads
+
+        the current state from Redis. The frontend is responsible for polling.
+
+
+        Optional filter query parameters can be provided to filter results:
+
+        - year_start: Only include cases filed on or after this year
+
+        - year_end: Only include cases filed on or before this year
+
+        - area_of_law: Only include cases with this area of law
+
+        - sub_area_of_law: Only include cases with this sub area of law
+
+
+        Args:
+
+        job_id: Job ID returned from POST /cases/addin-case-search
+
+        request: FastAPI Request object
+
+        session: Redis session
+
+        year_start: Optional filter for minimum year
+
+        year_end: Optional filter for maximum year
+
+        area_of_law: Optional filter for area of law
+
+        sub_area_of_law: Optional filter for sub area of law
+
+
+        Returns:
+
+        Dictionary with status, cases (transformed), and case_ids'
+      operationId: get_addin_case_search_result_endpoint_cases_addin_case_search__job_id__get
+      parameters:
+      - name: job_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Job Id
+      - name: year_start
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: Filter cases filed after this year
+          title: Year Start
+        description: Filter cases filed after this year
+      - name: year_end
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: Filter cases filed before this year
+          title: Year End
+        description: Filter cases filed before this year
+      - name: area_of_law
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter by area of law
+          title: Area Of Law
+        description: Filter by area of law
+      - name: sub_area_of_law
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter by sub area of law
+          title: Sub Area Of Law
+        description: Filter by sub area of law
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddinCaseSearchResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /cases/get-opinion-content:
+    post:
+      tags:
+      - Cases
+      summary: Get Opinion Content
+      description: Fetch the full text of a court opinion by cluster_id
+      operationId: get_opinion_content_cases_get_opinion_content_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OpinionContentRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Get Opinion Content Cases Get Opinion Content Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /cases/addin-extract-cluster-slug:
+    post:
+      tags:
+      - Cases
+      summary: Addin Extract Cluster Slug From Url
+      description: 'Extract cluster_id and slug from a CourtListener URL and return a formatted URL.
+
+
+        Supports:
+
+        - CourtListener public URLs: https://www.courtlistener.com/opinion/{cluster_id}/{slug}/
+
+        - Internal case details URLs: /case-details?caseid={cluster_id}&slug={slug}
+
+        (the legacy /chat/caseDetails form is still accepted)
+
+
+        Args:
+
+        request: ExtractClusterSlugRequest containing the URL to parse
+
+
+        Returns:
+
+        JSON object with formatted CourtListener URL: {"url": "https://www.courtlistener.com/opinion/{cluster_id}/{slug}/"}
+
+
+        Raises:
+
+        HTTPException: If URL is missing, invalid, or cannot be parsed'
+      operationId: addin_extract_cluster_slug_from_url_cases_addin_extract_cluster_slug_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExtractClusterSlugRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+                title: Response Addin Extract Cluster Slug From Url Cases Addin Extract Cluster Slug Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /cases/search:
+    post:
+      tags:
+      - Cases
+      summary: Cases Search
+      operationId: cases_search_cases_search_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CaseSearch'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /cases/addin-cases-search:
+    post:
+      tags:
+      - Cases
+      summary: Addin Cases Search
+      description: 'Enhanced case search that uses the legal research retrieval system to find more relevant cases.
+
+        Uses AI to extract legal questions from the user''s query, then leverages specialized legal
+
+        database search with holding extraction to deliver more precise results.'
+      operationId: addin_cases_search_cases_addin_cases_search_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AICaseSearch'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /cases/search/ai:
+    post:
+      tags:
+      - Cases
+      summary: Ai Cases Search
+      operationId: ai_cases_search_cases_search_ai_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AICaseSearch'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /cases/search/document-batch-stream:
+    post:
+      tags:
+      - Cases
+      summary: Document Batch Case Search Stream
+      description: 'Processes document paragraphs by chunking them by character count and finding relevant cases for each batch in parallel.
+
+        Streams results back to the frontend as each batch completes processing, maintaining paragraph indexes for mapping.
+
+
+        Args:
+
+        request: Contains the document paragraphs and usage data
+
+        session: Redis session dictionary for storing user state
+
+
+        Returns:
+
+        Streaming response with case search results for each batch with paragraph mapping'
+      operationId: document_batch_case_search_stream_cases_search_document_batch_stream_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentBatchCaseSearch'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /cases/addin-case-relationship-analysis:
+    post:
+      tags:
+      - Cases
+      summary: Addin Analyze Case Relationship
+      description: 'Analyzes the relationship between a specific case and the user''s original context.
+
+
+        This endpoint receives details about:
+
+        1. A case the user has selected from search results
+
+        2. The user''s original document text/argument
+
+
+        It returns an analysis of the relationship, including:
+
+        - How the case is relevant to the user''s argument
+
+        - Whether it supports or contrasts with the user''s position
+
+        - Additional suggestions for related cases or statutes'
+      operationId: addin_analyze_case_relationship_cases_addin_case_relationship_analysis_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CaseRelationshipRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /cases/search/ai/suggested-queries:
+    post:
+      tags:
+      - Cases
+      summary: Ai Query Suggestions
+      operationId: ai_query_suggestions_cases_search_ai_suggested_queries_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AICaseSearch'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /cases/verify-citation-accuracy:
+    post:
+      tags:
+      - Cases
+      summary: Wrapper
+      operationId: wrapper_cases_verify_citation_accuracy_post
+      parameters:
+      - name: args
+        in: query
+        required: true
+        schema:
+          title: Args
+      - name: kwargs
+        in: query
+        required: true
+        schema:
+          title: Kwargs
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /cases/addin/search/filtered:
+    post:
+      tags:
+      - Cases
+      summary: Addin Filtered Case Search
+      description: 'Search for cases with filtering options.
+
+
+        Args:
+
+        query: The search query text
+
+        jurisdiction: Filter by jurisdiction (e.g., "California", "Federal")
+
+        year_start: Filter by cases after this year
+
+        year_end: Filter by cases before this year
+
+        court_level: Filter by court level (e.g., "Federal", "State", "Tribal")
+
+        area_of_law: Filter by area of law (e.g., "Criminal Law", "Constitutional Law")
+
+        subcategory: Filter by subcategory of law (e.g., "First Amendment", "Fourth Amendment")
+
+        session: Redis session dictionary
+
+
+        Returns:
+
+        List of cases with a matches_filters flag indicating if they matched the applied filters'
+      operationId: addin_filtered_case_search_cases_addin_search_filtered_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddinFilteredCaseSearchRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /cases/addin/case-chat:
+    post:
+      tags:
+      - Cases
+      summary: Addin Case Chat
+      description: 'Answers questions about a specific case using the case''s content and context.
+
+
+        Args:
+
+        request: Contains the citation, question, and optional document context
+
+        session: Redis session dictionary for storing user state
+
+
+        Returns:
+
+        A response containing the answer to the user''s question'
+      operationId: addin_case_chat_cases_addin_case_chat_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddinCaseChatRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Addin Case Chat Cases Addin Case Chat Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /cases/create-table-of-authorities:
+    post:
+      tags:
+      - Cases
+      summary: Create Table Of Authorities Endpoint
+      description: Generate a Table of Authorities preview via JSONL stream.
+      operationId: create_table_of_authorities_endpoint_cases_create_table_of_authorities_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TableOfAuthoritiesRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /cases/prepare-toa-insertion:
+    post:
+      tags:
+      - Cases
+      summary: Prepare Toa Insertion Endpoint
+      description: Resolve cases to cluster_ids and build marking plan via JSONL stream.
+      operationId: prepare_toa_insertion_endpoint_cases_prepare_toa_insertion_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+              title: Request
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /cases/batch-verify-citations:
+    post:
+      tags:
+      - Cases
+      summary: Batch Verify Citations
+      description: 'Analyzes all citations in a document and verifies their accuracy.
+
+        Processes each page individually and checks each citation against its source.
+
+
+        Args:
+
+        request: Contains document_pages with page numbers and text content
+
+        session: Redis session dictionary for storing user state
+
+
+        Returns:
+
+        A comprehensive analysis of all citations in the document,
+
+        highlighting any problematic references'
+      operationId: batch_verify_citations_cases_batch_verify_citations_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TableOfAuthoritiesRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Batch Verify Citations Cases Batch Verify Citations Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /cases/batch-verify-citations-in-text:
+    post:
+      tags:
+      - Cases
+      summary: Batch Verify Citations In Text
+      description: 'Extracts and verifies all legal citations in a provided text.
+
+
+        This endpoint:
+
+        1. Extracts all case citations from the input text
+
+        2. Verifies each citation''s accuracy individually
+
+        3. Returns comprehensive analysis for each citation found
+
+
+        Args:
+
+        request: Contains the document text with citations to analyze
+
+        session: Redis session dictionary for storing user state
+
+
+        Returns:
+
+        Comprehensive analysis of all citations found in the text'
+      operationId: batch_verify_citations_in_text_cases_batch_verify_citations_in_text_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddinVerifyCitationRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Batch Verify Citations In Text Cases Batch Verify Citations In Text Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /cases/batch-verify-citations-in-text-stream:
+    post:
+      tags:
+      - Cases
+      summary: Batch Verify Citations In Text Stream Route
+      description: 'Legacy endpoint (develop flow): single document text, extract citations,
+
+        verify each via verify_citation_accuracy, stream results. Accepts context
+
+        or document (string). Duplicate logic; only wraps verify_citation_accuracy.'
+      operationId: batch_verify_citations_in_text_stream_route_cases_batch_verify_citations_in_text_stream_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /cases/addin-verify-citation:
+    post:
+      tags:
+      - Cases
+      summary: Addin Verify Citation Stream
+      description: 'Unchanged from origin/develop: revamped flow, document as list of paragraphs.'
+      operationId: addin_verify_citation_stream_cases_addin_verify_citation_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddinBatchVerifyCitationsRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /cases/deep-search-wedge:
+    post:
+      tags:
+      - Cases
+      summary: Analyze Query
+      description: 'Accepts freeform legal input and returns job ID for polling. This endpoint has slightly different
+
+        functionality to support the wedge use case, including recaptcha support and different jurisdictions.'
+      operationId: analyze_query_cases_deep_search_wedge_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeepSearchWedgeRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeepSearchResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /cases/deep-search:
+    post:
+      tags:
+      - Cases
+      summary: Analyze Query
+      description: 'Accepts freeform legal input and returns job ID for polling.
+
+
+        If the query is detected as a keyword query (not a citation), it will
+
+        execute a direct keyword search and return results immediately without
+
+        running the full deep search pipeline.
+
+
+        If citation search results are found, they are sorted by relevance score
+
+        and returned immediately without running the rest of the deep search pipeline.'
+      operationId: analyze_query_cases_deep_search_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeepSearchRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeepSearchResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /cases/deep-search/{job_id}:
+    get:
+      tags:
+      - Cases
+      summary: Get Deep Search Result
+      description: 'Poll the status of a deep search job by job ID.
+
+        Returns the job result along with a list of case_ids for convenience.'
+      operationId: get_deep_search_result_cases_deep_search__job_id__get
+      parameters:
+      - name: job_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Job Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Deep Search Result Cases Deep Search  Job Id  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /cases/modifying-precedents:
+    get:
+      tags:
+      - Cases
+      summary: Get Modifying Precedents
+      description: 'Fetch modifying precedents for specified cases.
+
+        This endpoint is called to populate StrongCite badges for cases.
+
+
+        The frontend must provide a list of case_ids as query parameters.
+
+        Precedents are fetched directly from the database and deduplicated.
+
+
+        This is a consolidated endpoint that can be used for both deep search jobs
+
+        and general case lookups. For deep search jobs, use /deep-search/{job_id}/precedents.'
+      operationId: get_modifying_precedents_cases_modifying_precedents_get
+      parameters:
+      - name: case_ids
+        in: query
+        required: true
+        schema:
+          type: array
+          items:
+            type: string
+          description: List of case IDs to fetch modifying precedents for.
+          title: Case Ids
+        description: List of case IDs to fetch modifying precedents for.
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Modifying Precedents Cases Modifying Precedents Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /cases/holdings/modifying-precedents:
+    get:
+      tags:
+      - Cases
+      summary: Get Holdings Modifying Precedents
+      description: 'Fetch modifying precedents for specified holdings.
+
+        This endpoint is called to populate StrongCite badges for holdings.
+
+
+        The frontend must provide a list of holding_ids as query parameters.
+
+        Precedents are fetched directly from the database.'
+      operationId: get_holdings_modifying_precedents_cases_holdings_modifying_precedents_get
+      parameters:
+      - name: holding_ids
+        in: query
+        required: true
+        schema:
+          type: array
+          items:
+            type: string
+          description: List of holding IDs to fetch modifying precedents for.
+          title: Holding Ids
+        description: List of holding IDs to fetch modifying precedents for.
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Holdings Modifying Precedents Cases Holdings Modifying Precedents Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /cases/deep-search/{job_id}/precedents:
+    get:
+      tags:
+      - Cases
+      summary: Get Deep Search Precedents
+      description: 'Fetch modifying precedents for specified cases in a deep search job result.
+
+        This endpoint is called asynchronously after initial results are displayed
+
+        to populate StrongCite badges without blocking the main response.
+
+
+        The frontend must provide a list of case_ids to fetch precedents for.
+
+        Precedents are fetched directly from the database for each request.
+
+
+        Note: This endpoint delegates to the consolidated /modifying-precedents endpoint.'
+      operationId: get_deep_search_precedents_cases_deep_search__job_id__precedents_get
+      parameters:
+      - name: job_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Job Id
+      - name: case_ids
+        in: query
+        required: true
+        schema:
+          type: array
+          items:
+            type: string
+          description: List of case IDs to fetch precedents for.
+          title: Case Ids
+        description: List of case IDs to fetch precedents for.
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /cases/form/options:
+    get:
+      tags:
+      - Cases
+      summary: Get Form Options
+      description: Get the supported values for db case search
+      operationId: get_form_options_cases_form_options_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /cases/form/search:
+    post:
+      tags:
+      - Cases
+      summary: Form Search Cases
+      description: Run case search with the form inputs
+      operationId: form_search_cases_cases_form_search_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CaseFormSearchRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /cases/addin-suggest-pincites:
+    post:
+      tags:
+      - Cases
+      summary: Addin Suggest Pincites
+      description: 'Suggests relevant pincites for a specific case based on the user''s query context.
+
+
+        Args:
+
+        request: Contains the cluster_id of the case and the user''s query context
+
+        session: Redis session dictionary for storing user state
+
+
+        Returns:
+
+        A list of suggested pincites with their context'
+      operationId: addin_suggest_pincites_cases_addin_suggest_pincites_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SuggestPincitesRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Addin Suggest Pincites Cases Addin Suggest Pincites Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /cases/analyze-query:
+    post:
+      tags:
+      - Cases
+      summary: Analyze Legal Query
+      description: 'Analyzes a legal query and returns structured information about the legal questions,
+
+        causes of action, and other relevant details without starting a background job.
+
+
+        This is an immediate version of the deep-search functionality that returns
+
+        immediate results rather than requiring polling.
+
+
+        Args:
+
+        request: Contains the query to analyze
+
+        session: Redis session dictionary for storing user state
+
+        mini: If True, returns results without disposition data for better performance
+
+
+        Returns:
+
+        Structured analysis of the legal query with search results'
+      operationId: analyze_legal_query_cases_analyze_query_post
+      parameters:
+      - name: mini
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: true
+          title: Mini
+      - name: fast
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: Whether to use the fast case retrieval method
+          default: false
+          title: Fast
+        description: Whether to use the fast case retrieval method
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnalyzeQueryRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Analyze Legal Query Cases Analyze Query Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /cases/{opinioncluster_id}/cases-from-opinioncluster-id:
+    get:
+      tags:
+      - Cases
+      summary: Get Cases From Opinioncluster Id
+      description: Return detailed case records with related data for a given `opinioncluster_id` from db_caselaw.
+      operationId: get_cases_from_opinioncluster_id_cases__opinioncluster_id__cases_from_opinioncluster_id_get
+      parameters:
+      - name: opinioncluster_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Opinioncluster Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Cases From Opinioncluster Id Cases  Opinioncluster Id  Cases From Opinioncluster Id Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /cases/{opinioncluster_id}/find-precedents:
+    get:
+      tags:
+      - Cases
+      summary: Find Precedents
+      description: 'Find citing cases (precedents) for a given opinioncluster_id using SQLAlchemy ORM.
+
+        Returns cases that cite the given opinion, ordered by citation depth (descending).
+
+
+        Args:
+
+        opinioncluster_id: The opinion cluster ID to find precedents for
+
+
+        Returns:
+
+        Dictionary containing:
+
+        - precedents: List of citing cases with metadata
+
+        - count: Number of precedents found
+
+
+        Raises:
+
+        HTTPException: If the database engine is unavailable or query fails'
+      operationId: find_precedents_cases__opinioncluster_id__find_precedents_get
+      parameters:
+      - name: opinioncluster_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Opinioncluster Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Find Precedents Cases  Opinioncluster Id  Find Precedents Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /cases/{opinioncluster_id}/full-text:
+    get:
+      tags:
+      - Cases
+      summary: Get Full Text
+      description: 'Retrieve the full text content for all opinions in a given cluster.
+
+
+        Args:
+
+        opinioncluster_id: The opinion cluster ID to fetch content for
+
+
+        Returns:
+
+        Dictionary containing:
+
+        - cluster_id: The cluster ID
+
+        - opinions: List of opinion objects with content and metadata
+
+
+        Raises:
+
+        HTTPException: If the database engine is unavailable or query fails'
+      operationId: get_full_text_cases__opinioncluster_id__full_text_get
+      parameters:
+      - name: opinioncluster_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Opinioncluster Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Full Text Cases  Opinioncluster Id  Full Text Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    AddinCaseSearchWithFiltersRequest:
+      properties:
+        query:
+          type: string
+          title: Query
+        db_jurisdictions:
+          items:
+            type: string
+          type: array
+          title: Db Jurisdictions
+        max_cases:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Max Cases
+        year_start:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Year Start
+        year_end:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Year End
+        area_of_law:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Area Of Law
+        sub_area_of_law:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sub Area Of Law
+      type: object
+      required:
+      - query
+      title: AddinCaseSearchWithFiltersRequest
+      description: Request model for filtered add-in case search.
+    OpinionContentRequest:
+      properties:
+        cluster_id:
+          type: string
+          title: Cluster Id
+      type: object
+      required:
+      - cluster_id
+      title: OpinionContentRequest
+    FindByCitationRequest:
+      properties:
+        citation:
+          type: string
+          title: Citation
+      type: object
+      required:
+      - citation
+      title: FindByCitationRequest
+    AddinFindByCaseNameRequest:
+      properties:
+        case_name:
+          type: string
+          title: Case Name
+      type: object
+      required:
+      - case_name
+      title: AddinFindByCaseNameRequest
+      description: Request model for finding case by name.
+    AddinCaseSearchRequest:
+      properties:
+        query:
+          type: string
+          title: Query
+        db_jurisdictions:
+          items:
+            type: string
+          type: array
+          title: Db Jurisdictions
+        max_cases:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Max Cases
+      type: object
+      required:
+      - query
+      title: AddinCaseSearchRequest
+      description: Request model for add-in case search using deep search.
+    OpenLawsAncestor:
+      properties:
+        path:
+          type: string
+          title: Path
+          default: ''
+        display_name:
+          type: string
+          title: Display Name
+      type: object
+      required:
+      - display_name
+      title: OpenLawsAncestor
+    CaseFormSearchRequest:
+      properties:
+        filters:
+          $ref: '#/components/schemas/Filters'
+        semanticInputs:
+          $ref: '#/components/schemas/SemanticInputs'
+        jurisdictions:
+          items:
+            type: string
+          type: array
+          title: Jurisdictions
+        page_size:
+          type: integer
+          title: Page Size
+          default: 25
+        cursor:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Cursor
+      type: object
+      required:
+      - filters
+      - semanticInputs
+      - jurisdictions
+      title: CaseFormSearchRequest
+    SuggestPincitesRequest:
+      properties:
+        cluster_id:
+          type: string
+          title: Cluster Id
+        query_context:
+          type: string
+          title: Query Context
+      type: object
+      required:
+      - cluster_id
+      - query_context
+      title: SuggestPincitesRequest
+      description: 'Request model for suggesting relevant pincites for a case.
+
+
+        Contains the cluster_id of the case and the user''s query context.'
+    AddinFilteredCaseSearchRequest:
+      properties:
+        query:
+          type: string
+          title: Query
+        jurisdiction:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Jurisdiction
+        year_start:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Year Start
+        year_end:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Year End
+        court_level:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Court Level
+        area_of_law:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Area Of Law
+        subcategory:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Subcategory
+      type: object
+      required:
+      - query
+      title: AddinFilteredCaseSearchRequest
+    AddinCaseSearchResult:
+      properties:
+        caseName:
+          type: string
+          title: Casename
+        title:
+          type: string
+          title: Title
+        citation:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Citation
+        bluebook:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Bluebook
+        date_filed:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Date Filed
+        jurisdiction:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Jurisdiction
+        citationCount:
+          type: integer
+          title: Citationcount
+          default: 0
+        snippet:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Snippet
+        areaOfLaw:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Areaoflaw
+        subAreaOfLaw:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Subareaoflaw
+        totalAreasOfLaw:
+          items:
+            type: string
+          type: array
+          title: Totalareasoflaw
+        url:
+          type: string
+          title: Url
+        caseClusterId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Caseclusterid
+        caseDBId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Casedbid
+        courtDetails:
+          additionalProperties: true
+          type: object
+          title: Courtdetails
+      type: object
+      required:
+      - caseName
+      - title
+      - url
+      title: AddinCaseSearchResult
+      description: Case search result formatted for add-in frontend.
+    SemanticInputs:
+      properties:
+        questions:
+          $ref: '#/components/schemas/SemanticSection'
+        holdings:
+          $ref: '#/components/schemas/SemanticSection'
+        facts:
+          $ref: '#/components/schemas/SemanticSection'
+      type: object
+      required:
+      - questions
+      - holdings
+      - facts
+      title: SemanticInputs
+    CaseSearch:
+      properties:
+        request:
+          $ref: '#/components/schemas/CaseSearchRequest'
+      type: object
+      required:
+      - request
+      title: CaseSearch
+    PublicationStatus:
+      type: string
+      enum:
+      - Published
+      - Slip Opinion
+      title: PublicationStatus
+      description: Derived at hydration from reporter_citations presence — not a stored column (ENG-18892).
+    DeepSearchRequest:
+      properties:
+        query:
+          type: string
+          title: Query
+        db_jurisdictions:
+          items:
+            type: string
+          type: array
+          title: Db Jurisdictions
+        max_cases:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Max Cases
+        vector_search_config:
+          anyOf:
+          - $ref: '#/components/schemas/VectorSearchConfig'
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Vector Search Config
+        use_optimized_query:
+          type: boolean
+          title: Use Optimized Query
+          default: false
+      type: object
+      required:
+      - query
+      - db_jurisdictions
+      title: DeepSearchRequest
+    CaseSearchRequest:
+      properties:
+        query:
+          type: string
+          title: Query
+        courts:
+          anyOf:
+          - items:
+              type: integer
+            type: array
+          - type: 'null'
+          title: Courts
+      type: object
+      required:
+      - query
+      title: CaseSearchRequest
+    ExtractClusterSlugRequest:
+      properties:
+        url:
+          type: string
+          minLength: 1
+          title: Url
+          description: CourtListener URL to parse. Supports public URLs (https://www.courtlistener.com/opinion/{cluster_id}/{slug}/) or internal URLs (/case-details?caseid={cluster_id}&slug={slug}, or the legacy /chat/caseDetails form)
+      type: object
+      required:
+      - url
+      title: ExtractClusterSlugRequest
+    AuthoritySearchResponse:
+      properties:
+        results:
+          items:
+            $ref: '#/components/schemas/AuthoritySearchResult'
+          type: array
+          title: Results
+        search_type:
+          type: string
+          title: Search Type
+          default: none
+        jurisdiction_used:
+          type: string
+          title: Jurisdiction Used
+          default: none
+      type: object
+      title: AuthoritySearchResponse
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    CitationSearchResult:
+      properties:
+        case_id:
+          type: string
+          format: uuid
+          title: Case Id
+        opinioncluster_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Opinioncluster Id
+        case_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Case Name
+        slug:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Slug
+        court_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Court Id
+        jurisdiction:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Jurisdiction
+        court_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Court Name
+        year_filed:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Year Filed
+        legal_reasoning:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Legal Reasoning
+        n_cited:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: N Cited
+        yearly_cites:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Yearly Cites
+        total_score:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Total Score
+        citation_normalized:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Citation Normalized
+        similarity_score:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Similarity Score
+      type: object
+      required:
+      - case_id
+      - opinioncluster_id
+      - case_name
+      - slug
+      - court_id
+      - jurisdiction
+      - court_name
+      - year_filed
+      - n_cited
+      - yearly_cites
+      - total_score
+      title: CitationSearchResult
+    TableOfAuthoritiesRequest:
+      properties:
+        document_pages:
+          items:
+            $ref: '#/components/schemas/DocumentPage'
+          type: array
+          title: Document Pages
+      type: object
+      required:
+      - document_pages
+      title: TableOfAuthoritiesRequest
+      description: 'Request model for table of authorities creation.
+
+        Contains a list of document pages with page numbers and text content.'
+    AddinBatchVerifyCitationsRequest:
+      properties:
+        document:
+          items:
+            $ref: '#/components/schemas/ParagraphData'
+          type: array
+          title: Document
+      type: object
+      required:
+      - document
+      title: AddinBatchVerifyCitationsRequest
+      description: 'Request model for batch citation verification endpoint.
+
+        Extracts and verifies all citations in a document (no specific citation required).
+
+        Frontend sends paragraphs directly - no need to split text.
+
+        Citation details are extracted later.'
+    FindCasesRequest:
+      properties:
+        cluster_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Cluster Id
+        slug:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Slug
+      type: object
+      title: FindCasesRequest
+    AddinCaseDetailsResponse:
+      properties:
+        caseId:
+          type: string
+          title: Caseid
+        caseDocketId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Casedocketid
+        caseClusterId:
+          type: string
+          title: Caseclusterid
+        caseDBId:
+          type: string
+          title: Casedbid
+        caseName:
+          type: string
+          title: Casename
+        caseNameBluebook:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Casenamebluebook
+        caseNameShortBluebook:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Casenameshortbluebook
+        citation:
+          type: string
+          title: Citation
+        citationCount:
+          type: integer
+          title: Citationcount
+        citationStrings:
+          items:
+            type: string
+          type: array
+          title: Citationstrings
+        publicationStatus:
+          $ref: '#/components/schemas/PublicationStatus'
+          default: Published
+        matched_citation:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Matched Citation
+        dateDecided:
+          type: string
+          title: Datedecided
+        court:
+          type: string
+          title: Court
+        court_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Court Id
+        judges:
+          items:
+            type: string
+          type: array
+          title: Judges
+        caseType:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Casetype
+        trialStage:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Trialstage
+        dispositionType:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Dispositiontype
+        winningParty:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Winningparty
+        outcomeSnippet:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Outcomesnippet
+        areasOfLaw:
+          additionalProperties:
+            items:
+              type: string
+            type: array
+          type: object
+          title: Areasoflaw
+        causesOfAction:
+          items:
+            type: string
+          type: array
+          title: Causesofaction
+        facts:
+          additionalProperties: true
+          type: object
+          title: Facts
+        holdings:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Holdings
+        precedents:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Precedents
+        citationStats:
+          additionalProperties: true
+          type: object
+          title: Citationstats
+        subsequentCitations:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Subsequentcitations
+        arguments:
+          additionalProperties: true
+          type: object
+          title: Arguments
+        judge:
+          additionalProperties: true
+          type: object
+          title: Judge
+        courtDetails:
+          additionalProperties: true
+          type: object
+          title: Courtdetails
+      additionalProperties: true
+      type: object
+      required:
+      - caseId
+      - caseClusterId
+      - caseDBId
+      - caseName
+      - citation
+      - citationCount
+      - dateDecided
+      - court
+      title: AddinCaseDetailsResponse
+      description: Response model for case details from HydratedDisposition.
+    CaseRelationshipRequest:
+      properties:
+        user_context:
+          type: string
+          title: User Context
+        case_details:
+          additionalProperties: true
+          type: object
+          title: Case Details
+        original_query:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Original Query
+      type: object
+      required:
+      - user_context
+      - case_details
+      title: CaseRelationshipRequest
+    ParagraphData:
+      properties:
+        index:
+          type: integer
+          title: Index
+        text:
+          type: string
+          title: Text
+        listItemString:
+          type: string
+          title: Listitemstring
+          default: ''
+        pageNumber:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Pagenumber
+        uniqueLocalId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Uniquelocalid
+      additionalProperties: true
+      type: object
+      required:
+      - index
+      - text
+      title: ParagraphData
+      description: Model for paragraph data structure.
+    AnalyzeQueryRequest:
+      properties:
+        query:
+          type: string
+          title: Query
+        jurisdiction:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Jurisdiction
+        recaptcha_token:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Recaptcha Token
+      type: object
+      required:
+      - query
+      title: AnalyzeQueryRequest
+    SemanticSection:
+      properties:
+        items:
+          items:
+            type: string
+          type: array
+          title: Items
+      type: object
+      required:
+      - items
+      title: SemanticSection
+    AICaseSearch:
+      properties:
+        query:
+          type: string
+          title: Query
+      type: object
+      required:
+      - query
+      title: AICaseSearch
+    AddinVerifyCitationRequest:
+      properties:
+        context:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Context
+        citation:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Citation
+        case_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Case Name
+        pincite:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Pincite
+      additionalProperties: true
+      type: object
+      title: AddinVerifyCitationRequest
+      description: 'Unified request model for citation and case name verification.
+
+
+        Supports three verification modes:
+
+        1. Citation verification (with optional pincite validation)
+
+        2. Case name verification
+
+        3. Both citation and case name (verifies they match the same case)
+
+
+        At least one of citation or case_name must be provided.'
+    DocumentPage:
+      properties:
+        pageNumber:
+          type: integer
+          title: Pagenumber
+        text:
+          type: string
+          title: Text
+      type: object
+      required:
+      - pageNumber
+      - text
+      title: DocumentPage
+      description: Model for a single page of a document with text content.
+    DeepSearchWedgeRequest:
+      properties:
+        query:
+          type: string
+          title: Query
+        jurisdiction:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Jurisdiction
+        max_cases:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Max Cases
+        recaptcha_token:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Recaptcha Token
+      type: object
+      required:
+      - query
+      title: DeepSearchWedgeRequest
+    Filters:
+      properties:
+        areaOfLaw:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Areaoflaw
+        subAreaOfLaw:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Subareaoflaw
+        minCitations:
+          type: integer
+          title: Mincitations
+        minCitationVelocity:
+          type: integer
+          title: Mincitationvelocity
+        prevailingParty:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Prevailingparty
+        proceduralStep:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Proceduralstep
+        trialStage:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Trialstage
+        courtLevel:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Courtlevel
+        fromYear:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Fromyear
+        toYear:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Toyear
+      type: object
+      required:
+      - areaOfLaw
+      - subAreaOfLaw
+      - minCitations
+      - minCitationVelocity
+      - prevailingParty
+      - proceduralStep
+      - trialStage
+      - courtLevel
+      - fromYear
+      - toYear
+      title: Filters
+    DeepSearchResponse:
+      properties:
+        job_id:
+          type: string
+          title: Job Id
+        message:
+          type: string
+          title: Message
+        lr_type:
+          type: string
+          title: Lr Type
+        session_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Session Id
+      type: object
+      required:
+      - job_id
+      - message
+      - lr_type
+      title: DeepSearchResponse
+    AuthoritySearchResult:
+      properties:
+        display_name:
+          type: string
+          title: Display Name
+        label:
+          type: string
+          title: Label
+        identifier:
+          type: string
+          title: Identifier
+        display_ancestors:
+          items:
+            $ref: '#/components/schemas/OpenLawsAncestor'
+          type: array
+          title: Display Ancestors
+        openlaws_web_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Openlaws Web Url
+        plaintext_content:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Plaintext Content
+        markdown_content:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Markdown Content
+        jurisdiction_key:
+          type: string
+          title: Jurisdiction Key
+        law_key:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Law Key
+        effective_date:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Effective Date
+        is_repealed:
+          type: boolean
+          title: Is Repealed
+          default: false
+        is_reserved:
+          type: boolean
+          title: Is Reserved
+          default: false
+      type: object
+      required:
+      - display_name
+      - label
+      - identifier
+      - jurisdiction_key
+      title: AuthoritySearchResult
+      description: Flat OpenLaws record shape consumed by the case-search frontend hook.
+    AddinCaseChatRequest:
+      properties:
+        citation:
+          type: string
+          title: Citation
+        question:
+          type: string
+          title: Question
+        document:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Document
+      type: object
+      required:
+      - citation
+      - question
+      title: AddinCaseChatRequest
+      description: Request model for case chat endpoint.
+    DocumentBatchCaseSearch:
+      properties:
+        paragraphs:
+          items:
+            additionalProperties:
+              type: string
+            type: object
+          type: array
+          title: Paragraphs
+        usage_data:
+          additionalProperties: true
+          type: object
+          title: Usage Data
+      type: object
+      required:
+      - paragraphs
+      - usage_data
+      title: DocumentBatchCaseSearch
+    AuthoritySearchRequest:
+      properties:
+        citation:
+          type: string
+          title: Citation
+        jurisdiction_key:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Jurisdiction Key
+        state_code:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: State Code
+      type: object
+      required:
+      - citation
+      title: AuthoritySearchRequest
+      description: Statute/regulation search request for the standalone case-search authorities tab.
+    VectorSearchConfig:
+      properties:
+        max_vector_results:
+          type: integer
+          title: Max Vector Results
+        ann_k_scale:
+          type: integer
+          title: Ann K Scale
+        ann_k_max:
+          type: integer
+          title: Ann K Max
+        ef_search:
+          type: integer
+          title: Ef Search
+        rerank_candidates:
+          type: integer
+          title: Rerank Candidates
+      type: object
+      required:
+      - max_vector_results
+      - ann_k_scale
+      - ann_k_max
+      - ef_search
+      - rerank_candidates
+      title: VectorSearchConfig
+      description: 'Tunable configuration for the vector search step.
+
+
+        This centralizes the main "levers" for ANN + HNSW search so we can:
+
+        - Log the exact settings used for a given run
+
+        - Vary them per-environment via env/config
+
+        - Optionally override them per-request when experimenting.'
+    AddinCaseSearchResponse:
+      properties:
+        status:
+          type: string
+          title: Status
+        cases:
+          items:
+            $ref: '#/components/schemas/AddinCaseSearchResult'
+          type: array
+          title: Cases
+        case_ids:
+          items:
+            type: string
+          type: array
+          title: Case Ids
+      type: object
+      required:
+      - status
+      title: AddinCaseSearchResponse
+      description: Response model for add-in case search results endpoint.
+    AddinCaseLookupRequest:
+      properties:
+        query:
+          type: string
+          title: Query
+      type: object
+      required:
+      - query
+      title: AddinCaseLookupRequest
+      description: Request model for unified case lookup endpoint.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError

@@ -1,0 +1,288 @@
+openapi: 3.2.0
+info:
+  title: CallidusAI Legal Research API
+  description: Callidus AI backend API
+  version: 0.1.0
+tags:
+- name: Legal Research
+paths:
+  /legal_research/legal_question/question_intake:
+    post:
+      summary: Question Intaker
+      operationId: question_intaker_legal_research_legal_question_question_intake_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatQuery'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Legal Research
+  /legal_research/legal_question/question_answer:
+    post:
+      summary: Question Answerer
+      operationId: question_answerer_legal_research_legal_question_question_answer_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatQuery'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Legal Research
+  /legal_research/legal_question/question_answer/citations:
+    post:
+      summary: Question Answerer 2
+      operationId: question_answerer_2_legal_research_legal_question_question_answer_citations_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatQuery'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Legal Research
+  /legal_research/legal_question/continued_conversation:
+    post:
+      summary: Continue Conversation Question
+      operationId: continue_conversation_question_legal_research_legal_question_continued_conversation_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatQuery'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Legal Research
+components:
+  schemas:
+    ControlPanelOptions:
+      properties:
+        legalQuestionsCount:
+          type: integer
+          title: Legalquestionscount
+          default: 3
+        casePerQuestionsCount:
+          type: integer
+          title: Caseperquestionscount
+          default: 3
+        casesToInclude:
+          type: integer
+          title: Casestoinclude
+          default: 3
+        legalResearchFollowUpQuestions:
+          type: integer
+          title: Legalresearchfollowupquestions
+          default: 5
+        followUpQuestions:
+          type: integer
+          title: Followupquestions
+          default: 3
+        statutesCount:
+          type: integer
+          title: Statutescount
+          default: 3
+        showHoldings:
+          type: boolean
+          title: Showholdings
+          default: true
+        analysisDepth:
+          type: integer
+          title: Analysisdepth
+          default: 2
+        creativity:
+          type: number
+          title: Creativity
+          default: 0
+        argumentBias:
+          type: string
+          title: Argumentbias
+          default: objective
+        documentType:
+          type: string
+          title: Documenttype
+          default: ''
+        partyToFavour:
+          type: string
+          title: Partytofavour
+          default: ''
+        focusArea:
+          type: string
+          title: Focusarea
+          default: ''
+        legalFocus:
+          anyOf:
+          - type: boolean
+          - type: string
+          title: Legalfocus
+          default: notInteracted
+        jurisdictions:
+          type: string
+          title: Jurisdictions
+          default: ''
+        responseLength:
+          type: integer
+          title: Responselength
+          default: 2
+        grammarCheck:
+          type: boolean
+          title: Grammarcheck
+          default: false
+        activeVoiceCheck:
+          type: boolean
+          title: Activevoicecheck
+          default: false
+        legalWritingCheck:
+          type: boolean
+          title: Legalwritingcheck
+          default: false
+        persuasiveCheck:
+          type: boolean
+          title: Persuasivecheck
+          default: false
+        narrativeCheck:
+          type: boolean
+          title: Narrativecheck
+          default: false
+        expositoryCheck:
+          type: boolean
+          title: Expositorycheck
+          default: false
+        descriptiveCheck:
+          type: boolean
+          title: Descriptivecheck
+          default: false
+        summaryMethod:
+          type: string
+          title: Summarymethod
+          default: notInteracted
+        summaryType:
+          type: string
+          title: Summarytype
+          default: notInteracted
+      type: object
+      title: ControlPanelOptions
+    ChatQuery:
+      properties:
+        request:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Request
+        control_options:
+          anyOf:
+          - $ref: '#/components/schemas/ControlPanelOptions'
+          - type: 'null'
+          default:
+            legalQuestionsCount: 3
+            casePerQuestionsCount: 3
+            casesToInclude: 3
+            legalResearchFollowUpQuestions: 5
+            followUpQuestions: 3
+            statutesCount: 3
+            showHoldings: true
+            analysisDepth: 2
+            creativity: 0.0
+            argumentBias: objective
+            documentType: ''
+            partyToFavour: ''
+            focusArea: ''
+            legalFocus: notInteracted
+            jurisdictions: ''
+            responseLength: 2
+            grammarCheck: false
+            activeVoiceCheck: false
+            legalWritingCheck: false
+            persuasiveCheck: false
+            narrativeCheck: false
+            expositoryCheck: false
+            descriptiveCheck: false
+            summaryMethod: notInteracted
+            summaryType: notInteracted
+      type: object
+      required:
+      - request
+      title: ChatQuery
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError

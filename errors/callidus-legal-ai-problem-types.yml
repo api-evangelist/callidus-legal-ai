@@ -1,0 +1,32 @@
+generated: '2026-10-06'
+method: derived
+generator: derive-problem-types.py
+source:
+- openapi/callidus-legal-ai-openapi.json
+format: custom
+envelope:
+  media_type: application/json
+  schema: HTTPValidationError
+coverage:
+  operations: 869
+  statuses_declared: 3
+problems:
+- status: 404
+  title: Not Found
+  description: No conversation for this research
+  operations: 4
+  media_types: []
+  schema: null
+- status: 409
+  title: Conflict
+  description: Linked tasks present and force=false.
+  operations: 1
+  media_types: []
+  schema: null
+- status: 422
+  title: Unprocessable Content
+  description: Validation Error
+  operations: 826
+  media_types:
+  - application/json
+  schema: HTTPValidationError

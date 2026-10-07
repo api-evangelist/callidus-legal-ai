@@ -1,0 +1,114 @@
+openapi: 3.2.0
+info:
+  title: CallidusAI Summarize Full API
+  description: Callidus AI backend API
+  version: 0.1.0
+tags:
+- name: Summarize Full
+paths:
+  /summarize_full:
+    post:
+      summary: Summarize Full
+      operationId: summarize_full_summarize_full_post
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Body_summarize_full_summarize_full_post'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Summarize Full
+components:
+  schemas:
+    Body_summarize_full_summarize_full_post:
+      properties:
+        url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Url
+        url_title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Url Title
+        text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Text
+        file:
+          anyOf:
+          - type: string
+            contentMediaType: application/octet-stream
+          - type: 'null'
+          title: File
+        document_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Document Id
+        control_options:
+          type: string
+          title: Control Options
+          default: '{"summaryMethod": "swift", "summaryType": "notInteracted"}'
+        output_format:
+          type: string
+          enum:
+          - pdf
+          - docx
+          - text
+          title: Output Format
+          default: text
+        summary_length:
+          type: integer
+          title: Summary Length
+          default: 2
+      type: object
+      title: Body_summarize_full_summarize_full_post
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError

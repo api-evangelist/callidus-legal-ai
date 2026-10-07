@@ -1,0 +1,263 @@
+openapi: 3.2.0
+info:
+  title: CallidusAI Addin Live Edit API
+  description: Callidus AI backend API
+  version: 0.1.0
+tags:
+- name: Addin-LiveEdit
+paths:
+  /addin/live-edit/classify-message:
+    post:
+      tags:
+      - Addin-LiveEdit
+      summary: Addin Live Edit Classify Message
+      description: 'Enhanced message classifier for determining user intent and operation type.
+
+
+        Uses gemini-3.6-flash for fast classification (<100ms responses).
+
+
+        Args:
+
+        request: FastAPI request object
+
+        query: Dictionary containing "message" key with user message text
+
+        session: Redis session
+
+
+        Returns:
+
+        JSONResponse with classification result:
+
+        - category: ''query'' or ''edit''
+
+        - metadata.operation: ''search_replace'' or ''general''
+
+        - metadata.search_term, replace_term, variations (if applicable)'
+      operationId: addin_live_edit_classify_message_addin_live_edit_classify_message_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+              title: Query
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /addin/live-edit/edit:
+    post:
+      tags:
+      - Addin-LiveEdit
+      summary: Addin Live Editing
+      description: 'Enhanced conversational document editing endpoint.
+
+
+        Handles both specific and broad requests with intelligent planning and batch processing.
+
+        Uses classifier to determine if request is specific (single paragraph) or broad (multiple paragraphs).
+
+
+        Args:
+
+        request: FastAPI request object
+
+        query: Request containing message, paragraphs, document, and other editing parameters
+
+        task_tracker: Task tracker for monitoring
+
+        session: Redis session
+
+        stream_handler: Handler for streaming LLM responses
+
+        event_generator: Generator for streaming events
+
+
+        Returns:
+
+        EventSourceResponse streaming editing results'
+      operationId: addin_live_editing_addin_live_edit_edit_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddinLiveEditing'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /addin/live-edit/chat:
+    post:
+      tags:
+      - Addin-LiveEdit
+      summary: Addin Chat
+      description: 'Chat endpoint for Word add-in.
+
+
+        Args:
+
+        request: FastAPI request object containing chat query in body
+
+        session: Redis session
+
+        stream_handler: Handler for streaming LLM responses
+
+        event_generator: Generator for streaming events
+
+
+        Returns:
+
+        EventSourceResponse streaming chat responses'
+      operationId: addin_chat_addin_live_edit_chat_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /addin/live-edit/calculate-diff:
+    post:
+      tags:
+      - Addin-LiveEdit
+      summary: Calculate Diff
+      description: 'Calculate diffs before inserting live editing suggestions into Word.
+
+
+        This endpoint mimics the diff calculation from addin_live_editing without LLM overhead.
+
+
+        Args:
+
+        request: FastAPI request object containing original_change and updated_text
+
+
+        Returns:
+
+        Dictionary with success status and diff_list or error message'
+      operationId: calculate_diff_addin_live_edit_calculate_diff_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+components:
+  schemas:
+    LiveEditParagraph:
+      properties:
+        index:
+          type: integer
+          title: Index
+        text:
+          type: string
+          title: Text
+        listItemString:
+          type: string
+          title: Listitemstring
+          default: ''
+        uniqueLocalId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Uniquelocalid
+      additionalProperties: true
+      type: object
+      required:
+      - index
+      - text
+      title: LiveEditParagraph
+      description: Paragraph data sent by the Word add-in for live editing.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    AddinLiveEditing:
+      properties:
+        paragraphs:
+          items:
+            $ref: '#/components/schemas/LiveEditParagraph'
+          type: array
+          title: Paragraphs
+        user_message:
+          type: string
+          title: User Message
+        all_messages:
+          anyOf:
+          - items:
+              additionalProperties:
+                type: string
+              type: object
+            type: array
+          - type: 'null'
+          title: All Messages
+        usage_data:
+          additionalProperties: true
+          type: object
+          title: Usage Data
+        metadata:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Metadata
+      type: object
+      required:
+      - paragraphs
+      - user_message
+      - usage_data
+      title: AddinLiveEditing
+      description: 'Request model for conversational document editing.
+
+
+        Takes user message and paragraphs, returns either conversational response or edits.'

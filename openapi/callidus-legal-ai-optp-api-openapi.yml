@@ -1,0 +1,1013 @@
+openapi: 3.2.0
+info:
+  title: CallidusAI Optp API
+  description: Callidus AI backend API
+  version: 0.1.0
+tags:
+- name: Optp
+paths:
+  /api/optp:
+    post:
+      summary: Post Optp
+      operationId: post_optp_api_optp_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OPTPDataRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Optp
+  /optp/update/{optp_session_id}/usergoal:
+    post:
+      summary: Update User Goal
+      operationId: update_user_goal_optp_update__optp_session_id__usergoal_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserGoalUpdate'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Optp
+  /optp/document/{doc_id}:
+    post:
+      summary: Fetch Document Content
+      operationId: fetch_document_content_optp_document__doc_id__post
+      parameters:
+      - name: doc_id
+        in: path
+        required: true
+        schema:
+          type: string
+          convert_underscores: false
+          title: Doc Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Optp
+  /optp/rank_and_match:
+    post:
+      summary: Rank And Match Provisions
+      operationId: rank_and_match_provisions_optp_rank_and_match_post
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Body_rank_and_match_provisions_optp_rank_and_match_post'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Optp
+  /optp/status/{optp_session_id}:
+    get:
+      summary: Get Status
+      operationId: get_status_optp_status__optp_session_id__get
+      parameters:
+      - name: optp_session_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Optp Session Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Optp
+  /optp/cancel/{optp_session_id}:
+    post:
+      summary: Cancel Optp Call
+      operationId: cancel_optp_call_optp_cancel__optp_session_id__post
+      parameters:
+      - name: optp_session_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Optp Session Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Optp
+  /optp/results/{optp_session_id}:
+    get:
+      summary: Get Results
+      operationId: get_results_optp_results__optp_session_id__get
+      parameters:
+      - name: optp_session_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Optp Session Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Optp
+  /optp/{optp_session_id}:
+    post:
+      summary: Compare Documents
+      operationId: compare_documents_optp__optp_session_id__post
+      parameters:
+      - name: optp_session_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Optp Session Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Optp
+  /optp/{optp_session_id}/provisions/{provision_id}/rewrite:
+    post:
+      summary: Rewrite Optp Section
+      operationId: rewrite_optp_section_optp__optp_session_id__provisions__provision_id__rewrite_post
+      parameters:
+      - name: optp_session_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Optp Session Id
+      - name: provision_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Provision Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OPTPFollowUpRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Optp
+  /optp/{optp_session_id}/provisions/{provision_id}/explain:
+    post:
+      summary: Explain Optp Section
+      operationId: explain_optp_section_optp__optp_session_id__provisions__provision_id__explain_post
+      parameters:
+      - name: optp_session_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Optp Session Id
+      - name: provision_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Provision Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OPTPFollowUpRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Optp
+  /optp/{optp_session_id}/provisions/{provision_id}/market:
+    post:
+      summary: Market Optp Section
+      operationId: market_optp_section_optp__optp_session_id__provisions__provision_id__market_post
+      parameters:
+      - name: optp_session_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Optp Session Id
+      - name: provision_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Provision Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OPTPFollowUpRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Optp
+  /optp/{optp_session_id}/parties/extract:
+    post:
+      summary: Regenerate Optp Section
+      operationId: regenerate_optp_section_optp__optp_session_id__parties_extract_post
+      parameters:
+      - name: optp_session_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Optp Session Id
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Body_regenerate_optp_section_optp__optp_session_id__parties_extract_post'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Optp
+  /optp/{optp_session_id}/provisions/{provision_id}/regenerate:
+    post:
+      summary: Recalculate Metrics
+      operationId: recalculate_metrics_optp__optp_session_id__provisions__provision_id__regenerate_post
+      parameters:
+      - name: optp_session_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Optp Session Id
+      - name: provision_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Provision Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OPTPProvisionRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Optp
+  /optp/convert:
+    post:
+      summary: Optp Convert
+      operationId: optp_convert_optp_convert_post
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Body_optp_convert_optp_convert_post'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Optp
+  /optp/{optp_session_id}/generate-provision:
+    post:
+      summary: Generate Provision Endpoint
+      operationId: generate_provision_endpoint_optp__optp_session_id__generate_provision_post
+      parameters:
+      - name: optp_session_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Optp Session Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OPTPNewProvisionRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Optp
+  /optp/{optp_session_id}/format-provision:
+    post:
+      summary: Format Provision Endpoint
+      operationId: format_provision_endpoint_optp__optp_session_id__format_provision_post
+      parameters:
+      - name: optp_session_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Optp Session Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OPTPNewProvisionRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - Optp
+components:
+  schemas:
+    OPTPProvisionRequest:
+      properties:
+        request:
+          $ref: '#/components/schemas/OPTPProvision'
+      type: object
+      required:
+      - request
+      title: OPTPProvisionRequest
+    OPTPFollowUpRequest:
+      properties:
+        request:
+          $ref: '#/components/schemas/OPTPFollowUp'
+      type: object
+      required:
+      - request
+      title: OPTPFollowUpRequest
+    OPTPIncludedContracts:
+      properties:
+        baseContract:
+          type: boolean
+          title: Basecontract
+          default: false
+        comparisonContract:
+          type: boolean
+          title: Comparisoncontract
+          default: false
+      type: object
+      title: OPTPIncludedContracts
+    OPTPNewProvisionRequest:
+      properties:
+        request:
+          $ref: '#/components/schemas/OPTPNewProvision'
+      type: object
+      required:
+      - request
+      title: OPTPNewProvisionRequest
+    UserGoalUpdate:
+      properties:
+        userGoal:
+          type: number
+          title: Usergoal
+      type: object
+      required:
+      - userGoal
+      title: UserGoalUpdate
+    Body_regenerate_optp_section_optp__optp_session_id__parties_extract_post:
+      properties:
+        file_content:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: File Content
+      type: object
+      title: Body_regenerate_optp_section_optp__optp_session_id__parties_extract_post
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    Party-Input:
+      properties:
+        name:
+          type: string
+          title: Name
+        relationship:
+          type: string
+          title: Relationship
+      type: object
+      required:
+      - name
+      - relationship
+      title: Party
+    Body_rank_and_match_provisions_optp_rank_and_match_post:
+      properties:
+        base_pickle:
+          type: string
+          contentMediaType: application/octet-stream
+          title: Base Pickle
+        comparison_pickle:
+          type: string
+          contentMediaType: application/octet-stream
+          title: Comparison Pickle
+      type: object
+      required:
+      - base_pickle
+      - comparison_pickle
+      title: Body_rank_and_match_provisions_optp_rank_and_match_post
+    OPTPNewProvision:
+      properties:
+        provisionTitle:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Provisiontitle
+        instructions:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Instructions
+        baseDefinedTerms:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Basedefinedterms
+        provisionNames:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Provisionnames
+        provisionText:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Provisiontext
+        previousProvisionFormat:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Previousprovisionformat
+      type: object
+      title: OPTPNewProvision
+    OPTPData:
+      properties:
+        baseContractUrl:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Basecontracturl
+        comparisonContractUrl:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Comparisoncontracturl
+        baseContractDocId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Basecontractdocid
+        comparisonContractDocId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Comparisoncontractdocid
+        baseContractDocName:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Basecontractdocname
+        comparisonContractDocName:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Comparisoncontractdocname
+        messagesAvailable:
+          type: integer
+          title: Messagesavailable
+        optpIngestionRate:
+          type: number
+          title: Optpingestionrate
+        options:
+          $ref: '#/components/schemas/Options'
+        userEmail:
+          type: string
+          title: Useremail
+        matterId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Matterid
+      type: object
+      required:
+      - messagesAvailable
+      - optpIngestionRate
+      - options
+      - userEmail
+      title: OPTPData
+    Options:
+      properties:
+        typeOfDeal:
+          type: string
+          title: Typeofdeal
+        party1:
+          $ref: '#/components/schemas/Party-Input'
+        party2:
+          $ref: '#/components/schemas/Party-Input'
+        industry:
+          type: string
+          title: Industry
+        secondaryIndustry:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Secondaryindustry
+        extraAttention:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Extraattention
+        dealBreakers:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Dealbreakers
+        favoritism:
+          type: number
+          title: Favoritism
+        useAdvancedModel:
+          type: boolean
+          title: Useadvancedmodel
+          default: false
+      type: object
+      required:
+      - typeOfDeal
+      - party1
+      - party2
+      - industry
+      - favoritism
+      title: Options
+    OPTPProvision:
+      properties:
+        baseContractId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Basecontractid
+        comparisonContractIds:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Comparisoncontractids
+        baseContractTitle:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Basecontracttitle
+        comparisonContractTitles:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Comparisoncontracttitles
+        baseContractContent:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Basecontractcontent
+        comparisonContractContents:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Comparisoncontractcontents
+        draftContent:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Draftcontent
+        previousDraftContent:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Previousdraftcontent
+        rewriteInstructions:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Rewriteinstructions
+        issuesToConsider:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Issuestoconsider
+        includedContracts:
+          $ref: '#/components/schemas/OPTPIncludedContracts'
+        metrics:
+          anyOf:
+          - $ref: '#/components/schemas/OPTPMetrics'
+          - type: 'null'
+        overallMetrics:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Overallmetrics
+        numberMatches:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Numbermatches
+        provisionNames:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Provisionnames
+        party1:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Party1
+        party2:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Party2
+        industry:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Industry
+        secondaryIndustry:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Secondaryindustry
+        typeOfDeal:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Typeofdeal
+        baseDefinedTerms:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Basedefinedterms
+      type: object
+      title: OPTPProvision
+    OPTPDataRequest:
+      properties:
+        request:
+          $ref: '#/components/schemas/OPTPData'
+      type: object
+      required:
+      - request
+      title: OPTPDataRequest
+    OPTPMetrics:
+      properties:
+        substanceBaseContract:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Substancebasecontract
+        substanceDraftContract:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Substancedraftcontract
+        biasBaseContract:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Biasbasecontract
+        biasComparisonContract:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Biascomparisoncontract
+        biasDraftContract:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Biasdraftcontract
+        overallBaseAlignment:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Overallbasealignment
+        overallDraftAlignment:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Overalldraftalignment
+      type: object
+      title: OPTPMetrics
+    OPTPFollowUp:
+      properties:
+        relevantText:
+          type: string
+          title: Relevanttext
+        comparisonText:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Comparisontext
+        baseProvision:
+          type: string
+          title: Baseprovision
+          default: ''
+        comparisonProvision:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Comparisonprovision
+        provisionSource:
+          type: string
+          title: Provisionsource
+          default: ''
+        instructions:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Instructions
+        party1:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Party1
+        party2:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Party2
+        industry:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Industry
+        secondaryIndustry:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Secondaryindustry
+        typeOfDeal:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Typeofdeal
+        partyToFavor:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Partytofavor
+        stream:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Stream
+        baseDefinedTerms:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Basedefinedterms
+        provisionNames:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Provisionnames
+        overallMetrics:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Overallmetrics
+        numberMatches:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Numbermatches
+        metrics:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Metrics
+        additionalContext:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Additionalcontext
+        dealbreakers:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Dealbreakers
+        extraAttention:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Extraattention
+      type: object
+      required:
+      - relevantText
+      title: OPTPFollowUp
+    Body_optp_convert_optp_convert_post:
+      properties:
+        url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Url
+        text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Text
+        file:
+          anyOf:
+          - type: string
+            contentMediaType: application/octet-stream
+          - type: 'null'
+          title: File
+      type: object
+      title: Body_optp_convert_optp_convert_post
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError

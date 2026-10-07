@@ -1,0 +1,27 @@
+openapi: 3.2.0
+info:
+  title: CallidusAI Serp API
+  description: Callidus AI backend API
+  version: 0.1.0
+tags:
+- name: SERP
+paths:
+  /serp/stats:
+    post:
+      summary: Serp Stats
+      description: Get SERP API stats
+      operationId: serp_stats_serp_stats_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  anyOf:
+                  - type: string
+                  - type: number
+                type: object
+                title: Response Serp Stats Serp Stats Post
+      tags:
+      - SERP

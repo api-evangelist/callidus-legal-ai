@@ -1,0 +1,100 @@
+openapi: 3.2.0
+info:
+  title: CallidusAI MCP API
+  description: Callidus AI backend API
+  version: 0.1.0
+tags:
+- name: MCP
+paths:
+  /mcp/v1:
+    get:
+      tags:
+      - MCP
+      summary: Mcp Sse Endpoint
+      description: 'MCP SSE endpoint — used by clients for streaming transport.
+
+
+        Returns 401 with WWW-Authenticate for unauthenticated requests,
+
+        which triggers the OAuth discovery flow in MCP clients.'
+      operationId: mcp_sse_endpoint_mcp_v1_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+    post:
+      tags:
+      - MCP
+      summary: Mcp Endpoint
+      description: 'MCP Streamable HTTP endpoint.
+
+
+        Accepts a JSON-RPC request, dispatches to the appropriate MCP handler,
+
+        and returns a JSON-RPC response.
+
+
+        Auth: Bearer MCP JWT in Authorization header.
+
+        Optional: x-mcp-matter-id header to scope tool calls to a matter.'
+      operationId: mcp_endpoint_mcp_v1_post
+      parameters:
+      - name: x-mcp-matter-id
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Mcp-Matter-Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError

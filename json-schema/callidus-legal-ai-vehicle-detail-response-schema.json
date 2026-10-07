@@ -1,0 +1,743 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/callidus-legal-ai/main/json-schema/callidus-legal-ai-vehicle-detail-response-schema.json",
+  "title": "VehicleDetailResponse",
+  "description": "Detail response — same shape as the list row today; reserved for\nfuture additions (e.g. associated auto loan statements, valuation\nhistory) without breaking the list response.",
+  "x-generated": "2026-10-06",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/callidus-legal-ai-openapi.json#/components/schemas/VehicleDetailResponse",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "title": "Id"
+    },
+    "dataset_id": {
+      "type": "integer",
+      "title": "Dataset Id"
+    },
+    "business_id": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Business Id"
+    },
+    "business": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BusinessResponse"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "owners": {
+      "items": {
+        "$ref": "#/$defs/VehicleOwnerResponse"
+      },
+      "type": "array",
+      "title": "Owners",
+      "default": []
+    },
+    "vin": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Vin"
+    },
+    "normalized_vin": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Normalized Vin"
+    },
+    "year": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Year"
+    },
+    "make": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Make"
+    },
+    "model": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Model"
+    },
+    "trim": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Trim"
+    },
+    "body_type": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Body Type"
+    },
+    "fuel_type": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Fuel Type"
+    },
+    "empty_weight_lb": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Empty Weight Lb"
+    },
+    "color": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Color"
+    },
+    "title_number": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Title Number"
+    },
+    "title_issuing_state": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Title Issuing State"
+    },
+    "title_issue_date": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Title Issue Date"
+    },
+    "title_brands": {
+      "anyOf": [
+        {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Title Brands"
+    },
+    "odometer_reading": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Odometer Reading"
+    },
+    "odometer_brand": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "actual",
+            "exempt",
+            "not_actual",
+            "over_100k"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Odometer Brand"
+    },
+    "odometer_as_of": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Odometer As Of"
+    },
+    "has_lienholder": {
+      "type": "boolean",
+      "title": "Has Lienholder",
+      "default": false
+    },
+    "lienholder_name": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Lienholder Name"
+    },
+    "lienholder_address": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Lienholder Address"
+    },
+    "acquired_date": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Acquired Date"
+    },
+    "purchase_price": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Purchase Price"
+    },
+    "estimated_value": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Estimated Value"
+    },
+    "estimated_value_as_of": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Estimated Value As Of"
+    },
+    "estimated_value_source": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Estimated Value Source"
+    },
+    "source_description": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Source Description"
+    },
+    "metadata_ex": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Metadata Ex"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Created At"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Updated At"
+    },
+    "ownership_type": {
+      "type": "string",
+      "enum": [
+        "individual",
+        "entity",
+        "both",
+        "unknown"
+      ],
+      "title": "Ownership Type",
+      "description": "Single-field summary of who owns this vehicle.\n\n``individual`` = at least one personal owner; ``entity`` = held by a\nbusiness (trust / LLC / S-Corp); ``both`` = mixed; ``unknown``\n= no owners attached yet.",
+      "readOnly": true
+    },
+    "primary_owner_name": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Primary Owner Name",
+      "description": "Single-name fallback when the UI can't render the full owners list.\n\nPrefers ``title_holder`` > ``co_title_holder`` > ``trust`` >\n``corporate``, then highest ownership_percentage, then first owner\nby id. Returns None when no owners exist.",
+      "readOnly": true
+    },
+    "display_label": {
+      "type": "string",
+      "title": "Display Label",
+      "description": "Human-readable label for table rows and matter-memory bullets.\n\nFallback chain: ``year make model`` → ``make model`` → ``VIN xxx`` →\n``Vehicle``. Mirrors ``_build_bsi_name`` in the persistence layer so\nthe API label matches the BSI ``name`` column.",
+      "readOnly": true
+    },
+    "title_status_label": {
+      "type": "string",
+      "enum": [
+        "clean",
+        "salvage",
+        "rebuilt",
+        "lien",
+        "unknown"
+      ],
+      "title": "Title Status Label",
+      "description": "Map ``has_lienholder`` + ``title_brands`` to the ``VehicleTitleStatus``\ncontract — same logic as the persistence helper so the UI can show the\ntitle status without re-deriving it client-side.\n\n``\"clean\"`` requires *positive title evidence* — at least one of\n``title_number`` / ``title_issuing_state`` / ``title_issue_date`` /\n``title_brands`` populated. Vehicles created from a KBB / BeenVerified\nvaluation alone (no title uploaded yet) have all four nulled out and\nreport ``\"unknown\"`` — absence of warning signals isn't proof of a\nclean title.",
+      "readOnly": true
+    }
+  },
+  "type": "object",
+  "required": [
+    "id",
+    "dataset_id",
+    "created_at",
+    "updated_at",
+    "ownership_type",
+    "primary_owner_name",
+    "display_label",
+    "title_status_label"
+  ],
+  "$defs": {
+    "BusinessResponse": {
+      "properties": {
+        "id": {
+          "type": "integer",
+          "title": "Id"
+        },
+        "dataset_id": {
+          "type": "integer",
+          "title": "Dataset Id"
+        },
+        "name": {
+          "type": "string",
+          "title": "Name"
+        },
+        "ein": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Ein"
+        },
+        "ein_last4": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Ein Last4"
+        },
+        "taxpayer_id_kind": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TaxpayerIdKind"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "state_of_formation": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "State Of Formation"
+        },
+        "tax_classification": {
+          "$ref": "#/$defs/TaxClassification",
+          "default": "unknown"
+        },
+        "legal_entity_type": {
+          "$ref": "#/$defs/LegalEntityType",
+          "default": "unknown"
+        },
+        "source_tax_document_id": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Source Tax Document Id"
+        },
+        "source_document_type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Source Document Type"
+        },
+        "verified_by": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "title": "Verified By"
+        },
+        "principal_business_activity": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Principal Business Activity"
+        },
+        "naics_code": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Naics Code"
+        },
+        "accounting_method": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Accounting Method"
+        },
+        "formation_year": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Formation Year"
+        },
+        "is_active_this_year": {
+          "type": "boolean",
+          "title": "Is Active This Year",
+          "default": true
+        },
+        "business_address": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Business Address"
+        },
+        "taxpayer_ownership_pct": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Taxpayer Ownership Pct"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "title": "Created At"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time",
+          "title": "Updated At"
+        }
+      },
+      "type": "object",
+      "required": [
+        "id",
+        "dataset_id",
+        "name",
+        "created_at",
+        "updated_at"
+      ],
+      "title": "BusinessResponse",
+      "description": "Single business-entity record (any tax classification, any legal wrapper)."
+    },
+    "LegalEntityType": {
+      "type": "string",
+      "enum": [
+        "individual",
+        "smllc",
+        "mmllc",
+        "corporation",
+        "limited_partnership",
+        "general_partnership",
+        "professional_corp",
+        "professional_llc",
+        "unknown"
+      ],
+      "title": "LegalEntityType",
+      "description": "What state law calls it (the wrapper).\n\nDrives asset-division logic — liability shield, separateness for property\ndistribution, professional-practice handling."
+    },
+    "TaxClassification": {
+      "type": "string",
+      "enum": [
+        "sole_proprietorship",
+        "disregarded_entity",
+        "s_corp",
+        "c_corp",
+        "partnership",
+        "qualified_joint_venture",
+        "unknown"
+      ],
+      "title": "TaxClassification",
+      "description": "How the business files with the IRS (federal substance).\n\nDrives extraction routing and downstream income-flow analysis."
+    },
+    "TaxpayerIdKind": {
+      "type": "string",
+      "enum": [
+        "ein",
+        "ssn",
+        "none"
+      ],
+      "title": "TaxpayerIdKind",
+      "description": "Which taxpayer identifier the business reports under."
+    },
+    "VehicleOwnerResponse": {
+      "properties": {
+        "id": {
+          "type": "integer",
+          "title": "Id"
+        },
+        "vehicle_id": {
+          "type": "integer",
+          "title": "Vehicle Id"
+        },
+        "taxpayer_id": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Taxpayer Id"
+        },
+        "owner_name": {
+          "type": "string",
+          "title": "Owner Name"
+        },
+        "role": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "title_holder",
+                "co_title_holder",
+                "trust",
+                "corporate",
+                "other"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Role"
+        },
+        "ownership_percentage": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Ownership Percentage"
+        },
+        "joint_designator": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "and",
+                "or",
+                "and_or"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Joint Designator"
+        },
+        "source_description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Source Description"
+        }
+      },
+      "type": "object",
+      "required": [
+        "id",
+        "vehicle_id",
+        "owner_name"
+      ],
+      "title": "VehicleOwnerResponse",
+      "description": "One owner on a vehicle title. Multiple owners per vehicle are common —\njoint title (``Jane AND John Doe``), trustee + beneficiary, lessor + lessee.\n\n``taxpayer_id`` is null until the post-extraction linking pass matches the\nowner name against a canonical taxpayer in the dataset (deterministic\nmatcher — see ``link_vehicle_owners_to_taxpayers_activity``). Stays null\nwhen no confident match exists (ambiguity / no matching taxpayer yet).\n``owner_name`` is always populated."
+    }
+  }
+}

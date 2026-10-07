@@ -1,0 +1,577 @@
+openapi: 3.2.0
+info:
+  title: CallidusAI Addin Outlook API
+  description: Callidus AI backend API
+  version: 0.1.0
+tags:
+- name: Addin-Outlook
+paths:
+  /addin/outlook/detect-matter:
+    post:
+      tags:
+      - Addin-Outlook
+      summary: Detect Matter
+      description: 'Which matter the open reply belongs to, plus its context counts.
+
+
+        Answered from emails already synced where possible, and from a Graph lookup
+
+        of the thread''s folders otherwise. Returns ``source: none`` with no matter
+
+        when neither resolves — the pane then asks the user to choose, so this is a
+
+        200 rather than a 404.
+
+
+        Takes no request-scoped session on purpose: this handler may call Graph, and
+
+        a session injected by ``Depends`` stays checked out for the whole request.
+
+        The permission set is read in a short-lived session that closes before any
+
+        network traffic, the same way ``list_outlook_folders`` handles its token.'
+      operationId: detect_matter_addin_outlook_detect_matter_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DetectMatterRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DetectMatterResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /addin/outlook/matters:
+    get:
+      tags:
+      - Addin-Outlook
+      summary: List Matters
+      description: 'Matters the caller can draft against, for the pane''s Change picker.
+
+
+        Permissions are read in a short-lived session so the listing query that
+
+        follows does not run alongside a held request connection.'
+      operationId: list_matters_addin_outlook_matters_get
+      parameters:
+      - name: search
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter by matter name
+          title: Search
+        description: Filter by matter name
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/app__modules__integrations__outlook__addin_schemas__MatterListResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /addin/outlook/matters/{matter_id}/context-counts:
+    get:
+      tags:
+      - Addin-Outlook
+      summary: Get Context Counts
+      description: 'File and email counts for a matter the user picked by hand.
+
+
+        Takes no ``Depends`` session, matching the sibling handlers: one injected
+
+        there stays checked out for the whole request, and ``context_counts`` opens
+
+        its own sessions against the matters database. Holding a default-database
+
+        connection across those would occupy two pools at once for no benefit.'
+      operationId: get_context_counts_addin_outlook_matters__matter_id__context_counts_get
+      parameters:
+      - name: matter_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Matter Id
+      - name: thread_messages
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          description: Messages the pane found in the open thread; echoed back.
+          default: 0
+          title: Thread Messages
+        description: Messages the pane found in the open thread; echoed back.
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContextCounts'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /addin/outlook/suggested-instruction:
+    post:
+      tags:
+      - Addin-Outlook
+      summary: Suggested Instruction
+      description: 'A starting instruction for the prompt box, written from the open thread.
+
+
+        Takes no matter and checks none: it reads only the caller''s own mailbox
+
+        through their own Graph token and returns one sentence about the email in
+
+        front of them. Nothing about a matter is read or disclosed.
+
+
+        Called when the user clicks the link, not on pane open, so a model call is
+
+        only made — and only billed — when someone actually wants it.'
+      operationId: suggested_instruction_addin_outlook_suggested_instruction_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SuggestInstructionRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuggestInstructionResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /addin/outlook/draft:
+    post:
+      tags:
+      - Addin-Outlook
+      summary: Draft Reply
+      description: 'Write, or refine, the reply — streamed as SSE while the model works.
+
+
+        Events, each a JSON object with ``event`` and ``data``:
+
+
+        - ``progress_indicator`` while context is gathered and the model starts;
+
+        - ``token`` with ``data.text`` for each delta;
+
+        - ``final_object`` with the full ``draft``, sanitized ``html`` for the
+
+        compose body, and the ``sources`` that reached the model;
+
+        - ``error`` if the model call fails after retries.
+
+
+        Takes no request-scoped session: a ``Depends`` session would be held for
+
+        the whole stream, which is the model''s entire writing time. The permission
+
+        check runs in its own short-lived session before streaming begins.'
+      operationId: draft_reply_addin_outlook_draft_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DraftRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    DraftRequest:
+      properties:
+        matter_id:
+          type: string
+          title: Matter Id
+        instruction:
+          type: string
+          maxLength: 500
+          minLength: 1
+          title: Instruction
+        conversation_id:
+          anyOf:
+          - type: string
+            maxLength: 1024
+          - type: 'null'
+          title: Conversation Id
+          description: Graph conversation id of the open thread. When present the server fetches the thread from Graph, which yields real sender, recipient, date and body fields; ``thread`` below is then only a fallback.
+        thread:
+          $ref: '#/components/schemas/DraftThread'
+          description: The thread as the pane read it out of the compose window. Used only when Graph cannot supply it — the quoted block's shape differs per Outlook client, so it is the less reliable of the two sources.
+          default:
+            subject: ''
+            messages: []
+        context:
+          $ref: '#/components/schemas/DraftContextSelection'
+          default:
+            thread: true
+            matter_files: true
+            matter_emails: true
+        sender:
+          $ref: '#/components/schemas/DraftSender'
+          default: {}
+        refine:
+          anyOf:
+          - $ref: '#/components/schemas/DraftRefine'
+          - type: 'null'
+      type: object
+      required:
+      - matter_id
+      - instruction
+      title: DraftRequest
+      description: Everything the draft endpoint needs to write one reply.
+    DraftContextSelection:
+      properties:
+        thread:
+          type: boolean
+          title: Thread
+          default: true
+        matter_files:
+          type: boolean
+          title: Matter Files
+          default: true
+        matter_emails:
+          type: boolean
+          title: Matter Emails
+          default: true
+      type: object
+      title: DraftContextSelection
+      description: Which sources the user left checked in the pane.
+    MatterSummary:
+      properties:
+        id:
+          type: string
+          title: Id
+        name:
+          type: string
+          title: Name
+        client:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Client
+          description: Client display name. None when the matter has no client attached.
+        role:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Role
+          description: Party role, e.g. Defendant/Respondent.
+        practice_area:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Practice Area
+          description: Matter type, e.g. Employment Law.
+      type: object
+      required:
+      - id
+      - name
+      title: MatterSummary
+      description: A matter as the add-in's matter card renders it.
+    SuggestInstructionResponse:
+      properties:
+        instruction:
+          type: string
+          maxLength: 500
+          title: Instruction
+        generated:
+          type: boolean
+          title: Generated
+          description: True when written from this thread, False when the generic fallback was returned because the thread was empty or the model call failed. The pane treats both the same; this is for logs.
+      type: object
+      required:
+      - instruction
+      - generated
+      title: SuggestInstructionResponse
+      description: One sentence for the pane to put in the prompt box.
+    ContextCounts:
+      properties:
+        thread_messages:
+          type: integer
+          title: Thread Messages
+          default: 0
+        matter_files:
+          type: integer
+          title: Matter Files
+          default: 0
+        matter_emails:
+          type: integer
+          title: Matter Emails
+          default: 0
+      type: object
+      title: ContextCounts
+      description: 'What the pane''s three context checkboxes report.
+
+
+        ``thread_messages`` comes from the conversation as Graph reports it, which
+
+        is the same thread the draft is built from. The pane''s own parse of the
+
+        quoted block is used only when Graph cannot answer: it cannot see the
+
+        message being replied to and recognises only Outlook''s ``From:`` header
+
+        format, so it reads low against a chain quoted in another client''s style.'
+    DetectMatterResponse:
+      properties:
+        matter:
+          anyOf:
+          - $ref: '#/components/schemas/MatterSummary'
+          - type: 'null'
+        source:
+          type: string
+          title: Source
+          description: 'How the matter was established: ''folder'' when a connected Outlook folder answered it, ''none'' when nothing matched and the pane must ask the user to choose, ''ambiguous'' when the folder is linked to several matters and the user must pick one of ``candidates``.'
+        counts:
+          $ref: '#/components/schemas/ContextCounts'
+          default:
+            thread_messages: 0
+            matter_files: 0
+            matter_emails: 0
+        has_matters:
+          type: boolean
+          title: Has Matters
+          description: Whether the caller can view any matter at all. False lets the pane offer Create Matter instead of a picker with nothing in it. Only meaningful when no matter was detected; a detected matter implies True.
+          default: true
+        candidates:
+          items:
+            $ref: '#/components/schemas/MatterSummary'
+          type: array
+          title: Candidates
+          description: 'When source is ''ambiguous'': the matters the thread could belong to, in the order the picker should list them. Empty otherwise.'
+        candidate_source:
+          type: string
+          title: Candidate Source
+          description: 'Which lookup produced the match — ``candidates`` when ambiguous, ``matter`` otherwise: ''folder'' when a connected Outlook folder answered, ''thread'' when this thread was already synced into the matter(s). The pane words the pinned-group heading and the card''s ''Detected from …'' line from this, so neither can claim a folder connection that does not exist. Defaults to ''folder'', which is what every caller assumed before this field existed.'
+          default: folder
+      type: object
+      required:
+      - source
+      title: DetectMatterResponse
+      description: The matter the open thread belongs to, if it can be established.
+    DraftRefine:
+      properties:
+        mode:
+          type: string
+          enum:
+          - shorter
+          - more_formal
+          - more_direct
+          - custom
+          title: Mode
+        instruction:
+          anyOf:
+          - type: string
+            maxLength: 500
+          - type: 'null'
+          title: Instruction
+          description: The user's own wording. Required when mode is custom.
+        previous_draft:
+          type: string
+          maxLength: 30000
+          minLength: 1
+          title: Previous Draft
+      type: object
+      required:
+      - mode
+      - previous_draft
+      title: DraftRefine
+      description: 'A follow-up instruction applied to a draft the user already has.
+
+
+        ``previous_draft`` is sent by the pane rather than held server-side: the pane
+
+        owns the draft the user is looking at, including one they refined and then
+
+        restored with Original, so it is the only reliable source of what to change.'
+    SuggestInstructionRequest:
+      properties:
+        conversation_id:
+          anyOf:
+          - type: string
+            maxLength: 1024
+          - type: 'null'
+          title: Conversation Id
+          description: Graph conversation id. When present the thread is fetched from Graph; ``thread`` is the fallback, as on the draft endpoint.
+        thread:
+          $ref: '#/components/schemas/DraftThread'
+          default:
+            subject: ''
+            messages: []
+      type: object
+      title: SuggestInstructionRequest
+      description: The open thread, for writing a starting instruction from it.
+    app__modules__integrations__outlook__addin_schemas__MatterListResponse:
+      properties:
+        matters:
+          items:
+            $ref: '#/components/schemas/MatterSummary'
+          type: array
+          title: Matters
+      type: object
+      required:
+      - matters
+      title: MatterListResponse
+      description: Matters the caller can draft against, for the pane's Change picker.
+    DetectMatterRequest:
+      properties:
+        conversation_id:
+          anyOf:
+          - type: string
+            maxLength: 1024
+          - type: 'null'
+          title: Conversation Id
+          description: Graph conversation id of the open thread.
+        message_id:
+          anyOf:
+          - type: string
+            maxLength: 1024
+          - type: 'null'
+          title: Message Id
+          description: Graph id of the message being replied to, when the pane has one. A reply being composed has no id of its own until it is saved.
+        thread_messages:
+          type: integer
+          minimum: 0.0
+          title: Thread Messages
+          description: Messages the pane found in the open thread.
+          default: 0
+      type: object
+      title: DetectMatterRequest
+      description: What the pane knows about the message being replied to.
+    ThreadMessage:
+      properties:
+        from:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: From
+          description: Sender, formatted as the pane displays it.
+        to:
+          items:
+            type: string
+          type: array
+          maxItems: 50
+          title: To
+        sent_at:
+          anyOf:
+          - type: string
+            maxLength: 64
+          - type: 'null'
+          title: Sent At
+        body_text:
+          type: string
+          maxLength: 50000
+          title: Body Text
+          default: ''
+      type: object
+      title: ThreadMessage
+      description: One message of the open Outlook thread, as the pane read it.
+    DraftThread:
+      properties:
+        subject:
+          type: string
+          maxLength: 1000
+          title: Subject
+          default: ''
+        messages:
+          items:
+            $ref: '#/components/schemas/ThreadMessage'
+          type: array
+          maxItems: 40
+          title: Messages
+      type: object
+      title: DraftThread
+      description: The email thread the reply belongs to. The first message is the one being replied to.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    DraftSender:
+      properties:
+        name:
+          anyOf:
+          - type: string
+            maxLength: 200
+          - type: 'null'
+          title: Name
+        email:
+          anyOf:
+          - type: string
+            maxLength: 320
+          - type: 'null'
+          title: Email
+      type: object
+      title: DraftSender
+      description: Who the draft is signed as, taken from the Outlook account.

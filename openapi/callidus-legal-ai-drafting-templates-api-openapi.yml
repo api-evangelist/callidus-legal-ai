@@ -1,0 +1,233 @@
+openapi: 3.2.0
+info:
+  title: CallidusAI Drafting Templates API
+  description: Callidus AI backend API
+  version: 0.1.0
+tags:
+- name: Drafting Templates
+paths:
+  /platform/matters/{matter_id}/drafting-templates:
+    get:
+      tags:
+      - Drafting Templates
+      summary: Get Drafting Templates
+      description: Return all firm templates registered on this matter, keyed by document type.
+      operationId: get_drafting_templates_platform_matters__matter_id__drafting_templates_get
+      parameters:
+      - name: matter_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Matter Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatterDraftingTemplatesResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /platform/matters/{matter_id}/drafting-templates/{document_type}:
+    put:
+      tags:
+      - Drafting Templates
+      summary: Register Drafting Template
+      description: 'Associate a DocHub ``doc_id`` as the firm template for *document_type*.
+
+
+        The customer must have already uploaded the file to DocHub via the
+
+        existing upload flow. This endpoint just records the association on the
+
+        matter.'
+      operationId: register_drafting_template_platform_matters__matter_id__drafting_templates__document_type__put
+      parameters:
+      - name: matter_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Matter Id
+      - name: document_type
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Document Type
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterTemplateRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatterDraftingTemplatesResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+      - Drafting Templates
+      summary: Delete Drafting Template
+      description: 'Remove the firm template registration for *document_type* on this matter.
+
+
+        The DocHub blob is left intact — the customer manages their own files
+
+        there.'
+      operationId: delete_drafting_template_platform_matters__matter_id__drafting_templates__document_type__delete
+      parameters:
+      - name: matter_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Matter Id
+      - name: document_type
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Document Type
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatterDraftingTemplatesResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    RegisterTemplateRequest:
+      properties:
+        doc_id:
+          type: string
+          format: uuid
+          title: Doc Id
+        name:
+          type: string
+          minLength: 1
+          title: Name
+          description: Display name (typically the original filename)
+      type: object
+      required:
+      - doc_id
+      - name
+      title: RegisterTemplateRequest
+      description: 'Body for ``PUT /matters/{matter_id}/drafting-templates/{document_type}``.
+
+
+        The customer has already uploaded the file via the existing two-step
+
+        DocHub flow (``POST /upload-url`` → blob PUT → ``POST /add-document``);
+
+        this endpoint just associates that ``doc_id`` as the firm template for
+
+        the given doctype on this matter.'
+    MatterDraftingTemplatesResponse:
+      properties:
+        templates:
+          additionalProperties:
+            $ref: '#/components/schemas/MatterDraftingTemplateEntry'
+          type: object
+          title: Templates
+      type: object
+      required:
+      - templates
+      title: MatterDraftingTemplatesResponse
+      description: '``GET /matters/{matter_id}/drafting-templates`` response.
+
+
+        Always returns a complete map (never null) — empty dict when the matter
+
+        has no templates registered. Lets the UI iterate without null-checks.'
+    MatterDraftingTemplateEntry:
+      properties:
+        doc_id:
+          type: string
+          format: uuid
+          title: Doc Id
+        name:
+          type: string
+          title: Name
+        uploaded_at:
+          type: string
+          format: date-time
+          title: Uploaded At
+        uploaded_by:
+          type: string
+          title: Uploaded By
+      type: object
+      required:
+      - doc_id
+      - name
+      - uploaded_at
+      - uploaded_by
+      title: MatterDraftingTemplateEntry
+      description: 'A single firm template registered against a matter for one doctype.
+
+
+        Stored verbatim as a value in ``Matter.drafting_templates`` JSONB, keyed by
+
+        document_type. Surfaced on the matter-templates GET endpoint and embedded
+
+        in draft list items so the UI can compare against ``DocumentDraft.
+
+        enriched_with_template`` to detect "last enriched with the old template"
+
+        drift.'
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError

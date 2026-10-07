@@ -1,0 +1,1528 @@
+openapi: 3.2.0
+info:
+  title: CallidusAI Smart Bot API
+  description: Callidus AI backend API
+  version: 0.1.0
+tags:
+- name: Smart Bot
+paths:
+  /smart_bot/conversations:
+    post:
+      tags:
+      - Smart Bot
+      summary: Create Conversation Endpoint
+      description: Create a new smart bot conversation.
+      operationId: create_conversation_endpoint_smart_bot_conversations_post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateConversationRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConversationResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    get:
+      tags:
+      - Smart Bot
+      summary: List Conversations Endpoint
+      description: 'List all smart bot conversations for the authenticated user.
+
+
+        Pass ``parent_conversation_id`` for task-scoped history (chats under a task
+
+        root), ``legal_research_id`` for a Legal Research task''s history (LR chats are
+
+        unparented so they scope by research instead), or ``matter_id`` for the
+
+        matter-level view. The underlying query is always permission-scoped to the
+
+        user, so the task-scope ids need no separate access check (an unrelated id
+
+        simply yields none of the user''s chats).
+
+
+        ``limit``/``offset`` page the (stable, newest-first) results. ``q`` filters
+
+        to conversations whose title or matter name contains the term — see
+
+        ``list_conversations`` for match semantics and limitations.'
+      operationId: list_conversations_endpoint_smart_bot_conversations_get
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Offset
+      - name: matter_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Matter Id
+      - name: parent_conversation_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Parent Conversation Id
+      - name: legal_research_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Legal Research Id
+      - name: q
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Q
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ConversationResponse'
+                title: Response List Conversations Endpoint Smart Bot Conversations Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /smart_bot/conversations/start:
+    post:
+      tags:
+      - Smart Bot
+      summary: Start Conversation Endpoint
+      description: 'Create a conversation with a hidden seed message.
+
+
+        Used by the intake wizard to hand off context to SmartBot without the
+
+        seed appearing in the chat UI.
+
+
+        ``parent_conversation_id`` (the task root) is intentionally not access-checked —
+
+        see the rationale in ``create_conversation_endpoint``.'
+      operationId: start_conversation_endpoint_smart_bot_conversations_start_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartConversationRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StartConversationResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /smart_bot/starter-suggestions:
+    post:
+      tags:
+      - Smart Bot
+      summary: Starter Suggestions Endpoint
+      description: 'LLM-generated Task Assistant starter suggestions grounded in the task''s snapshot.
+
+
+        Per-source access is enforced by the seed builders inside the service. Denied access
+
+        surfaces as 403 for deposition/research tasks but as the dataset loader''s own 404 for
+
+        datasets (which masks existence, matching every other dataset route) — an inherited
+
+        asymmetry, not an oversight. Empty ``suggestions`` means generation failed — the
+
+        client keeps its static per-module fallback.'
+      operationId: starter_suggestions_endpoint_smart_bot_starter_suggestions_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StarterSuggestionsRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StarterSuggestionsResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /smart_bot/conversations/by-research/{research_id}:
+    get:
+      tags:
+      - Smart Bot
+      summary: Get Conversation By Research
+      description: Return the Smart Bot conversation linked to a research, or 404.
+      operationId: get_conversation_by_research_smart_bot_conversations_by_research__research_id__get
+      parameters:
+      - name: research_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Research Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConversationResponse'
+        '404':
+          description: No conversation for this research
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /smart_bot/conversations/{conversation_id}/task-link:
+    get:
+      tags:
+      - Smart Bot
+      summary: Get Conversation Task Link
+      description: 'Resolve the task a chat was created in, for a "back to task" link.
+
+
+        Returns the routing fields of the chat''s parent (task root) conversation, or
+
+        ``task_link: null`` when the chat isn''t tied to a task. The parent is a
+
+        cross-module row (discovery / deposition / LR), so its fields are read
+
+        module-agnostically; access is authorized via the chat itself (which the
+
+        caller must be able to view).'
+      operationId: get_conversation_task_link_smart_bot_conversations__conversation_id__task_link_get
+      parameters:
+      - name: conversation_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Conversation Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskLinkResponse'
+        '404':
+          description: Conversation not found
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /smart_bot/conversations/by-dataset/{dataset_id}:
+    get:
+      tags:
+      - Smart Bot
+      summary: Get Conversation By Dataset
+      description: Return the Smart Bot conversation linked to a discovery dataset, or 404.
+      operationId: get_conversation_by_dataset_smart_bot_conversations_by_dataset__dataset_id__get
+      parameters:
+      - name: dataset_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Dataset Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatasetConversationResponse'
+        '404':
+          description: No conversation for this dataset
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /smart_bot/conversations/by-deposition/{deposition_id}:
+    get:
+      tags:
+      - Smart Bot
+      summary: Get Conversation By Deposition
+      description: Return the Smart Bot conversation linked to a deposition task, or 404.
+      operationId: get_conversation_by_deposition_smart_bot_conversations_by_deposition__deposition_id__get
+      parameters:
+      - name: deposition_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Deposition Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DepositionConversationResponse'
+        '404':
+          description: No conversation for this deposition
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /smart_bot/conversations/{conversation_id}:
+    get:
+      tags:
+      - Smart Bot
+      summary: Get Conversation Endpoint
+      description: 'Get a conversation and its messages.
+
+
+        ``limit``, when given, returns only the tail of the conversation (still in ascending
+
+        order) plus ``total_messages`` so the caller can decide whether to fetch the rest.
+
+        Used by the client to paint a long conversation''s last few messages immediately,
+
+        then backfill the full history in the background.'
+      operationId: get_conversation_endpoint_smart_bot_conversations__conversation_id__get
+      parameters:
+      - name: conversation_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Conversation Id
+      - name: limit
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+            minimum: 1
+          - type: 'null'
+          description: Return only the most recent `limit` stored messages (the tail).
+          title: Limit
+        description: Return only the most recent `limit` stored messages (the tail).
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConversationDetailResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+      - Smart Bot
+      summary: Delete Conversation Endpoint
+      description: Delete a smart bot conversation owned by the authenticated user.
+      operationId: delete_conversation_endpoint_smart_bot_conversations__conversation_id__delete
+      parameters:
+      - name: conversation_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Conversation Id
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /smart_bot/conversations/{conversation_id}/smart-suggestions:
+    patch:
+      tags:
+      - Smart Bot
+      summary: Update Smart Suggestions Endpoint
+      description: Enable or disable smart suggestions for a conversation.
+      operationId: update_smart_suggestions_endpoint_smart_bot_conversations__conversation_id__smart_suggestions_patch
+      parameters:
+      - name: conversation_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Conversation Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSmartSuggestionsRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConversationResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /smart_bot/conversation/{conversation_id}/token-count:
+    get:
+      tags:
+      - Smart Bot
+      summary: Get Token Count Endpoint
+      description: Return the total token count for all messages in a conversation.
+      operationId: get_token_count_endpoint_smart_bot_conversation__conversation_id__token_count_get
+      parameters:
+      - name: conversation_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Conversation Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: integer
+                title: Response Get Token Count Endpoint Smart Bot Conversation  Conversation Id  Token Count Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /smart_bot/conversations/{conversation_id}/messages:
+    post:
+      tags:
+      - Smart Bot
+      summary: Send Message Endpoint
+      description: 'Send a user message and stream the AI response via Server-Sent Events.
+
+
+        SSE event types:
+
+        - ``token`` — a chunk of the AI''s text response
+
+        - ``status`` — a user-visible progress update (e.g. "Searching your documents...")
+
+        - ``done`` — signals completion: ``{"status": "complete"}``
+
+        - ``error`` — an error message string'
+      operationId: send_message_endpoint_smart_bot_conversations__conversation_id__messages_post
+      parameters:
+      - name: conversation_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Conversation Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendMessageRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+                title: Response Send Message Endpoint Smart Bot Conversations  Conversation Id  Messages Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /smart_bot/conversations/{conversation_id}/message-stream/{stream_token}:
+    get:
+      tags:
+      - Smart Bot
+      summary: Get Message Stream Endpoint
+      description: 'Return the current state of a message stream for a conversation.
+
+
+        This endpoint is polled by the client to get the latest messages in a stream.'
+      operationId: get_message_stream_endpoint_smart_bot_conversations__conversation_id__message_stream__stream_token__get
+      parameters:
+      - name: conversation_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Conversation Id
+      - name: stream_token
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Stream Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /smart_bot/conversations/{conversation_id}/active:
+    get:
+      tags:
+      - Smart Bot
+      summary: Get Conversation Active Endpoint
+      description: Return whether this conversation has an active streaming session.
+      operationId: get_conversation_active_endpoint_smart_bot_conversations__conversation_id__active_get
+      parameters:
+      - name: conversation_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Conversation Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: boolean
+                title: Response Get Conversation Active Endpoint Smart Bot Conversations  Conversation Id  Active Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /smart_bot/conversations/{conversation_id}/stop:
+    post:
+      tags:
+      - Smart Bot
+      summary: Stop Conversation Stream Endpoint
+      description: Signal the active stream for this conversation to stop.
+      operationId: stop_conversation_stream_endpoint_smart_bot_conversations__conversation_id__stop_post
+      parameters:
+      - name: conversation_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Conversation Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+                title: Response Stop Conversation Stream Endpoint Smart Bot Conversations  Conversation Id  Stop Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /smart_bot/conversations/{conversation_id}/tool-response:
+    post:
+      tags:
+      - Smart Bot
+      summary: Tool Response Endpoint
+      description: 'Record the user''s decision for a pending ask_user confirmation question.
+
+
+        Writes the decision to a Redis flag polled by the paused agent loop — the loop
+
+        may be running on a different worker, so this is the same multi-worker-safe
+
+        pattern as the stop endpoint. 404 when nothing is pending (the question already
+
+        resolved — e.g. it timed out or was auto-cancelled); 409 when the pending
+
+        question is a different one than the client is answering.'
+      operationId: tool_response_endpoint_smart_bot_conversations__conversation_id__tool_response_post
+      parameters:
+      - name: conversation_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Conversation Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ToolResponseRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+                title: Response Tool Response Endpoint Smart Bot Conversations  Conversation Id  Tool Response Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /smart_bot/draft-document/{job_id}/result:
+    get:
+      tags:
+      - Smart Bot
+      summary: Get Draft Document Result Endpoint
+      description: 'Return the current result of a SmartbotDraftDocumentWorkflow.
+
+
+        Queries Temporal once and returns immediately — the caller is responsible
+
+        for polling if the status is ``pending``.
+
+
+        On a terminal Temporal failure (failed / timed out / canceled) the job id
+
+        is dropped from the caller''s ``draft_job_ids`` so a reload does not revive
+
+        a pending card. Retirement runs only when ``query_basic_workflow_status``
+
+        sets ``terminal=True`` — a transient ``describe()`` error still returns
+
+        ``status=failed`` for the poller but must not clear an in-flight job.
+
+        Cleanup is best-effort and does not change the error response if the write
+
+        fails.'
+      operationId: get_draft_document_result_endpoint_smart_bot_draft_document__job_id__result_get
+      parameters:
+      - name: job_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Job Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DraftDocumentResultResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /smart_bot/preferences/matter-link-opt-out:
+    get:
+      tags:
+      - Smart Bot
+      summary: Get Matter Link Opt Out Endpoint
+      description: Get the user's smartbot matter-link opt-out preference.
+      operationId: get_matter_link_opt_out_endpoint_smart_bot_preferences_matter_link_opt_out_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmartbotOptOutResponse'
+    patch:
+      tags:
+      - Smart Bot
+      summary: Update Matter Link Opt Out Endpoint
+      description: Set the user's smartbot matter-link opt-out preference.
+      operationId: update_matter_link_opt_out_endpoint_smart_bot_preferences_matter_link_opt_out_patch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSmartbotOptOutRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmartbotOptOutResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /smart_bot/preferences/enter-key-behavior:
+    get:
+      tags:
+      - Smart Bot
+      summary: Get Enter Key Behavior Endpoint
+      description: Get the user's assistant Enter-key behavior preference.
+      operationId: get_enter_key_behavior_endpoint_smart_bot_preferences_enter_key_behavior_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnterKeyBehaviorResponse'
+    patch:
+      tags:
+      - Smart Bot
+      summary: Update Enter Key Behavior Endpoint
+      description: Set the user's assistant Enter-key behavior preference.
+      operationId: update_enter_key_behavior_endpoint_smart_bot_preferences_enter_key_behavior_patch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateEnterKeyBehaviorRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnterKeyBehaviorResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /smart_bot/conversations/{conversation_id}/next-steps:
+    get:
+      tags:
+      - Smart Bot
+      summary: Get Next Steps Endpoint
+      description: Return the most recently persisted next-step suggestions for a conversation.
+      operationId: get_next_steps_endpoint_smart_bot_conversations__conversation_id__next_steps_get
+      parameters:
+      - name: conversation_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Conversation Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/app__modules__smart_bot__routes__router__NextStepsResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    UpdateEnterKeyBehaviorRequest:
+      properties:
+        behavior:
+          type: string
+          enum:
+          - enter_sends
+          - enter_newline
+          title: Behavior
+      type: object
+      required:
+      - behavior
+      title: UpdateEnterKeyBehaviorRequest
+    DatasetConversationResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        matter_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Matter Id
+        dataset_file_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Dataset File Count
+      type: object
+      required:
+      - id
+      title: DatasetConversationResponse
+      description: Lookup result for the Timeline Task Assistant conversation linked to a dataset.
+    ConversationDetailResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+        matter_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Matter Id
+        matter_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Matter Name
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+        smart_suggestions:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Smart Suggestions
+        next_steps:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Next Steps
+        messages:
+          items:
+            $ref: '#/components/schemas/MessageResponse'
+          type: array
+          title: Messages
+        total_messages:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Total Messages
+        cases:
+          additionalProperties: true
+          type: object
+          title: Cases
+        references:
+          items:
+            $ref: '#/components/schemas/SmartbotReferenceResponse'
+          type: array
+          title: References
+        active:
+          type: boolean
+          title: Active
+        generating_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Generating Id
+        draft_job_ids:
+          items:
+            type: string
+          type: array
+          title: Draft Job Ids
+        is_owner:
+          type: boolean
+          title: Is Owner
+          default: true
+        is_shared_view:
+          type: boolean
+          title: Is Shared View
+          default: false
+      type: object
+      required:
+      - id
+      - title
+      - matter_id
+      - created_at
+      - updated_at
+      - smart_suggestions
+      - next_steps
+      - messages
+      - cases
+      - references
+      - active
+      - generating_id
+      title: ConversationDetailResponse
+    StartConversationRequest:
+      properties:
+        initial_input:
+          type: string
+          minLength: 1
+          title: Initial Input
+          description: Seed message injected as a hidden context message
+        matter_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Matter Id
+          description: Optional matter to associate the conversation with
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+          description: Optional title for the conversation
+        research_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Research Id
+          description: Optional LR V3 research to link this conversation to
+        seed_cases:
+          anyOf:
+          - additionalProperties:
+              type: string
+              format: uuid
+            type: object
+          - type: 'null'
+          title: Seed Cases
+          description: Citation key -> caselaw case id; pre-seeds the conversation case map
+        dataset_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Dataset Id
+          description: Discovery dataset to link this conversation to (Timeline Task Assistant)
+        dataset_file_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Dataset File Count
+          description: Dataset file count at seed time; used to detect when the context is stale
+        deposition_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Deposition Id
+          description: Deposition task to link this conversation to (Deposition Task Assistant)
+        parent_conversation_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Parent Conversation Id
+          description: Optional task root Conversation.id; scopes this chat to that task's history
+      type: object
+      required:
+      - initial_input
+      title: StartConversationRequest
+    SendMessageRequest:
+      properties:
+        content:
+          type: string
+          minLength: 1
+          title: Content
+          description: The user's message text
+        doc_ids:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Doc Ids
+          description: Optional list of document IDs to provide context for the message
+        mode:
+          $ref: '#/components/schemas/AgentMode'
+          description: 'Agent mode: quick (no tools, fastest), standard (tools, medium thinking), deep (tools, high thinking)'
+          default: standard
+      type: object
+      required:
+      - content
+      title: SendMessageRequest
+    CreateConversationRequest:
+      properties:
+        matter_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Matter Id
+          description: Optional matter to associate the conversation with
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+          description: Optional title for the conversation
+        smart_suggestions:
+          type: boolean
+          title: Smart Suggestions
+          description: Whether smart suggestions are enabled for this conversation
+          default: true
+        parent_conversation_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Parent Conversation Id
+          description: Optional task root Conversation.id; scopes this chat to that task's history
+      type: object
+      title: CreateConversationRequest
+    TaskLinkResponse:
+      properties:
+        task_link:
+          anyOf:
+          - $ref: '#/components/schemas/TaskLinkInfo'
+          - type: 'null'
+      type: object
+      title: TaskLinkResponse
+      description: 'Envelope for the task-link lookup.
+
+
+        Wrapping in an object (rather than returning a bare ``TaskLinkInfo | None``)
+
+        keeps the not-task-tied case as a 200 with ``task_link: null`` — a bare
+
+        ``null`` body can''t be parsed by the legacy ApiCall client.'
+    AgentMode:
+      type: string
+      enum:
+      - quick
+      - standard
+      - deep
+      title: AgentMode
+    SmartbotOptOutResponse:
+      properties:
+        opt_out:
+          type: boolean
+          title: Opt Out
+      type: object
+      required:
+      - opt_out
+      title: SmartbotOptOutResponse
+    TaskLinkInfo:
+      properties:
+        module_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Module Type
+        conversation_id:
+          type: string
+          title: Conversation Id
+        dataset_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Dataset Id
+        legal_research_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Legal Research Id
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+      type: object
+      required:
+      - conversation_id
+      title: TaskLinkInfo
+      description: 'Routing essentials for the task a chat was created in.
+
+
+        Resolved from the chat''s ``parent_conversation_id`` (the task root). The
+
+        client maps ``module_type`` + the relevant id to a per-module task route.
+
+        ``conversation_id`` is the *root* conversation''s id (used by id-keyed routes
+
+        like depositions); ``dataset_id`` is the discovery dataset id for
+
+        dataset-backed modules (Timeline / Doc Review / Forensic / Reliance);
+
+        ``legal_research_id`` is the Legal Research V3 session id for LR task roots.
+
+
+        Field names are friendlier than the underlying ``Conversation`` columns they
+
+        come from (``reference_data`` / ``research_id``).
+
+
+        ``title`` is the task root''s display name, decrypted where the module stores
+
+        it encrypted. It lets the client name the task itself ("Smith depo prep")
+
+        instead of falling back to its module ("Deposition"); empty when the root
+
+        was never titled, in which case the client keeps the module-name fallback.'
+    StarterSuggestionsResponse:
+      properties:
+        suggestions:
+          items:
+            type: string
+          type: array
+          title: Suggestions
+      type: object
+      required:
+      - suggestions
+      title: StarterSuggestionsResponse
+      description: Empty ``suggestions`` means generation failed or was too thin — the client keeps its static fallback.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ToolResponseRequest:
+      properties:
+        tool_use_id:
+          type: string
+          minLength: 1
+          title: Tool Use Id
+          description: The tool_use_id from the ask_user SSE event being answered
+        decision:
+          type: string
+          enum:
+          - confirm
+          - cancel
+          - answered
+          title: Decision
+          description: 'The option the user picked on the card: ''confirm''/''cancel'' for a write confirmation, or ''answered'' for a clarification questionnaire (including a skip-all, which is ''answered'' with no answers). Only the proceed-decision the paused tool declared lets it continue, so ''answered'' cannot authorize a write.'
+        data:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Data
+          description: Optional structured payload returned to the paused tool call (e.g. doc_ids uploaded through an upload-widget gate). Only fields the tool opted into are merged into its input; omit for plain confirm/cancel tools.
+      type: object
+      required:
+      - tool_use_id
+      - decision
+      title: ToolResponseRequest
+      description: The user's decision for a pending ask_user confirmation question.
+    NextStep:
+      properties:
+        short:
+          type: string
+          title: Short
+        long:
+          type: string
+          title: Long
+      type: object
+      required:
+      - short
+      - long
+      title: NextStep
+    StartConversationResponse:
+      properties:
+        conversation_id:
+          type: string
+          title: Conversation Id
+      type: object
+      required:
+      - conversation_id
+      title: StartConversationResponse
+    SmartbotReferenceResponse:
+      properties:
+        id:
+          type: integer
+          title: Id
+        doc_id:
+          type: string
+          title: Doc Id
+        page_numbers:
+          anyOf:
+          - items:
+              type: integer
+            type: array
+          - type: 'null'
+          title: Page Numbers
+        quote:
+          type: string
+          title: Quote
+        filename:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Filename
+        full_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Full Path
+      type: object
+      required:
+      - id
+      - doc_id
+      - page_numbers
+      - quote
+      title: SmartbotReferenceResponse
+    DepositionConversationResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        matter_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Matter Id
+      type: object
+      required:
+      - id
+      title: DepositionConversationResponse
+      description: Lookup result for the Task Assistant conversation linked to a deposition task.
+    StarterSuggestionsRequest:
+      properties:
+        dataset_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Dataset Id
+          description: Discovery dataset id (Timeline / Doc Review / Forensic / Reliance / Case Coach)
+        deposition_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Deposition Id
+          description: Deposition task id
+        research_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Research Id
+          description: Legal Research V3 session id
+        matter_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Matter Id
+          description: Matter the task belongs to; folds matter context into the suggestions
+        module:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Module
+          description: Task Assistant module discriminator (e.g. 'timeline', 'doc-review'); scopes suggestions to what the assistant can do in that module
+        refresh:
+          type: boolean
+          title: Refresh
+          description: Regenerate instead of serving the cached set (the fresh result still overwrites the cache); sent after the user consumed a suggestion
+          default: false
+      type: object
+      title: StarterSuggestionsRequest
+      description: 'Task source for LLM-generated Task Assistant starter suggestions.
+
+
+        Mirrors :class:`StartConversationRequest`''s task-link fields: exactly one of
+
+        ``dataset_id`` / ``deposition_id`` / ``research_id`` identifies the task.'
+    EnterKeyBehaviorResponse:
+      properties:
+        behavior:
+          type: string
+          enum:
+          - enter_sends
+          - enter_newline
+          title: Behavior
+      type: object
+      required:
+      - behavior
+      title: EnterKeyBehaviorResponse
+    MessageResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        conversation_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Conversation Id
+        content:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Content
+        content_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Content Type
+        is_ai:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Ai
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        index:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Index
+        image_mime_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Image Mime Type
+        image_data:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Image Data
+        image_urls:
+          anyOf:
+          - items:
+              additionalProperties:
+                type: string
+              type: object
+            type: array
+          - type: 'null'
+          title: Image Urls
+        doc_ids:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Doc Ids
+        draft_session_ids:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Draft Session Ids
+        attached_file_names:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Attached File Names
+        generated_doc_ids:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Generated Doc Ids
+      type: object
+      required:
+      - id
+      - conversation_id
+      - content
+      - content_type
+      - is_ai
+      - created_at
+      - index
+      - image_mime_type
+      - image_data
+      - image_urls
+      - doc_ids
+      - draft_session_ids
+      title: MessageResponse
+    ConversationResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+        matter_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Matter Id
+        matter_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Matter Name
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+      type: object
+      required:
+      - id
+      - title
+      - matter_id
+      - created_at
+      - updated_at
+      title: ConversationResponse
+    UpdateSmartSuggestionsRequest:
+      properties:
+        enabled:
+          type: boolean
+          title: Enabled
+      type: object
+      required:
+      - enabled
+      title: UpdateSmartSuggestionsRequest
+    app__modules__smart_bot__routes__router__NextStepsResponse:
+      properties:
+        steps:
+          items:
+            $ref: '#/components/schemas/NextStep'
+          type: array
+          title: Steps
+        date:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Date
+      type: object
+      required:
+      - steps
+      - date
+      title: NextStepsResponse
+    DraftDocumentResultResponse:
+      properties:
+        status:
+          type: string
+          title: Status
+        doc_agent_session_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Doc Agent Session Id
+        output_filename:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Output Filename
+        error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error
+      type: object
+      required:
+      - status
+      title: DraftDocumentResultResponse
+    UpdateSmartbotOptOutRequest:
+      properties:
+        opt_out:
+          type: boolean
+          title: Opt Out
+      type: object
+      required:
+      - opt_out
+      title: UpdateSmartbotOptOutRequest
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError

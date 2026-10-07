@@ -1,0 +1,1640 @@
+openapi: 3.2.0
+info:
+  title: CallidusAI Depositions API
+  description: Callidus AI backend API
+  version: 0.1.0
+tags:
+- name: Depositions
+paths:
+  /deposition/:
+    get:
+      tags:
+      - Depositions
+      summary: List Depositions Endpoint
+      description: List all deposition tasks the user owns or has access to.
+      operationId: list_depositions_endpoint_deposition__get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DepositionListResponse'
+    post:
+      tags:
+      - Depositions
+      summary: Create Deposition Endpoint
+      description: Create a new deposition task and return its ID.
+      operationId: create_deposition_endpoint_deposition__post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DepositionCreateRequest'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DepositionCreateResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /deposition/{id}:
+    get:
+      tags:
+      - Depositions
+      summary: Get Deposition Endpoint
+      description: Retrieve the details of a specific deposition task.
+      operationId: get_deposition_endpoint_deposition__id__get
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DepositionResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    patch:
+      tags:
+      - Depositions
+      summary: Update Deposition Endpoint
+      description: Update a deposition task by ID.
+      operationId: update_deposition_endpoint_deposition__id__patch
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DepositionUpdateRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DepositionResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+      - Depositions
+      summary: Delete Deposition Endpoint
+      description: Delete a deposition task. Only the owner may delete.
+      operationId: delete_deposition_endpoint_deposition__id__delete
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Id
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /deposition/{id}/chat_context:
+    get:
+      tags:
+      - Depositions
+      summary: Deposition Chat Context Endpoint
+      description: Seed context for the deposition's Task Assistant (ENG-15337).
+      operationId: deposition_chat_context_endpoint_deposition__id__chat_context_get
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DepositionChatContextResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /deposition/{id}/task_id:
+    get:
+      tags:
+      - Depositions
+      summary: Deposition Task Id Endpoint
+      description: Resolve the deposition's root Conversation.id for task-scoped Task Assistant chats.
+      operationId: deposition_task_id_endpoint_deposition__id__task_id_get
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DepositionTaskIdResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /deposition/{id}/analysis:
+    get:
+      tags:
+      - Depositions
+      summary: Get Task Depositions Endpoint
+      description: Retrieve the list of depositions associated with a deposition task.
+      operationId: get_task_depositions_endpoint_deposition__id__analysis_get
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskDepositionsResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+      - Depositions
+      summary: Create Task Deposition Endpoint
+      description: Create a new deposition entry linked to a deposition task.
+      operationId: create_task_deposition_endpoint_deposition__id__analysis_post
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDepositionItemRequest'
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateDepositionItemResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /deposition/{id}/analysis/{deposition_id}:
+    get:
+      tags:
+      - Depositions
+      summary: Get Deposition Item Endpoint
+      description: Retrieve the details of a specific deposition entry.
+      operationId: get_deposition_item_endpoint_deposition__id__analysis__deposition_id__get
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Id
+      - name: deposition_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Deposition Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DepositionDetailResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+      - Depositions
+      summary: Delete Task Deposition Endpoint
+      description: Delete an analyzed deposition entry. Requires can_edit on the parent task.
+      operationId: delete_task_deposition_endpoint_deposition__id__analysis__deposition_id__delete
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Id
+      - name: deposition_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Deposition Id
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /deposition/{id}/prep:
+    post:
+      tags:
+      - Depositions
+      summary: Create Task Prep Endpoint
+      description: Create a new deposition prep entry and trigger the analysis workflow.
+      operationId: create_task_prep_endpoint_deposition__id__prep_post
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DepositionPrepCreateRequest'
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DepositionPrepCreateResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    get:
+      tags:
+      - Depositions
+      summary: Get Task Preps Endpoint
+      description: Retrieve the list of prep entries for a deposition task.
+      operationId: get_task_preps_endpoint_deposition__id__prep_get
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DepositionPrepListResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /deposition/{id}/prep/{prep_id}:
+    delete:
+      tags:
+      - Depositions
+      summary: Delete Task Prep Endpoint
+      description: Delete a deposition prep entry. Requires can_edit on the parent task.
+      operationId: delete_task_prep_endpoint_deposition__id__prep__prep_id__delete
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Id
+      - name: prep_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Prep Id
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    get:
+      tags:
+      - Depositions
+      summary: Get Task Prep Endpoint
+      description: Retrieve the details of a specific prep entry including analysis results.
+      operationId: get_task_prep_endpoint_deposition__id__prep__prep_id__get
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Id
+      - name: prep_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Prep Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DepositionPrepResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /deposition/{id}/inconsistencies/runs:
+    post:
+      tags:
+      - Depositions
+      summary: Start Inconsistencies Run Endpoint
+      description: Kick off the inconsistency-finder pipeline for a deposition.
+      operationId: start_inconsistencies_run_endpoint_deposition__id__inconsistencies_runs_post
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InconsistencyRunCreateRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InconsistencyRunCreateResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /deposition/{id}/inconsistencies/runs/{run_id}:
+    get:
+      tags:
+      - Depositions
+      summary: Get Inconsistencies Run Endpoint
+      description: Poll the status of an inconsistency-finder run.
+      operationId: get_inconsistencies_run_endpoint_deposition__id__inconsistencies_runs__run_id__get
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Id
+      - name: run_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Run Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InconsistencyRunStatusResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /deposition/{id}/inconsistencies:
+    get:
+      tags:
+      - Depositions
+      summary: List Inconsistencies Endpoint
+      description: List inconsistency findings for a deposition, fresh by default.
+      operationId: list_inconsistencies_endpoint_deposition__id__inconsistencies_get
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Id
+      - name: include_stale
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+          title: Include Stale
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InconsistencyFindingListResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /deposition/{id}/inconsistencies/{finding_id}:
+    get:
+      tags:
+      - Depositions
+      summary: Get Inconsistency Endpoint
+      description: Fetch a single inconsistency finding by ID.
+      operationId: get_inconsistency_endpoint_deposition__id__inconsistencies__finding_id__get
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Id
+      - name: finding_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Finding Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InconsistencyFindingResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    InconsistencyRunCreateResponse:
+      properties:
+        run_id:
+          type: integer
+          title: Run Id
+        workflow_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Workflow Id
+        status:
+          type: string
+          title: Status
+      type: object
+      required:
+      - run_id
+      - workflow_id
+      - status
+      title: InconsistencyRunCreateResponse
+    DepositionDetailResponse:
+      properties:
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+        deponent_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Deponent Name
+        transcript_summary:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Transcript Summary
+        inconsistencies:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Inconsistencies
+        key_quotes:
+          anyOf:
+          - items:
+              additionalProperties: true
+              type: object
+            type: array
+          - type: 'null'
+          title: Key Quotes
+        transcript_text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Transcript Text
+      type: object
+      required:
+      - name
+      - deponent_name
+      - transcript_summary
+      - inconsistencies
+      - key_quotes
+      title: DepositionDetailResponse
+    InconsistencyFindingListResponse:
+      properties:
+        findings:
+          items:
+            $ref: '#/components/schemas/InconsistencyFindingResponse'
+          type: array
+          title: Findings
+        executive_summary:
+          anyOf:
+          - $ref: '#/components/schemas/InconsistencyExecutiveSummary'
+          - type: 'null'
+        latest_run:
+          anyOf:
+          - $ref: '#/components/schemas/InconsistencyLatestRun'
+          - type: 'null'
+        matter_doc_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Matter Doc Count
+      type: object
+      required:
+      - findings
+      title: InconsistencyFindingListResponse
+    InconsistencyNotableRevelation:
+      properties:
+        headline:
+          type: string
+          title: Headline
+        details:
+          type: string
+          title: Details
+        source_deponents:
+          items:
+            type: string
+          type: array
+          title: Source Deponents
+      type: object
+      required:
+      - headline
+      - details
+      title: InconsistencyNotableRevelation
+    InconsistencyFindingResponse:
+      properties:
+        finding_id:
+          type: integer
+          title: Finding Id
+        deposition_id:
+          type: string
+          title: Deposition Id
+        run_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Run Id
+        finding_kind:
+          type: string
+          title: Finding Kind
+        confidence:
+          type: string
+          title: Confidence
+        topic:
+          type: string
+          title: Topic
+        subject_description:
+          type: string
+          title: Subject Description
+        summary:
+          type: string
+          title: Summary
+        is_stale:
+          type: boolean
+          title: Is Stale
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        facts:
+          items:
+            $ref: '#/components/schemas/InconsistencyFactRef'
+          type: array
+          title: Facts
+      type: object
+      required:
+      - finding_id
+      - deposition_id
+      - run_id
+      - finding_kind
+      - confidence
+      - topic
+      - subject_description
+      - summary
+      - is_stale
+      - created_at
+      - facts
+      title: InconsistencyFindingResponse
+    InconsistencyRunCreateRequest:
+      properties:
+        analysis_ids:
+          items:
+            type: integer
+          type: array
+          title: Analysis Ids
+        include_matter_context:
+          type: boolean
+          title: Include Matter Context
+          default: true
+      type: object
+      required:
+      - analysis_ids
+      title: InconsistencyRunCreateRequest
+      description: 'Run the inconsistency finder against the specified existing analyses.
+
+
+        The backend resolves each analysis row to its transcript + background
+
+        file UUIDs and pairs them with the analysis''s ``deponent_name``.
+
+
+        When ``include_matter_context`` is true (default) and the deposition
+
+        is linked to a matter with non-deposition documents, the workflow
+
+        runs a Phase 1.5 sweep that compares each extracted fact against
+
+        those documents via matter-context retrieval. When false, the sweep
+
+        is skipped entirely — useful when the user wants a faster run or
+
+        knows the matter docs aren''t relevant to the comparison they want.'
+    InconsistencyNextStep:
+      properties:
+        action:
+          type: string
+          title: Action
+        rationale:
+          type: string
+          title: Rationale
+        source_deponents:
+          items:
+            type: string
+          type: array
+          title: Source Deponents
+      type: object
+      required:
+      - action
+      - rationale
+      title: InconsistencyNextStep
+    KeyParty:
+      properties:
+        name:
+          type: string
+          title: Name
+        description:
+          type: string
+          title: Description
+      type: object
+      required:
+      - name
+      - description
+      title: KeyParty
+    InconsistencyFileProgress:
+      properties:
+        file_id:
+          type: string
+          title: File Id
+        deponent_name:
+          type: string
+          title: Deponent Name
+        status:
+          type: string
+          title: Status
+        fact_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Fact Count
+        error_message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error Message
+      type: object
+      required:
+      - file_id
+      - deponent_name
+      - status
+      title: InconsistencyFileProgress
+    DepositionChatContextResponse:
+      properties:
+        context_markdown:
+          type: string
+          title: Context Markdown
+        title:
+          type: string
+          title: Title
+        matter_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Matter Id
+      type: object
+      required:
+      - context_markdown
+      - title
+      title: DepositionChatContextResponse
+      description: Seed context for the Deposition Task Assistant (ENG-15337).
+    TaskDepositionsResponse:
+      properties:
+        analysis:
+          items:
+            $ref: '#/components/schemas/DepositionItemResponse'
+          type: array
+          title: Analysis
+      type: object
+      required:
+      - analysis
+      title: TaskDepositionsResponse
+    InconsistencyExecutiveSummary:
+      properties:
+        overview:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Overview
+        key_statements:
+          items:
+            $ref: '#/components/schemas/InconsistencyKeyStatement'
+          type: array
+          title: Key Statements
+        notable_revelations:
+          items:
+            $ref: '#/components/schemas/InconsistencyNotableRevelation'
+          type: array
+          title: Notable Revelations
+        top_inconsistencies:
+          items:
+            $ref: '#/components/schemas/InconsistencyTopItem'
+          type: array
+          title: Top Inconsistencies
+        recommended_next_steps:
+          items:
+            $ref: '#/components/schemas/InconsistencyNextStep'
+          type: array
+          title: Recommended Next Steps
+      type: object
+      title: InconsistencyExecutiveSummary
+    InconsistencyLatestRun:
+      properties:
+        run_id:
+          type: integer
+          title: Run Id
+        status:
+          type: string
+          enum:
+          - pending
+          - extracting
+          - matter_context_sweep
+          - clustering
+          - intra_sweep
+          - unclustered_review
+          - completed
+          - failed
+          title: Status
+        completed_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Completed At
+      type: object
+      required:
+      - run_id
+      - status
+      title: InconsistencyLatestRun
+      description: 'Compact status for the most recent run on a deposition.
+
+
+        Attached to ``list_findings`` so the UI can tell whether a run is
+
+        still in flight (and resume polling) vs. terminal (and render
+
+        results). Without this, a modal reopened mid-workflow shows the
+
+        partial findings already persisted by Phase 2 but is unaware that
+
+        Phase 3 (executive_summary) hasn''t completed yet.'
+    DepositionData:
+      properties:
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+        short_description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Short Description
+        background_information:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Background Information
+        cause_of_action_defense:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Cause Of Action Defense
+        party_role:
+          items:
+            type: string
+          type: array
+          title: Party Role
+        key_parties:
+          items:
+            $ref: '#/components/schemas/KeyParty'
+          type: array
+          title: Key Parties
+      type: object
+      title: DepositionData
+    InconsistencyRunStatusResponse:
+      properties:
+        run_id:
+          type: integer
+          title: Run Id
+        deposition_id:
+          type: string
+          title: Deposition Id
+        status:
+          type: string
+          title: Status
+        workflow_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Workflow Id
+        started_at:
+          type: string
+          format: date-time
+          title: Started At
+        completed_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Completed At
+        error_message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error Message
+        cross_witness_count:
+          type: integer
+          title: Cross Witness Count
+          default: 0
+        intra_witness_count:
+          type: integer
+          title: Intra Witness Count
+          default: 0
+        unclustered_review_count:
+          type: integer
+          title: Unclustered Review Count
+          default: 0
+        matter_context_count:
+          type: integer
+          title: Matter Context Count
+          default: 0
+        file_progress:
+          items:
+            $ref: '#/components/schemas/InconsistencyFileProgress'
+          type: array
+          title: File Progress
+      type: object
+      required:
+      - run_id
+      - deposition_id
+      - status
+      - workflow_id
+      - started_at
+      - completed_at
+      - error_message
+      title: InconsistencyRunStatusResponse
+    DepositionResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+        matter_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Matter Id
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/DepositionData'
+          - type: 'null'
+        created_by:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Created By
+        shared_with:
+          items:
+            type: string
+          type: array
+          title: Shared With
+        capabilities:
+          items:
+            type: string
+          type: array
+          title: Capabilities
+        party_role:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Party Role
+        key_parties:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/KeyParty'
+            type: array
+          - type: 'null'
+          title: Key Parties
+        short_description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Short Description
+        background_information:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Background Information
+        cause_of_action_defense:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Cause Of Action Defense
+      type: object
+      required:
+      - id
+      - title
+      - matter_id
+      - created_at
+      - updated_at
+      - data
+      title: DepositionResponse
+    CreateDepositionItemResponse:
+      properties:
+        id:
+          type: integer
+          title: Id
+        workflow_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Workflow Id
+      type: object
+      required:
+      - id
+      title: CreateDepositionItemResponse
+    DepositionPrepCreateResponse:
+      properties:
+        id:
+          type: integer
+          title: Id
+        workflow_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Workflow Id
+      type: object
+      required:
+      - id
+      - workflow_id
+      title: DepositionPrepCreateResponse
+    DepositionPrepUnavailableDoc:
+      properties:
+        file_id:
+          type: string
+          title: File Id
+        name:
+          type: string
+          title: Name
+        reason:
+          type: string
+          title: Reason
+      type: object
+      required:
+      - file_id
+      - name
+      - reason
+      title: DepositionPrepUnavailableDoc
+      description: An uploaded document the prep could not read; its content is not reflected in the results.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    DepositionUpdateRequest:
+      properties:
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+        short_description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Short Description
+        background_information:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Background Information
+        cause_of_action_defense:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Cause Of Action Defense
+        party_role:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Party Role
+        key_parties:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/KeyParty'
+            type: array
+          - type: 'null'
+          title: Key Parties
+        matter_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Matter Id
+      type: object
+      title: DepositionUpdateRequest
+    InconsistencyKeyStatement:
+      properties:
+        deponent:
+          type: string
+          title: Deponent
+        quote:
+          type: string
+          title: Quote
+        subject:
+          type: string
+          title: Subject
+        trial_value:
+          type: string
+          title: Trial Value
+      type: object
+      required:
+      - deponent
+      - quote
+      - subject
+      - trial_value
+      title: InconsistencyKeyStatement
+    DepositionCreateResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+      type: object
+      required:
+      - id
+      title: DepositionCreateResponse
+    DepositionPrepCreateRequest:
+      properties:
+        expert_name:
+          type: string
+          title: Expert Name
+        expert:
+          type: boolean
+          title: Expert
+          default: false
+        inquiry_lines:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Inquiry Lines
+        person_background_context:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Person Background Context
+        case_background_context:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Case Background Context
+        other_considerations:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Other Considerations
+        files:
+          items:
+            type: string
+          type: array
+          title: Files
+        examining_party_side:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Examining Party Side
+        witness_alignment:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Witness Alignment
+        examination_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Examination Type
+      type: object
+      required:
+      - expert_name
+      title: DepositionPrepCreateRequest
+    DepositionListResponse:
+      properties:
+        depositions:
+          items:
+            $ref: '#/components/schemas/DepositionResponse'
+          type: array
+          title: Depositions
+        total:
+          type: integer
+          title: Total
+      type: object
+      required:
+      - depositions
+      - total
+      title: DepositionListResponse
+    InconsistencyTopItem:
+      properties:
+        headline:
+          type: string
+          title: Headline
+        summary:
+          type: string
+          title: Summary
+        finding_ids:
+          items:
+            type: integer
+          type: array
+          title: Finding Ids
+        trial_value:
+          type: string
+          title: Trial Value
+        source_deponents:
+          items:
+            type: string
+          type: array
+          title: Source Deponents
+      type: object
+      required:
+      - headline
+      - summary
+      - trial_value
+      title: InconsistencyTopItem
+    DepositionPrepResponse:
+      properties:
+        id:
+          type: integer
+          title: Id
+        task_id:
+          type: string
+          title: Task Id
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        expert_name:
+          type: string
+          title: Expert Name
+        expert:
+          type: boolean
+          title: Expert
+        inquiry_lines:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Inquiry Lines
+        person_background_context:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Person Background Context
+        case_background_context:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Case Background Context
+        other_considerations:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Other Considerations
+        files:
+          items:
+            type: string
+          type: array
+          title: Files
+        examining_party_side:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Examining Party Side
+        witness_alignment:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Witness Alignment
+        examination_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Examination Type
+        strategies:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Strategies
+        questions:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Questions
+        suggestions:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Suggestions
+        issues_spotted:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Issues Spotted
+        summary:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Summary
+        documents_unavailable:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/DepositionPrepUnavailableDoc'
+            type: array
+          - type: 'null'
+          title: Documents Unavailable
+      type: object
+      required:
+      - id
+      - task_id
+      - created_at
+      - expert_name
+      - expert
+      - inquiry_lines
+      - person_background_context
+      - case_background_context
+      - other_considerations
+      - files
+      - strategies
+      - questions
+      - suggestions
+      - issues_spotted
+      - summary
+      title: DepositionPrepResponse
+    DepositionCreateRequest:
+      properties:
+        title:
+          type: string
+          title: Title
+        short_description:
+          type: string
+          title: Short Description
+        background_information:
+          type: string
+          title: Background Information
+        cause_of_action_defense:
+          type: string
+          title: Cause Of Action Defense
+        party_role:
+          items:
+            type: string
+          type: array
+          title: Party Role
+        key_parties:
+          items:
+            $ref: '#/components/schemas/KeyParty'
+          type: array
+          title: Key Parties
+        matter_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Matter Id
+        matter_memory_override:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Matter Memory Override
+      type: object
+      required:
+      - title
+      - short_description
+      - background_information
+      - cause_of_action_defense
+      - party_role
+      - key_parties
+      title: DepositionCreateRequest
+    InconsistencyFactRef:
+      properties:
+        fact_id:
+          type: integer
+          title: Fact Id
+        deponent_name:
+          type: string
+          title: Deponent Name
+        file_id:
+          type: string
+          title: File Id
+        claim:
+          type: string
+          title: Claim
+        quote:
+          type: string
+          title: Quote
+        context_summary:
+          type: string
+          title: Context Summary
+        topic_label:
+          type: string
+          title: Topic Label
+        deposition_title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Deposition Title
+        page_label:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Page Label
+        line_start:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Line Start
+        line_end:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Line End
+      type: object
+      required:
+      - fact_id
+      - deponent_name
+      - file_id
+      - claim
+      - quote
+      - context_summary
+      - topic_label
+      title: InconsistencyFactRef
+    DepositionItemResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        transcript:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Transcript
+        background_files:
+          items:
+            type: string
+          type: array
+          title: Background Files
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        summary:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Summary
+        deponent_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Deponent Name
+      type: object
+      required:
+      - id
+      - name
+      - description
+      - transcript
+      - background_files
+      - created_at
+      - summary
+      - deponent_name
+      title: DepositionItemResponse
+    DepositionTaskIdResponse:
+      properties:
+        task_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Task Id
+      type: object
+      title: DepositionTaskIdResponse
+      description: Root Conversation.id for a deposition task; anchors task-scoped Task Assistant chats.
+    DepositionPrepListResponse:
+      properties:
+        preps:
+          items:
+            $ref: '#/components/schemas/DepositionPrepResponse'
+          type: array
+          title: Preps
+      type: object
+      required:
+      - preps
+      title: DepositionPrepListResponse
+    CreateDepositionItemRequest:
+      properties:
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+        transcript:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Transcript
+        background_files:
+          items:
+            type: string
+          type: array
+          title: Background Files
+      type: object
+      title: CreateDepositionItemRequest
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError

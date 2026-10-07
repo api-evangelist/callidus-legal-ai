@@ -1,0 +1,186 @@
+openapi: 3.2.0
+info:
+  title: CallidusAI Form Filler API
+  description: Callidus AI backend API
+  version: 0.1.0
+tags:
+- name: Form Filler
+paths:
+  /form-filler/fill:
+    post:
+      tags:
+      - Form Filler
+      summary: Fill Form Endpoint
+      description: 'Populate a JSON form structure using synthesized matter context.
+
+
+        Builds context from the matter''s documents and conversations,
+
+        then uses an LLM to fill in the form fields.'
+      operationId: fill_form_endpoint_form_filler_fill_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FillFormRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FillFormResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /form-filler/extract-known-causes:
+    post:
+      tags:
+      - Form Filler
+      summary: Extract Known Causes Endpoint
+      description: 'Extract discrete causes of action from a matter''s attorney-entered known-causes text.
+
+
+        Distinct from ``/fill``: the LR intake seeds its Causes of Action field from the matter''s own
+
+        ``known_causes`` here — never from the general form filler''s inferred causes — so that
+
+        "Limit to the causes listed above" binds research to exactly the attorney''s claims.'
+      operationId: extract_known_causes_endpoint_form_filler_extract_known_causes_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExtractKnownCausesRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExtractKnownCausesResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    FillFormRequest:
+      properties:
+        matter_id:
+          type: string
+          title: Matter Id
+          description: Matter ID to build context from.
+        form_schema:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Form Schema
+          description: JSON form structure with fields to populate. When omitted and form_type is provided, the schema is auto-derived from the registered model (e.g. SeedResearchRequest for 'lr_intake').
+        form_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Form Type
+          description: Identifier for a predefined set of field descriptions (e.g. 'lr_intake').
+        cache_field_map:
+          anyOf:
+          - additionalProperties:
+              type: string
+            type: object
+          - type: 'null'
+          title: Cache Field Map
+          description: Maps form field names to MatterFormCache attribute names. When provided, cached values are used directly and only remaining fields are sent to the LLM. When omitted, a predefined mapping is used if one exists for the form_type.
+      type: object
+      required:
+      - matter_id
+      title: FillFormRequest
+      description: Request to populate a JSON form using matter context.
+    ExtractKnownCausesResponse:
+      properties:
+        causes:
+          items:
+            type: string
+          type: array
+          title: Causes
+          description: Distinct causes of action taken from the matter's known-causes text (empty when none).
+      type: object
+      title: ExtractKnownCausesResponse
+      description: Response containing the causes of action extracted from a matter's known-causes text.
+    ExtractKnownCausesRequest:
+      properties:
+        matter_id:
+          type: string
+          title: Matter Id
+          description: Matter ID whose attorney-entered known-causes text to extract.
+      type: object
+      required:
+      - matter_id
+      title: ExtractKnownCausesRequest
+      description: Request to extract discrete causes of action from a matter's known-causes text.
+    FillFormResponse:
+      properties:
+        filled_form:
+          additionalProperties: true
+          type: object
+          title: Filled Form
+          description: The form structure with fields populated from matter context.
+        validation_issues:
+          items:
+            type: string
+          type: array
+          title: Validation Issues
+          description: Structural issues remaining after correction (empty when valid).
+        memory_enabled:
+          type: boolean
+          title: Memory Enabled
+          description: False when matter memory is disabled — frontend should not fall back to raw matter fields.
+          default: true
+      type: object
+      required:
+      - filled_form
+      title: FillFormResponse
+      description: Response containing the populated form.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError

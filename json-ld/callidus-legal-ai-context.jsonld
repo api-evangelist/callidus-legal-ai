@@ -1,0 +1,1547 @@
+{
+  "@context": {
+    "@vocab": "https://strongsuit.com/schema#",
+    "schema": "https://schema.org/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "dcterms": "http://purl.org/dc/terms/",
+    "callidus": "https://strongsuit.com/schema#",
+    "ADStepResponse": "callidus:ADStepResponse",
+    "status": {
+      "@id": "callidus:status",
+      "@type": "@id"
+    },
+    "suggestion": {
+      "@id": "callidus:suggestion"
+    },
+    "selection": {
+      "@id": "callidus:selection"
+    },
+    "AICaseSearch": "callidus:AICaseSearch",
+    "query": {
+      "@id": "callidus:query",
+      "@type": "xsd:string"
+    },
+    "AccountBalanceListResponse": "callidus:AccountBalanceListResponse",
+    "balances": {
+      "@id": "callidus:balances",
+      "@container": "@list"
+    },
+    "total": {
+      "@id": "callidus:total",
+      "@type": "xsd:integer"
+    },
+    "page": {
+      "@id": "callidus:page",
+      "@type": "xsd:integer"
+    },
+    "page_size": {
+      "@id": "callidus:page_size",
+      "@type": "xsd:integer"
+    },
+    "total_pages": {
+      "@id": "callidus:total_pages",
+      "@type": "xsd:integer"
+    },
+    "AccountBalanceResponse": "callidus:AccountBalanceResponse",
+    "id": {
+      "@id": "callidus:id",
+      "@type": "xsd:integer"
+    },
+    "dataset_id": {
+      "@id": "callidus:dataset_id",
+      "@type": "xsd:integer"
+    },
+    "account_id": {
+      "@id": "callidus:account_id",
+      "@type": "xsd:integer"
+    },
+    "document_id": {
+      "@id": "callidus:document_id",
+      "@type": "xsd:integer"
+    },
+    "balance_date": {
+      "@id": "callidus:balance_date",
+      "@type": "xsd:dateTime"
+    },
+    "beginning_balance": {
+      "@id": "callidus:beginning_balance"
+    },
+    "ending_balance": {
+      "@id": "callidus:ending_balance",
+      "@type": "xsd:string"
+    },
+    "available_balance": {
+      "@id": "callidus:available_balance"
+    },
+    "total_credits": {
+      "@id": "callidus:total_credits"
+    },
+    "total_debits": {
+      "@id": "callidus:total_debits"
+    },
+    "source_node_id": {
+      "@id": "callidus:source_node_id"
+    },
+    "statement_period_start": {
+      "@id": "callidus:statement_period_start"
+    },
+    "statement_period_end": {
+      "@id": "callidus:statement_period_end"
+    },
+    "account": {
+      "@id": "callidus:account"
+    },
+    "net_change": {
+      "@id": "callidus:net_change"
+    },
+    "period_length_days": {
+      "@id": "callidus:period_length_days"
+    },
+    "AccountSummaryResponse": "callidus:AccountSummaryResponse",
+    "account_name": {
+      "@id": "callidus:account_name"
+    },
+    "account_number_masked": {
+      "@id": "callidus:account_number_masked"
+    },
+    "current_balance": {
+      "@id": "callidus:current_balance"
+    },
+    "transaction_count": {
+      "@id": "callidus:transaction_count",
+      "@type": "xsd:integer"
+    },
+    "net_amount": {
+      "@id": "callidus:net_amount",
+      "@type": "xsd:string"
+    },
+    "first_transaction_date": {
+      "@id": "callidus:first_transaction_date"
+    },
+    "last_transaction_date": {
+      "@id": "callidus:last_transaction_date"
+    },
+    "activity_period_days": {
+      "@id": "callidus:activity_period_days"
+    },
+    "AccountValueListResponse": "callidus:AccountValueListResponse",
+    "values": {
+      "@id": "callidus:values",
+      "@container": "@list"
+    },
+    "total_ending_value": {
+      "@id": "callidus:total_ending_value",
+      "@type": "xsd:string"
+    },
+    "total_contributions": {
+      "@id": "callidus:total_contributions",
+      "@type": "xsd:string"
+    },
+    "total_income": {
+      "@id": "callidus:total_income",
+      "@type": "xsd:string"
+    },
+    "AccountValueResponse": "callidus:AccountValueResponse",
+    "value_date": {
+      "@id": "callidus:value_date",
+      "@type": "xsd:dateTime"
+    },
+    "beginning_value": {
+      "@id": "callidus:beginning_value"
+    },
+    "ending_value": {
+      "@id": "callidus:ending_value"
+    },
+    "cash_balance": {
+      "@id": "callidus:cash_balance"
+    },
+    "pending_trades": {
+      "@id": "callidus:pending_trades"
+    },
+    "total_withdrawals": {
+      "@id": "callidus:total_withdrawals"
+    },
+    "total_fees": {
+      "@id": "callidus:total_fees"
+    },
+    "unrealized_gains_losses": {
+      "@id": "callidus:unrealized_gains_losses"
+    },
+    "realized_gains_losses": {
+      "@id": "callidus:realized_gains_losses"
+    },
+    "dividend_income": {
+      "@id": "callidus:dividend_income"
+    },
+    "interest_income": {
+      "@id": "callidus:interest_income"
+    },
+    "period_return_percent": {
+      "@id": "callidus:period_return_percent"
+    },
+    "net_cash_flow": {
+      "@id": "callidus:net_cash_flow",
+      "@type": "xsd:string"
+    },
+    "formatted_ending_value": {
+      "@id": "callidus:formatted_ending_value"
+    },
+    "ActAsCandidate": "callidus:ActAsCandidate",
+    "name": {
+      "@id": "callidus:name"
+    },
+    "email": {
+      "@id": "callidus:email"
+    },
+    "pricing_tier": {
+      "@id": "callidus:pricing_tier"
+    },
+    "enterprise_client_id": {
+      "@id": "callidus:enterprise_client_id"
+    },
+    "can_act_as": {
+      "@id": "callidus:can_act_as",
+      "@type": "xsd:boolean"
+    },
+    "reason": {
+      "@id": "callidus:reason"
+    },
+    "ActAsRequest": "callidus:ActAsRequest",
+    "target_user_id": {
+      "@id": "callidus:target_user_id",
+      "@type": "xsd:string"
+    },
+    "ActAsResponse": "callidus:ActAsResponse",
+    "access_token": {
+      "@id": "callidus:access_token",
+      "@type": "xsd:string"
+    },
+    "token_type": {
+      "@id": "callidus:token_type",
+      "@type": "xsd:string"
+    },
+    "expires_in": {
+      "@id": "callidus:expires_in",
+      "@type": "xsd:integer"
+    },
+    "user": {
+      "@id": "callidus:user",
+      "@type": "@id"
+    },
+    "impersonated_by": {
+      "@id": "callidus:impersonated_by",
+      "@type": "xsd:string"
+    },
+    "ActAsSearchRequest": "callidus:ActAsSearchRequest",
+    "ActAsSearchResponse": "callidus:ActAsSearchResponse",
+    "users": {
+      "@id": "callidus:users",
+      "@container": "@list"
+    },
+    "has_more": {
+      "@id": "callidus:has_more",
+      "@type": "xsd:boolean"
+    },
+    "AdAuthorityStepResponse": "callidus:AdAuthorityStepResponse",
+    "AddADRequest": "callidus:AddADRequest",
+    "AddAdAuthorityRequest": "callidus:AddAdAuthorityRequest",
+    "authority_name": {
+      "@id": "callidus:authority_name",
+      "@type": "xsd:string"
+    },
+    "bluebook": {
+      "@id": "callidus:bluebook",
+      "@type": "xsd:string"
+    },
+    "description": {
+      "@id": "callidus:description",
+      "@type": "xsd:string"
+    },
+    "AddAuthorityRequest": "callidus:AddAuthorityRequest",
+    "AddCOARequest": "callidus:AddCOARequest",
+    "cause_of_action_name": {
+      "@id": "callidus:cause_of_action_name",
+      "@type": "xsd:string"
+    },
+    "court_scope": {
+      "@id": "callidus:court_scope"
+    },
+    "AddCasesRequest": "callidus:AddCasesRequest",
+    "db_caselaw_case_ids": {
+      "@id": "callidus:db_caselaw_case_ids",
+      "@container": "@list"
+    },
+    "AddDocumentRequest": "callidus:AddDocumentRequest",
+    "filename": {
+      "@id": "callidus:filename",
+      "@type": "xsd:string"
+    },
+    "hash": {
+      "@id": "callidus:hash",
+      "@type": "xsd:string"
+    },
+    "original_filename": {
+      "@id": "callidus:original_filename"
+    },
+    "task_id": {
+      "@id": "callidus:task_id"
+    },
+    "lr": {
+      "@id": "callidus:lr",
+      "@type": "xsd:boolean"
+    },
+    "matter_id": {
+      "@id": "callidus:matter_id"
+    },
+    "source": {
+      "@id": "callidus:source"
+    },
+    "chunking_strategy": {
+      "@id": "callidus:chunking_strategy"
+    },
+    "file_content_type": {
+      "@id": "callidus:file_content_type"
+    },
+    "purpose": {
+      "@id": "callidus:purpose"
+    },
+    "archive_member_names_url_encoded": {
+      "@id": "callidus:archive_member_names_url_encoded",
+      "@type": "xsd:boolean"
+    },
+    "archive_member_path_prefix": {
+      "@id": "callidus:archive_member_path_prefix"
+    },
+    "relative_path": {
+      "@id": "callidus:relative_path"
+    },
+    "target_directory_id": {
+      "@id": "callidus:target_directory_id"
+    },
+    "matter_directory_id": {
+      "@id": "callidus:matter_directory_id"
+    },
+    "total_bytes": {
+      "@id": "callidus:total_bytes",
+      "@type": "xsd:integer"
+    },
+    "pages": {
+      "@id": "callidus:pages",
+      "@type": "xsd:integer"
+    },
+    "AddDocumentResponse": "callidus:AddDocumentResponse",
+    "success": {
+      "@id": "callidus:success",
+      "@type": "xsd:boolean"
+    },
+    "task_linked": {
+      "@id": "callidus:task_linked"
+    },
+    "matter_linked": {
+      "@id": "callidus:matter_linked"
+    },
+    "AddDocumentToMatterRequest": "callidus:AddDocumentToMatterRequest",
+    "doc_id": {
+      "@id": "callidus:doc_id",
+      "@type": "xsd:string"
+    },
+    "AddDocumentToMatterResponse": "callidus:AddDocumentToMatterResponse",
+    "already_linked": {
+      "@id": "callidus:already_linked",
+      "@type": "xsd:boolean"
+    },
+    "AddDocumentToTaskRequest": "callidus:AddDocumentToTaskRequest",
+    "AddDocumentToTaskResponse": "callidus:AddDocumentToTaskResponse",
+    "AddDocumentsToMatterRequest": "callidus:AddDocumentsToMatterRequest",
+    "doc_ids": {
+      "@id": "callidus:doc_ids",
+      "@container": "@list"
+    },
+    "AddDocumentsToMatterResponse": "callidus:AddDocumentsToMatterResponse",
+    "added": {
+      "@id": "callidus:added",
+      "@type": "xsd:integer"
+    },
+    "AddDocumentsToTaskRequest": "callidus:AddDocumentsToTaskRequest",
+    "batch_id": {
+      "@id": "callidus:batch_id"
+    },
+    "AddDocumentsToTaskResponse": "callidus:AddDocumentsToTaskResponse",
+    "failed": {
+      "@id": "callidus:failed",
+      "@type": "xsd:integer"
+    },
+    "AddDocumentsV2Request": "callidus:AddDocumentsV2Request",
+    "manifest_blob_path": {
+      "@id": "callidus:manifest_blob_path",
+      "@type": "xsd:string"
+    },
+    "AddDocumentsV2Response": "callidus:AddDocumentsV2Response",
+    "workflow_id": {
+      "@id": "callidus:workflow_id",
+      "@type": "xsd:string"
+    },
+    "doc_count": {
+      "@id": "callidus:doc_count",
+      "@type": "xsd:integer"
+    },
+    "AddFoldersToMatterRequest": "callidus:AddFoldersToMatterRequest",
+    "folder_ids": {
+      "@id": "callidus:folder_ids",
+      "@container": "@list"
+    },
+    "include_subfolders": {
+      "@id": "callidus:include_subfolders",
+      "@type": "xsd:boolean"
+    },
+    "AddFoldersToMatterResponse": "callidus:AddFoldersToMatterResponse",
+    "added_doc_count": {
+      "@id": "callidus:added_doc_count",
+      "@type": "xsd:integer"
+    },
+    "folder_count": {
+      "@id": "callidus:folder_count",
+      "@type": "xsd:integer"
+    },
+    "skipped_count": {
+      "@id": "callidus:skipped_count",
+      "@type": "xsd:integer"
+    },
+    "AddFoldersToTaskRequest": "callidus:AddFoldersToTaskRequest",
+    "return_doc_ids": {
+      "@id": "callidus:return_doc_ids",
+      "@type": "xsd:boolean"
+    },
+    "AddFoldersToTaskResponse": "callidus:AddFoldersToTaskResponse",
+    "resolved_doc_count": {
+      "@id": "callidus:resolved_doc_count",
+      "@type": "xsd:integer"
+    },
+    "resolved_doc_ids": {
+      "@id": "callidus:resolved_doc_ids",
+      "@container": "@list"
+    },
+    "AddKeyQuestionRequest": "callidus:AddKeyQuestionRequest",
+    "question": {
+      "@id": "callidus:question",
+      "@type": "xsd:string"
+    },
+    "question_label": {
+      "@id": "callidus:question_label",
+      "@type": "xsd:string"
+    },
+    "AddParagraphRequest": "callidus:AddParagraphRequest",
+    "text": {
+      "@id": "callidus:text",
+      "@type": "xsd:string"
+    },
+    "persuasive_text": {
+      "@id": "callidus:persuasive_text",
+      "@type": "xsd:string"
+    },
+    "favorability": {
+      "@id": "callidus:favorability"
+    },
+    "AddSubQuestionRequest": "callidus:AddSubQuestionRequest",
+    "AddTeamMembersRequest": "callidus:AddTeamMembersRequest",
+    "team_members": {
+      "@id": "callidus:team_members",
+      "@container": "@list"
+    },
+    "AddTeamMembersResponse": "callidus:AddTeamMembersResponse",
+    "results": {
+      "@id": "callidus:results",
+      "@container": "@list"
+    },
+    "AddinBatchVerifyCitationsRequest": "callidus:AddinBatchVerifyCitationsRequest",
+    "document": {
+      "@id": "callidus:document",
+      "@container": "@list"
+    },
+    "AddinCaseChatRequest": "callidus:AddinCaseChatRequest",
+    "citation": {
+      "@id": "callidus:citation",
+      "@type": "xsd:string"
+    },
+    "AddinCaseDetailsResponse": "callidus:AddinCaseDetailsResponse",
+    "caseId": {
+      "@id": "callidus:caseId",
+      "@type": "xsd:string"
+    },
+    "caseDocketId": {
+      "@id": "callidus:caseDocketId"
+    },
+    "caseClusterId": {
+      "@id": "callidus:caseClusterId",
+      "@type": "xsd:string"
+    },
+    "caseDBId": {
+      "@id": "callidus:caseDBId",
+      "@type": "xsd:string"
+    },
+    "caseName": {
+      "@id": "callidus:caseName",
+      "@type": "xsd:string"
+    },
+    "caseNameBluebook": {
+      "@id": "callidus:caseNameBluebook"
+    },
+    "caseNameShortBluebook": {
+      "@id": "callidus:caseNameShortBluebook"
+    },
+    "citationCount": {
+      "@id": "callidus:citationCount",
+      "@type": "xsd:integer"
+    },
+    "citationStrings": {
+      "@id": "callidus:citationStrings",
+      "@container": "@list"
+    },
+    "publicationStatus": {
+      "@id": "callidus:publicationStatus",
+      "@type": "@id"
+    },
+    "matched_citation": {
+      "@id": "callidus:matched_citation"
+    },
+    "dateDecided": {
+      "@id": "callidus:dateDecided",
+      "@type": "xsd:string"
+    },
+    "court": {
+      "@id": "callidus:court",
+      "@type": "xsd:string"
+    },
+    "court_id": {
+      "@id": "callidus:court_id"
+    },
+    "judges": {
+      "@id": "callidus:judges",
+      "@container": "@list"
+    },
+    "caseType": {
+      "@id": "callidus:caseType"
+    },
+    "trialStage": {
+      "@id": "callidus:trialStage"
+    },
+    "dispositionType": {
+      "@id": "callidus:dispositionType"
+    },
+    "winningParty": {
+      "@id": "callidus:winningParty"
+    },
+    "outcomeSnippet": {
+      "@id": "callidus:outcomeSnippet"
+    },
+    "areasOfLaw": {
+      "@id": "callidus:areasOfLaw"
+    },
+    "causesOfAction": {
+      "@id": "callidus:causesOfAction",
+      "@container": "@list"
+    },
+    "facts": {
+      "@id": "callidus:facts"
+    },
+    "holdings": {
+      "@id": "callidus:holdings",
+      "@container": "@list"
+    },
+    "precedents": {
+      "@id": "callidus:precedents",
+      "@container": "@list"
+    },
+    "citationStats": {
+      "@id": "callidus:citationStats"
+    },
+    "subsequentCitations": {
+      "@id": "callidus:subsequentCitations",
+      "@container": "@list"
+    },
+    "arguments": {
+      "@id": "callidus:arguments"
+    },
+    "judge": {
+      "@id": "callidus:judge"
+    },
+    "courtDetails": {
+      "@id": "callidus:courtDetails"
+    },
+    "AddinCaseLookupRequest": "callidus:AddinCaseLookupRequest",
+    "AddinCaseSearchRequest": "callidus:AddinCaseSearchRequest",
+    "db_jurisdictions": {
+      "@id": "callidus:db_jurisdictions",
+      "@container": "@list"
+    },
+    "max_cases": {
+      "@id": "callidus:max_cases"
+    },
+    "AddinCaseSearchResponse": "callidus:AddinCaseSearchResponse",
+    "cases": {
+      "@id": "callidus:cases",
+      "@container": "@list"
+    },
+    "case_ids": {
+      "@id": "callidus:case_ids",
+      "@container": "@list"
+    },
+    "AddinCaseSearchResult": "callidus:AddinCaseSearchResult",
+    "title": {
+      "@id": "callidus:title",
+      "@type": "xsd:string"
+    },
+    "date_filed": {
+      "@id": "callidus:date_filed"
+    },
+    "jurisdiction": {
+      "@id": "callidus:jurisdiction"
+    },
+    "snippet": {
+      "@id": "callidus:snippet"
+    },
+    "areaOfLaw": {
+      "@id": "callidus:areaOfLaw"
+    },
+    "subAreaOfLaw": {
+      "@id": "callidus:subAreaOfLaw"
+    },
+    "totalAreasOfLaw": {
+      "@id": "callidus:totalAreasOfLaw",
+      "@container": "@list"
+    },
+    "url": {
+      "@id": "callidus:url",
+      "@type": "xsd:string"
+    },
+    "AddinCaseSearchWithFiltersRequest": "callidus:AddinCaseSearchWithFiltersRequest",
+    "year_start": {
+      "@id": "callidus:year_start"
+    },
+    "year_end": {
+      "@id": "callidus:year_end"
+    },
+    "area_of_law": {
+      "@id": "callidus:area_of_law"
+    },
+    "sub_area_of_law": {
+      "@id": "callidus:sub_area_of_law"
+    },
+    "AddinDraftInputs": "callidus:AddinDraftInputs",
+    "paragraphs": {
+      "@id": "callidus:paragraphs",
+      "@container": "@list"
+    },
+    "AddinFilteredCaseSearchRequest": "callidus:AddinFilteredCaseSearchRequest",
+    "court_level": {
+      "@id": "callidus:court_level"
+    },
+    "subcategory": {
+      "@id": "callidus:subcategory"
+    },
+    "AddinFindByCaseNameRequest": "callidus:AddinFindByCaseNameRequest",
+    "case_name": {
+      "@id": "callidus:case_name",
+      "@type": "xsd:string"
+    },
+    "AddinGenerateOutline": "callidus:AddinGenerateOutline",
+    "conversation_id": {
+      "@id": "callidus:conversation_id"
+    },
+    "usage_data": {
+      "@id": "callidus:usage_data"
+    },
+    "AddinLiveEditing": "callidus:AddinLiveEditing",
+    "user_message": {
+      "@id": "callidus:user_message",
+      "@type": "xsd:string"
+    },
+    "all_messages": {
+      "@id": "callidus:all_messages"
+    },
+    "metadata": {
+      "@id": "callidus:metadata"
+    },
+    "AddinNamesAndDefinitions": "callidus:AddinNamesAndDefinitions",
+    "AddinNegotiate": "callidus:AddinNegotiate",
+    "industry": {
+      "@id": "callidus:industry"
+    },
+    "parties": {
+      "@id": "callidus:parties"
+    },
+    "contract_text": {
+      "@id": "callidus:contract_text"
+    },
+    "term_text": {
+      "@id": "callidus:term_text"
+    },
+    "rewrite_type": {
+      "@id": "callidus:rewrite_type"
+    },
+    "custom_instructions": {
+      "@id": "callidus:custom_instructions"
+    },
+    "representing_party": {
+      "@id": "callidus:representing_party"
+    },
+    "AddinProofRead": "callidus:AddinProofRead",
+    "ai_strength": {
+      "@id": "callidus:ai_strength",
+      "@type": "xsd:integer"
+    },
+    "mode": {
+      "@id": "callidus:mode"
+    },
+    "legal_authorities": {
+      "@id": "callidus:legal_authorities",
+      "@type": "xsd:boolean"
+    },
+    "add_points": {
+      "@id": "callidus:add_points",
+      "@type": "xsd:boolean"
+    },
+    "document_type": {
+      "@id": "callidus:document_type"
+    },
+    "concise_robust": {
+      "@id": "callidus:concise_robust",
+      "@type": "xsd:integer"
+    },
+    "standard_grammar": {
+      "@id": "callidus:standard_grammar",
+      "@type": "xsd:boolean"
+    },
+    "clarity": {
+      "@id": "callidus:clarity",
+      "@type": "xsd:boolean"
+    },
+    "legal_writing_lens": {
+      "@id": "callidus:legal_writing_lens",
+      "@type": "xsd:boolean"
+    },
+    "provision_references": {
+      "@id": "callidus:provision_references",
+      "@type": "xsd:boolean"
+    },
+    "defined_terms": {
+      "@id": "callidus:defined_terms",
+      "@type": "xsd:boolean"
+    },
+    "comment_only": {
+      "@id": "callidus:comment_only",
+      "@type": "xsd:boolean"
+    },
+    "add_arguments": {
+      "@id": "callidus:add_arguments"
+    },
+    "high_quality_writing": {
+      "@id": "callidus:high_quality_writing",
+      "@type": "xsd:boolean"
+    },
+    "true_spelling": {
+      "@id": "callidus:true_spelling",
+      "@type": "xsd:boolean"
+    },
+    "check_facts": {
+      "@id": "callidus:check_facts",
+      "@type": "xsd:boolean"
+    },
+    "AddinReferenceDoc": "callidus:AddinReferenceDoc",
+    "outline": {
+      "@id": "callidus:outline",
+      "@container": "@list"
+    },
+    "contract_type": {
+      "@id": "callidus:contract_type",
+      "@type": "xsd:string"
+    },
+    "party1": {
+      "@id": "callidus:party1",
+      "@type": "xsd:string"
+    },
+    "party1_defined": {
+      "@id": "callidus:party1_defined",
+      "@type": "xsd:string"
+    },
+    "party2": {
+      "@id": "callidus:party2",
+      "@type": "xsd:string"
+    },
+    "party2_defined": {
+      "@id": "callidus:party2_defined",
+      "@type": "xsd:string"
+    },
+    "governing_law": {
+      "@id": "callidus:governing_law",
+      "@type": "xsd:string"
+    },
+    "general_guidance": {
+      "@id": "callidus:general_guidance",
+      "@type": "xsd:string"
+    },
+    "favor_level": {
+      "@id": "callidus:favor_level"
+    },
+    "length_level": {
+      "@id": "callidus:length_level"
+    },
+    "country": {
+      "@id": "callidus:country",
+      "@type": "xsd:string"
+    },
+    "writing_style": {
+      "@id": "callidus:writing_style",
+      "@type": "xsd:string"
+    },
+    "use_advanced_model": {
+      "@id": "callidus:use_advanced_model",
+      "@type": "xsd:boolean"
+    },
+    "is_same_type": {
+      "@id": "callidus:is_same_type",
+      "@type": "xsd:boolean"
+    },
+    "priorities": {
+      "@id": "callidus:priorities"
+    },
+    "AddinVerifyCitationRequest": "callidus:AddinVerifyCitationRequest",
+    "context": {
+      "@id": "callidus:context"
+    },
+    "pincite": {
+      "@id": "callidus:pincite"
+    },
+    "AdminCaseAnalysisArtifactsResponse": "callidus:AdminCaseAnalysisArtifactsResponse",
+    "analysis_id": {
+      "@id": "callidus:analysis_id",
+      "@type": "xsd:string"
+    },
+    "tasks": {
+      "@id": "callidus:tasks",
+      "@container": "@list"
+    },
+    "AdminCaseAnalysisDetailResponse": "callidus:AdminCaseAnalysisDetailResponse",
+    "executions": {
+      "@id": "callidus:executions",
+      "@container": "@list"
+    },
+    "AdminCaseAnalysisItem": "callidus:AdminCaseAnalysisItem",
+    "matter_name": {
+      "@id": "callidus:matter_name"
+    },
+    "user_id": {
+      "@id": "callidus:user_id",
+      "@type": "xsd:string"
+    },
+    "stage": {
+      "@id": "callidus:stage",
+      "@type": "xsd:string"
+    },
+    "error": {
+      "@id": "callidus:error"
+    },
+    "workflow_kicked_off": {
+      "@id": "callidus:workflow_kicked_off",
+      "@type": "xsd:boolean"
+    },
+    "tasks_complete": {
+      "@id": "callidus:tasks_complete",
+      "@type": "xsd:integer"
+    },
+    "tasks_total": {
+      "@id": "callidus:tasks_total",
+      "@type": "xsd:integer"
+    },
+    "created_at": {
+      "@id": "callidus:created_at",
+      "@type": "xsd:dateTime"
+    },
+    "updated_at": {
+      "@id": "callidus:updated_at",
+      "@type": "xsd:dateTime"
+    },
+    "AdminCaseAnalysisOverviewResponse": "callidus:AdminCaseAnalysisOverviewResponse",
+    "items": {
+      "@id": "callidus:items",
+      "@container": "@list"
+    },
+    "AdminCaseAnalysisTaskSummary": "callidus:AdminCaseAnalysisTaskSummary",
+    "task_type": {
+      "@id": "callidus:task_type",
+      "@type": "xsd:string"
+    },
+    "started_at": {
+      "@id": "callidus:started_at"
+    },
+    "completed_at": {
+      "@id": "callidus:completed_at"
+    },
+    "AdminCreateSkillRequest": "callidus:AdminCreateSkillRequest",
+    "short_name": {
+      "@id": "callidus:short_name",
+      "@type": "xsd:string"
+    },
+    "prompt": {
+      "@id": "callidus:prompt",
+      "@type": "xsd:string"
+    },
+    "AdminFailedDocItem": "callidus:AdminFailedDocItem",
+    "mime_type": {
+      "@id": "callidus:mime_type"
+    },
+    "size_bytes": {
+      "@id": "callidus:size_bytes"
+    },
+    "upload_datetime": {
+      "@id": "callidus:upload_datetime"
+    },
+    "location": {
+      "@id": "callidus:location"
+    },
+    "failure_reason": {
+      "@id": "callidus:failure_reason"
+    },
+    "failure_detail": {
+      "@id": "callidus:failure_detail"
+    },
+    "last_transient_failure": {
+      "@id": "callidus:last_transient_failure"
+    },
+    "job_error": {
+      "@id": "callidus:job_error"
+    },
+    "percent_complete": {
+      "@id": "callidus:percent_complete"
+    },
+    "retryable": {
+      "@id": "callidus:retryable",
+      "@type": "xsd:boolean"
+    },
+    "skip_reason": {
+      "@id": "callidus:skip_reason"
+    },
+    "has_location": {
+      "@id": "callidus:has_location",
+      "@type": "xsd:boolean"
+    },
+    "AdminFailedDocsUser": "callidus:AdminFailedDocsUser",
+    "full_name": {
+      "@id": "callidus:full_name"
+    },
+    "AdminFailedIngestDownloadItem": "callidus:AdminFailedIngestDownloadItem",
+    "expires_at": {
+      "@id": "callidus:expires_at"
+    },
+    "AdminFailedIngestDownloadRequest": "callidus:AdminFailedIngestDownloadRequest",
+    "document_ids": {
+      "@id": "callidus:document_ids",
+      "@container": "@list"
+    },
+    "AdminFailedIngestDownloadResponse": "callidus:AdminFailedIngestDownloadResponse",
+    "skipped": {
+      "@id": "callidus:skipped",
+      "@container": "@list"
+    },
+    "AdminFailedIngestListResponse": "callidus:AdminFailedIngestListResponse",
+    "documents": {
+      "@id": "callidus:documents",
+      "@container": "@list"
+    },
+    "total_failed": {
+      "@id": "callidus:total_failed",
+      "@type": "xsd:integer"
+    },
+    "retryable_count": {
+      "@id": "callidus:retryable_count",
+      "@type": "xsd:integer"
+    },
+    "permanent_count": {
+      "@id": "callidus:permanent_count",
+      "@type": "xsd:integer"
+    },
+    "empty_blob_count": {
+      "@id": "callidus:empty_blob_count",
+      "@type": "xsd:integer"
+    },
+    "alias_count": {
+      "@id": "callidus:alias_count",
+      "@type": "xsd:integer"
+    },
+    "truncated": {
+      "@id": "callidus:truncated",
+      "@type": "xsd:boolean"
+    },
+    "AdminFailedIngestRequeueRequest": "callidus:AdminFailedIngestRequeueRequest",
+    "AdminFailedIngestRequeueResponse": "callidus:AdminFailedIngestRequeueResponse",
+    "requeued": {
+      "@id": "callidus:requeued",
+      "@container": "@list"
+    },
+    "AdminFailedIngestSkip": "callidus:AdminFailedIngestSkip",
+    "AdminIngestHealthCompleted": "callidus:AdminIngestHealthCompleted",
+    "succeeded": {
+      "@id": "callidus:succeeded",
+      "@type": "xsd:integer"
+    },
+    "success_rate_pct": {
+      "@id": "callidus:success_rate_pct"
+    },
+    "customers": {
+      "@id": "callidus:customers",
+      "@type": "xsd:integer"
+    },
+    "AdminIngestHealthQueue": "callidus:AdminIngestHealthQueue",
+    "queued": {
+      "@id": "callidus:queued",
+      "@type": "xsd:integer"
+    },
+    "processing": {
+      "@id": "callidus:processing",
+      "@type": "xsd:integer"
+    },
+    "oldest_queued_minutes": {
+      "@id": "callidus:oldest_queued_minutes"
+    },
+    "starved_jobs": {
+      "@id": "callidus:starved_jobs",
+      "@type": "xsd:integer"
+    },
+    "high_retry_jobs": {
+      "@id": "callidus:high_retry_jobs",
+      "@type": "xsd:integer"
+    },
+    "top_user_id": {
+      "@id": "callidus:top_user_id"
+    },
+    "top_user_processing": {
+      "@id": "callidus:top_user_processing",
+      "@type": "xsd:integer"
+    },
+    "top_user_processing_share_pct": {
+      "@id": "callidus:top_user_processing_share_pct"
+    },
+    "AdminIngestHealthResponse": "callidus:AdminIngestHealthResponse",
+    "evaluated_at": {
+      "@id": "callidus:evaluated_at",
+      "@type": "xsd:dateTime"
+    },
+    "window_minutes": {
+      "@id": "callidus:window_minutes",
+      "@type": "xsd:integer"
+    },
+    "completed": {
+      "@id": "callidus:completed",
+      "@type": "@id"
+    },
+    "failures_by_class": {
+      "@id": "callidus:failures_by_class"
+    },
+    "throughput_per_hour": {
+      "@id": "callidus:throughput_per_hour",
+      "@type": "xsd:decimal"
+    },
+    "queue": {
+      "@id": "callidus:queue",
+      "@type": "@id"
+    },
+    "AdminSetSkillHiddenRequest": "callidus:AdminSetSkillHiddenRequest",
+    "hide_prompt": {
+      "@id": "callidus:hide_prompt",
+      "@type": "xsd:boolean"
+    },
+    "AdminUpdateSkillRequest": "callidus:AdminUpdateSkillRequest",
+    "AdminUploadSummaryResponse": "callidus:AdminUploadSummaryResponse",
+    "since": {
+      "@id": "callidus:since",
+      "@type": "xsd:dateTime"
+    },
+    "until": {
+      "@id": "callidus:until",
+      "@type": "xsd:dateTime"
+    },
+    "by_status": {
+      "@id": "callidus:by_status"
+    },
+    "first_upload": {
+      "@id": "callidus:first_upload"
+    },
+    "last_upload": {
+      "@id": "callidus:last_upload"
+    },
+    "AdultAllocationMember": "callidus:AdultAllocationMember",
+    "taxpayer_id": {
+      "@id": "callidus:taxpayer_id",
+      "@type": "xsd:integer"
+    },
+    "label": {
+      "@id": "callidus:label",
+      "@type": "xsd:string"
+    },
+    "adult_share": {
+      "@id": "callidus:adult_share",
+      "@type": "xsd:integer"
+    },
+    "household_share": {
+      "@id": "callidus:household_share",
+      "@type": "xsd:integer"
+    },
+    "general_share": {
+      "@id": "callidus:general_share",
+      "@type": "xsd:integer"
+    },
+    "AffectedMatter": "callidus:AffectedMatter",
+    "AffirmativeDefenseV3": "callidus:AffirmativeDefenseV3",
+    "coa_id": {
+      "@id": "callidus:coa_id"
+    },
+    "assessment": {
+      "@id": "callidus:assessment"
+    },
+    "assessment_factors": {
+      "@id": "callidus:assessment_factors"
+    },
+    "authority_keys": {
+      "@id": "callidus:authority_keys",
+      "@container": "@list"
+    },
+    "case_keys": {
+      "@id": "callidus:case_keys",
+      "@container": "@list"
+    },
+    "applicability": {
+      "@id": "callidus:applicability"
+    },
+    "only_use_case_law": {
+      "@id": "callidus:only_use_case_law",
+      "@type": "xsd:boolean"
+    },
+    "only_use_case_law_reason": {
+      "@id": "callidus:only_use_case_law_reason"
+    },
+    "AgentAskRequest": "callidus:AgentAskRequest",
+    "reasoning_effort": {
+      "@id": "callidus:reasoning_effort",
+      "@type": "xsd:string"
+    },
+    "AgentMode": "callidus:AgentMode",
+    "AgentStatusSnapshot": "callidus:AgentStatusSnapshot",
+    "messages": {
+      "@id": "callidus:messages",
+      "@container": "@list"
+    },
+    "done": {
+      "@id": "callidus:done",
+      "@type": "xsd:boolean"
+    },
+    "AlignedParty": "callidus:AlignedParty",
+    "role": {
+      "@id": "callidus:role"
+    },
+    "AllocationConfigRequest": "callidus:AllocationConfigRequest",
+    "adults": {
+      "@id": "callidus:adults",
+      "@container": "@list"
+    },
+    "dependents": {
+      "@id": "callidus:dependents",
+      "@container": "@list"
+    },
+    "AllocationConfigResponse": "callidus:AllocationConfigResponse",
+    "AnalysisRunDetail": "callidus:AnalysisRunDetail",
+    "run_id": {
+      "@id": "callidus:run_id",
+      "@type": "xsd:string"
+    },
+    "workflow_name": {
+      "@id": "callidus:workflow_name",
+      "@type": "xsd:string"
+    },
+    "aggregate_state": {
+      "@id": "callidus:aggregate_state",
+      "@type": "xsd:string"
+    },
+    "total_count": {
+      "@id": "callidus:total_count",
+      "@type": "xsd:integer"
+    },
+    "terminal_count": {
+      "@id": "callidus:terminal_count",
+      "@type": "xsd:integer"
+    },
+    "failed_count": {
+      "@id": "callidus:failed_count",
+      "@type": "xsd:integer"
+    },
+    "finished_at": {
+      "@id": "callidus:finished_at"
+    },
+    "linked_doc_count": {
+      "@id": "callidus:linked_doc_count",
+      "@type": "xsd:integer"
+    },
+    "AnalysisRunProgress": "callidus:AnalysisRunProgress",
+    "last_finished_at": {
+      "@id": "callidus:last_finished_at"
+    },
+    "child_counts": {
+      "@id": "callidus:child_counts",
+      "@container": "@list"
+    },
+    "in_flight": {
+      "@id": "callidus:in_flight",
+      "@type": "xsd:integer"
+    },
+    "real_processed": {
+      "@id": "callidus:real_processed",
+      "@type": "xsd:integer"
+    },
+    "real_total": {
+      "@id": "callidus:real_total",
+      "@type": "xsd:integer"
+    },
+    "real_percent": {
+      "@id": "callidus:real_percent"
+    },
+    "widget_processed": {
+      "@id": "callidus:widget_processed",
+      "@type": "xsd:integer"
+    },
+    "widget_total": {
+      "@id": "callidus:widget_total",
+      "@type": "xsd:integer"
+    },
+    "widget_percent": {
+      "@id": "callidus:widget_percent"
+    },
+    "stragglers": {
+      "@id": "callidus:stragglers",
+      "@container": "@list"
+    },
+    "completion_children": {
+      "@id": "callidus:completion_children",
+      "@container": "@list"
+    },
+    "AnalysisStepResponse": "callidus:AnalysisStepResponse",
+    "AnalyzeQueryRequest": "callidus:AnalyzeQueryRequest",
+    "recaptcha_token": {
+      "@id": "callidus:recaptcha_token"
+    },
+    "AnswerClaim": "callidus:AnswerClaim",
+    "statement": {
+      "@id": "callidus:statement",
+      "@type": "xsd:string"
+    },
+    "citations": {
+      "@id": "callidus:citations",
+      "@container": "@list"
+    },
+    "AnswerSection": "callidus:AnswerSection",
+    "heading": {
+      "@id": "callidus:heading"
+    },
+    "claims": {
+      "@id": "callidus:claims",
+      "@container": "@list"
+    },
+    "AppellateBriefGenerateRequest": "callidus:AppellateBriefGenerateRequest",
+    "page_limit": {
+      "@id": "callidus:page_limit"
+    },
+    "retain_prior_drafts": {
+      "@id": "callidus:retain_prior_drafts",
+      "@type": "xsd:boolean"
+    },
+    "filing_forum": {
+      "@id": "callidus:filing_forum"
+    },
+    "responding_to_document_id": {
+      "@id": "callidus:responding_to_document_id"
+    },
+    "what_is_appealed": {
+      "@id": "callidus:what_is_appealed"
+    },
+    "record": {
+      "@id": "callidus:record"
+    },
+    "appealed_order_document_id": {
+      "@id": "callidus:appealed_order_document_id"
+    },
+    "AppellateBriefStatusResponse": "callidus:AppellateBriefStatusResponse",
+    "progress": {
+      "@id": "callidus:progress"
+    },
+    "download_url": {
+      "@id": "callidus:download_url"
+    },
+    "document_title": {
+      "@id": "callidus:document_title"
+    },
+    "ApplicabilityLevel": "callidus:ApplicabilityLevel",
+    "AreasOfLaw": "callidus:AreasOfLaw",
+    "ArtifactInventoryTask": "callidus:ArtifactInventoryTask",
+    "conversation_ids": {
+      "@id": "callidus:conversation_ids",
+      "@container": "@list"
+    },
+    "dataset_ids": {
+      "@id": "callidus:dataset_ids",
+      "@container": "@list"
+    },
+    "research_ids": {
+      "@id": "callidus:research_ids",
+      "@container": "@list"
+    },
+    "orphaned_conversation_ids": {
+      "@id": "callidus:orphaned_conversation_ids",
+      "@container": "@list"
+    },
+    "AssessmentResponse": "callidus:AssessmentResponse",
+    "score": {
+      "@id": "callidus:score",
+      "@type": "xsd:integer"
+    },
+    "suggestions": {
+      "@id": "callidus:suggestions",
+      "@container": "@list"
+    },
+    "suggestion_key": {
+      "@id": "callidus:suggestion_key",
+      "@type": "xsd:string"
+    },
+    "AssistantContextResponse": "callidus:AssistantContextResponse",
+    "context_markdown": {
+      "@id": "callidus:context_markdown",
+      "@type": "xsd:string"
+    },
+    "AttachDocHubDocumentsRequest": "callidus:AttachDocHubDocumentsRequest",
+    "current_context_tokens": {
+      "@id": "callidus:current_context_tokens"
+    },
+    "AttachMatterContextRequest": "callidus:AttachMatterContextRequest",
+    "markdown": {
+      "@id": "callidus:markdown",
+      "@type": "xsd:string"
+    },
+    "Audience": "callidus:Audience",
+    "Authority": "callidus:Authority",
+    "AuthorityClass": "callidus:AuthorityClass",
+    "AuthoritySearchRequest": "callidus:AuthoritySearchRequest",
+    "jurisdiction_key": {
+      "@id": "callidus:jurisdiction_key"
+    },
+    "state_code": {
+      "@id": "callidus:state_code"
+    },
+    "AuthoritySearchResponse": "callidus:AuthoritySearchResponse",
+    "search_type": {
+      "@id": "callidus:search_type",
+      "@type": "xsd:string"
+    },
+    "jurisdiction_used": {
+      "@id": "callidus:jurisdiction_used",
+      "@type": "xsd:string"
+    },
+    "AuthoritySearchResult": "callidus:AuthoritySearchResult",
+    "display_name": {
+      "@id": "callidus:display_name",
+      "@type": "xsd:string"
+    },
+    "identifier": {
+      "@id": "callidus:identifier",
+      "@type": "xsd:string"
+    },
+    "display_ancestors": {
+      "@id": "callidus:display_ancestors",
+      "@container": "@list"
+    },
+    "openlaws_web_url": {
+      "@id": "callidus:openlaws_web_url"
+    },
+    "plaintext_content": {
+      "@id": "callidus:plaintext_content"
+    },
+    "markdown_content": {
+      "@id": "callidus:markdown_content"
+    },
+    "law_key": {
+      "@id": "callidus:law_key"
+    },
+    "effective_date": {
+      "@id": "callidus:effective_date"
+    },
+    "is_repealed": {
+      "@id": "callidus:is_repealed",
+      "@type": "xsd:boolean"
+    },
+    "is_reserved": {
+      "@id": "callidus:is_reserved",
+      "@type": "xsd:boolean"
+    },
+    "AuthorityStepResponse": "callidus:AuthorityStepResponse",
+    "AuthorityValidityStatus": "callidus:AuthorityValidityStatus",
+    "AuthorityVerificationResult": "callidus:AuthorityVerificationResult",
+    "openlaws_status": {
+      "@id": "callidus:openlaws_status"
+    },
+    "replacement_authority": {
+      "@id": "callidus:replacement_authority"
+    },
+    "reasoning": {
+      "@id": "callidus:reasoning",
+      "@type": "xsd:string"
+    },
+    "AuthorityVerificationStatus": "callidus:AuthorityVerificationStatus",
+    "AuthorizeRequest": "callidus:AuthorizeRequest",
+    "client_id": {
+      "@id": "callidus:client_id",
+      "@type": "xsd:string"
+    },
+    "redirect_uri": {
+      "@id": "callidus:redirect_uri",
+      "@type": "xsd:string"
+    },
+    "code_challenge": {
+      "@id": "callidus:code_challenge",
+      "@type": "xsd:string"
+    },
+    "code_challenge_method": {
+      "@id": "callidus:code_challenge_method",
+      "@type": "xsd:string"
+    },
+    "state": {
+      "@id": "callidus:state",
+      "@type": "xsd:string"
+    },
+    "AuthorizeResponse": "callidus:AuthorizeResponse",
+    "code": {
+      "@id": "callidus:code",
+      "@type": "xsd:string"
+    },
+    "redirect_to": {
+      "@id": "callidus:redirect_to",
+      "@type": "xsd:string"
+    },
+    "client_name": {
+      "@id": "callidus:client_name",
+      "@type": "xsd:string"
+    },
+    "AvailableCase": "callidus:AvailableCase",
+    "case_id": {
+      "@id": "callidus:case_id",
+      "@type": "xsd:string"
+    },
+    "AvailableDraftEntry": "callidus:AvailableDraftEntry",
+    "draft_id": {
+      "@id": "callidus:draft_id",
+      "@type": "xsd:string"
+    },
+    "item_count": {
+      "@id": "callidus:item_count",
+      "@type": "xsd:integer"
+    },
+    "AvailableHolding": "callidus:AvailableHolding",
+    "holding_id": {
+      "@id": "callidus:holding_id",
+      "@type": "xsd:string"
+    },
+    "BalanceSheetItemCreateRequest": "callidus:BalanceSheetItemCreateRequest",
+    "kind": {
+      "@id": "callidus:kind",
+      "@type": "xsd:string"
+    },
+    "category": {
+      "@id": "callidus:category"
+    },
+    "institution_name": {
+      "@id": "callidus:institution_name"
+    },
+    "account_last4": {
+      "@id": "callidus:account_last4"
+    },
+    "current_amount": {
+      "@id": "callidus:current_amount"
+    },
+    "as_of_date": {
+      "@id": "callidus:as_of_date"
+    },
+    "acquired_date": {
+      "@id": "callidus:acquired_date"
+    },
+    "purchase_amount": {
+      "@id": "callidus:purchase_amount"
+    },
+    "owner": {
+      "@id": "callidus:owner",
+      "@type": "xsd:string"
+    },
+    "marital_character": {
+      "@id": "callidus:marital_character",
+      "@type": "xsd:string"
+    },
+    "secured_by_item_id": {
+      "@id": "callidus:secured_by_item_id"
+    },
+    "is_disputed": {
+      "@id": "callidus:is_disputed",
+      "@type": "xsd:boolean"
+    },
+    "dispute_notes": {
+      "@id": "callidus:dispute_notes"
+    },
+    "notes": {
+      "@id": "callidus:notes"
+    },
+    "metadata_ex": {
+      "@id": "callidus:metadata_ex"
+    },
+    "BalanceSheetItemDetailResponse": "callidus:BalanceSheetItemDetailResponse",
+    "source_tax_document_id": {
+      "@id": "callidus:source_tax_document_id"
+    },
+    "source_description": {
+      "@id": "callidus:source_description"
+    },
+    "is_locked": {
+      "@id": "callidus:is_locked",
+      "@type": "xsd:boolean"
+    },
+    "normalized_dedup_key": {
+      "@id": "callidus:normalized_dedup_key"
+    },
+    "rental_property_id": {
+      "@id": "callidus:rental_property_id"
+    },
+    "business_id": {
+      "@id": "callidus:business_id"
+    },
+    "financial_account_id": {
+      "@id": "callidus:financial_account_id"
+    },
+    "investment_account_id": {
+      "@id": "callidus:investment_account_id"
+    },
+    "liability_account_id": {
+      "@id": "callidus:liability_account_id"
+    },
+    "is_active": {
+      "@id": "callidus:is_active",
+      "@type": "xsd:boolean"
+    },
+    "secured_by_item": {
+      "@id": "callidus:secured_by_item"
+    },
+    "securing_liabilities": {
+      "@id": "callidus:securing_liabilities",
+      "@container": "@list"
+    },
+    "BalanceSheetItemResponse": "callidus:BalanceSheetItemResponse"
+  },
+  "@type": "schema:Dataset",
+  "schema:name": "Callidus Legal AI API JSON-LD context",
+  "schema:description": "A JSON-LD @context for the objects Callidus Legal AI's own API contract declares: one class per component schema, one property per declared field, typed from the contract. Derived by script (derive-json-ld.py, 2026-10-06) from openapi/callidus-legal-ai-openapi.json.",
+  "dcterms:created": "2026-10-06",
+  "dcterms:source": [
+    "openapi/callidus-legal-ai-openapi.json"
+  ]
+}
