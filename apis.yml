@@ -23,6 +23,12 @@ created: '2026-10-06'
 modified: '2026-10-06'
 
 tags:
+- Legal Tech
+- Artificial Intelligence
+- Litigation
+- Contract Automation
+- Research
+tags_raw:
 - LegalTech
 - AI
 - Litigation
@@ -254,6 +260,8 @@ apis:
   humanURL: https://api.app.strongsuit.com
   baseURL: https://api.app.strongsuit.com
   tags:
+  - Cases
+  tags_raw:
   - cases
   properties:
   - type: OpenAPI
@@ -342,6 +350,8 @@ apis:
   humanURL: https://api.app.strongsuit.com
   baseURL: https://api.app.strongsuit.com
   tags:
+  - Courts
+  tags_raw:
   - courts
   properties:
   - type: OpenAPI
@@ -496,6 +506,8 @@ apis:
   humanURL: https://api.app.strongsuit.com
   baseURL: https://api.app.strongsuit.com
   tags:
+  - Documents
+  tags_raw:
   - Document
   properties:
   - type: OpenAPI
@@ -586,6 +598,8 @@ apis:
   humanURL: https://api.app.strongsuit.com
   baseURL: https://api.app.strongsuit.com
   tags:
+  - Error
+  tags_raw:
   - error
   properties:
   - type: OpenAPI
@@ -674,6 +688,8 @@ apis:
   humanURL: https://api.app.strongsuit.com
   baseURL: https://api.app.strongsuit.com
   tags:
+  - Integration
+  tags_raw:
   - Integrations
   properties:
   - type: OpenAPI
@@ -874,6 +890,8 @@ apis:
   humanURL: https://api.app.strongsuit.com
   baseURL: https://api.app.strongsuit.com
   tags:
+  - PII
+  tags_raw:
   - Pii
   properties:
   - type: OpenAPI
@@ -962,6 +980,8 @@ apis:
   humanURL: https://api.app.strongsuit.com
   baseURL: https://api.app.strongsuit.com
   tags:
+  - SERP
+  tags_raw:
   - Serp
   properties:
   - type: OpenAPI
@@ -1028,6 +1048,8 @@ apis:
   humanURL: https://api.app.strongsuit.com
   baseURL: https://api.app.strongsuit.com
   tags:
+  - Stats
+  tags_raw:
   - stats
   properties:
   - type: OpenAPI
@@ -1205,6 +1227,8 @@ apis:
   humanURL: https://api.app.strongsuit.com
   baseURL: https://api.app.strongsuit.com
   tags:
+  - Version
+  tags_raw:
   - version
   properties:
   - type: OpenAPI
