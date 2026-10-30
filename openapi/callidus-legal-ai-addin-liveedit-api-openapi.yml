@@ -163,56 +163,6 @@ paths:
               schema: {}
 components:
   schemas:
-    LiveEditParagraph:
-      properties:
-        index:
-          type: integer
-          title: Index
-        text:
-          type: string
-          title: Text
-        listItemString:
-          type: string
-          title: Listitemstring
-          default: ''
-        uniqueLocalId:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Uniquelocalid
-      additionalProperties: true
-      type: object
-      required:
-      - index
-      - text
-      title: LiveEditParagraph
-      description: Paragraph data sent by the Word add-in for live editing.
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
     HTTPValidationError:
       properties:
         detail:
@@ -261,3 +211,53 @@ components:
 
 
         Takes user message and paragraphs, returns either conversational response or edits.'
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    LiveEditParagraph:
+      properties:
+        index:
+          type: integer
+          title: Index
+        text:
+          type: string
+          title: Text
+        listItemString:
+          type: string
+          title: Listitemstring
+          default: ''
+        uniqueLocalId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Uniquelocalid
+      additionalProperties: true
+      type: object
+      required:
+      - index
+      - text
+      title: LiveEditParagraph
+      description: Paragraph data sent by the Word add-in for live editing.

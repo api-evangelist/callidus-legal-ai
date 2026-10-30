@@ -1616,6 +1616,114 @@ paths:
       - Contract
 components:
   schemas:
+    Provision:
+      properties:
+        context:
+          type: string
+          title: Context
+        previous_text:
+          type: string
+          title: Previous Text
+        document_type:
+          type: string
+          title: Document Type
+        current_text:
+          type: string
+          title: Current Text
+        next_text:
+          type: string
+          title: Next Text
+        document:
+          type: string
+          title: Document
+        concise_robust:
+          type: integer
+          title: Concise Robust
+        requiresContext:
+          type: boolean
+          title: Requirescontext
+        usage_data:
+          additionalProperties: true
+          type: object
+          title: Usage Data
+      type: object
+      required:
+      - context
+      - previous_text
+      - document_type
+      - current_text
+      - next_text
+      - document
+      - concise_robust
+      - requiresContext
+      - usage_data
+      title: Provision
+    ChatQuery:
+      properties:
+        request:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Request
+        control_options:
+          anyOf:
+          - $ref: '#/components/schemas/ControlPanelOptions'
+          - type: 'null'
+          default:
+            legalQuestionsCount: 3
+            casePerQuestionsCount: 3
+            casesToInclude: 3
+            legalResearchFollowUpQuestions: 5
+            followUpQuestions: 3
+            statutesCount: 3
+            showHoldings: true
+            analysisDepth: 2
+            creativity: 0.0
+            argumentBias: objective
+            documentType: ''
+            partyToFavour: ''
+            focusArea: ''
+            legalFocus: notInteracted
+            jurisdictions: ''
+            responseLength: 2
+            grammarCheck: false
+            activeVoiceCheck: false
+            legalWritingCheck: false
+            persuasiveCheck: false
+            narrativeCheck: false
+            expositoryCheck: false
+            descriptiveCheck: false
+            summaryMethod: notInteracted
+            summaryType: notInteracted
+      type: object
+      required:
+      - request
+      title: ChatQuery
+    TermOptions:
+      properties:
+        text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Text
+        question:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Question
+      type: object
+      required:
+      - text
+      - question
+      title: TermOptions
+    TermOptionRequest:
+      properties:
+        request:
+          $ref: '#/components/schemas/TermOptions'
+      type: object
+      required:
+      - request
+      title: TermOptionRequest
     AddinDraftInputs:
       properties:
         paragraphs:
@@ -1629,6 +1737,301 @@ components:
       required:
       - paragraphs
       title: AddinDraftInputs
+    GenerateContractFileBody:
+      properties:
+        contract:
+          items:
+            $ref: '#/components/schemas/GenerateContractFileSection'
+          type: array
+          title: Contract
+        contractType:
+          type: string
+          title: Contracttype
+        documentStyles:
+          anyOf:
+          - additionalProperties:
+              $ref: '#/components/schemas/DocumentStyle'
+            type: object
+          - type: 'null'
+          title: Documentstyles
+      type: object
+      required:
+      - contract
+      - contractType
+      title: GenerateContractFileBody
+    AddinProofRead:
+      properties:
+        document:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Document
+        paragraphs:
+          items:
+            additionalProperties:
+              type: string
+            type: object
+          type: array
+          title: Paragraphs
+        ai_strength:
+          type: integer
+          title: Ai Strength
+        query:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Query
+        mode:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Mode
+        legal_authorities:
+          type: boolean
+          title: Legal Authorities
+        add_points:
+          type: boolean
+          title: Add Points
+        document_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Document Type
+        concise_robust:
+          type: integer
+          title: Concise Robust
+        standard_grammar:
+          type: boolean
+          title: Standard Grammar
+        clarity:
+          type: boolean
+          title: Clarity
+        legal_writing_lens:
+          type: boolean
+          title: Legal Writing Lens
+        provision_references:
+          type: boolean
+          title: Provision References
+        defined_terms:
+          type: boolean
+          title: Defined Terms
+        comment_only:
+          type: boolean
+          title: Comment Only
+        add_arguments:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Add Arguments
+        high_quality_writing:
+          type: boolean
+          title: High Quality Writing
+        true_spelling:
+          type: boolean
+          title: True Spelling
+        check_facts:
+          type: boolean
+          title: Check Facts
+        usage_data:
+          additionalProperties: true
+          type: object
+          title: Usage Data
+      type: object
+      required:
+      - document
+      - paragraphs
+      - ai_strength
+      - query
+      - mode
+      - legal_authorities
+      - add_points
+      - document_type
+      - concise_robust
+      - standard_grammar
+      - clarity
+      - legal_writing_lens
+      - provision_references
+      - defined_terms
+      - comment_only
+      - add_arguments
+      - high_quality_writing
+      - true_spelling
+      - check_facts
+      - usage_data
+      title: AddinProofRead
+    AddinGenerateOutline:
+      properties:
+        document:
+          type: string
+          title: Document
+        paragraphs:
+          items:
+            additionalProperties:
+              type: string
+            type: object
+          type: array
+          title: Paragraphs
+        conversation_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Conversation Id
+        usage_data:
+          additionalProperties: true
+          type: object
+          title: Usage Data
+      type: object
+      required:
+      - document
+      - paragraphs
+      - conversation_id
+      - usage_data
+      title: AddinGenerateOutline
+    GenerateAgentStatusResponse:
+      properties:
+        status:
+          type: string
+          title: Status
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+        contract_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Contract Type
+        doc_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Doc Id
+        filename:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Filename
+        docx_base64:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Docx Base64
+        step:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Step
+        total_steps:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Total Steps
+        phase:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Phase
+      type: object
+      required:
+      - status
+      title: GenerateAgentStatusResponse
+      description: 'Durable agent-draft job status. Non-terminal states carry ``status`` +
+
+        ``message``; the terminal ``done`` state adds the rendered file.'
+    Body_contract_generate_followup_contract_generate_followup_post:
+      properties:
+        request:
+          type: string
+          title: Request
+        files:
+          items:
+            type: string
+            contentMediaType: application/octet-stream
+          type: array
+          title: Files
+        fileMetadata:
+          items:
+            type: string
+          type: array
+          title: Filemetadata
+        doc_ids:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Doc Ids
+      type: object
+      required:
+      - request
+      title: Body_contract_generate_followup_contract_generate_followup_post
+    Body_negotiate_relevant_documents_contract_negotiate_relevant_documents_post:
+      properties:
+        file0:
+          anyOf:
+          - type: string
+            contentMediaType: application/octet-stream
+          - type: 'null'
+          title: File0
+        file1:
+          anyOf:
+          - type: string
+            contentMediaType: application/octet-stream
+          - type: 'null'
+          title: File1
+        file2:
+          anyOf:
+          - type: string
+            contentMediaType: application/octet-stream
+          - type: 'null'
+          title: File2
+        file3:
+          anyOf:
+          - type: string
+            contentMediaType: application/octet-stream
+          - type: 'null'
+          title: File3
+        file4:
+          anyOf:
+          - type: string
+            contentMediaType: application/octet-stream
+          - type: 'null'
+          title: File4
+        fileType0:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Filetype0
+        fileType1:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Filetype1
+        fileType2:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Filetype2
+        fileType3:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Filetype3
+        fileType4:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Filetype4
+      type: object
+      title: Body_negotiate_relevant_documents_contract_negotiate_relevant_documents_post
+    LoadContractRequest:
+      properties:
+        request:
+          type: string
+          title: Request
+      type: object
+      required:
+      - request
+      title: LoadContractRequest
     ContractChatWithContext:
       properties:
         document:
@@ -1685,6 +2088,488 @@ components:
       - all_messages
       - usage_data
       title: ContractChatWithContext
+    PartyQueryRequest:
+      properties:
+        request:
+          $ref: '#/components/schemas/PartyQuery'
+      type: object
+      required:
+      - request
+      title: PartyQueryRequest
+    GenerateContractFileRequest:
+      properties:
+        request:
+          $ref: '#/components/schemas/GenerateContractFileBody'
+        conversationId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Conversationid
+        referenceDoc:
+          type: boolean
+          title: Referencedoc
+          default: false
+      type: object
+      required:
+      - request
+      title: GenerateContractFileRequest
+    Body_contract_generate_agent_contract_generate_agent_post:
+      properties:
+        request:
+          type: string
+          title: Request
+      type: object
+      required:
+      - request
+      title: Body_contract_generate_agent_contract_generate_agent_post
+    AddinNegotiate:
+      properties:
+        paragraphs:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Paragraphs
+          default: {}
+        industry:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Industry
+          default: ''
+        parties:
+          anyOf:
+          - items:
+              additionalProperties:
+                type: string
+              type: object
+            type: array
+          - type: 'null'
+          title: Parties
+          default: []
+        text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Text
+          default: ''
+        contract_text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Contract Text
+          default: ''
+        term_text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Term Text
+          default: ''
+        question:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Question
+          default: ''
+        rewrite_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Rewrite Type
+          default: ''
+        custom_instructions:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Custom Instructions
+          default: ''
+        representing_party:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Representing Party
+          default: ''
+      type: object
+      title: AddinNegotiate
+    Body_process_review_files_contract_negotiate_review_process_files_post:
+      properties:
+        data:
+          type: string
+          title: Data
+      type: object
+      required:
+      - data
+      title: Body_process_review_files_contract_negotiate_review_process_files_post
+    GenerateAgentResponse:
+      properties:
+        job_id:
+          type: string
+          title: Job Id
+      type: object
+      required:
+      - job_id
+      title: GenerateAgentResponse
+    Body_contract_generate_outline_contract_generate_outline_post:
+      properties:
+        request:
+          type: string
+          title: Request
+        files:
+          items:
+            type: string
+            contentMediaType: application/octet-stream
+          type: array
+          title: Files
+        fileMetadata:
+          items:
+            type: string
+          type: array
+          title: Filemetadata
+        doc_ids:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Doc Ids
+      type: object
+      required:
+      - request
+      title: Body_contract_generate_outline_contract_generate_outline_post
+    AddinReferenceDoc:
+      properties:
+        document:
+          type: string
+          title: Document
+        paragraphs:
+          items:
+            additionalProperties:
+              type: string
+            type: object
+          type: array
+          title: Paragraphs
+        outline:
+          items:
+            type: string
+          type: array
+          title: Outline
+        contract_type:
+          type: string
+          title: Contract Type
+        industry:
+          type: string
+          title: Industry
+        party1:
+          type: string
+          title: Party1
+        party1_defined:
+          type: string
+          title: Party1 Defined
+        party2:
+          type: string
+          title: Party2
+        party2_defined:
+          type: string
+          title: Party2 Defined
+        governing_law:
+          type: string
+          title: Governing Law
+        general_guidance:
+          type: string
+          title: General Guidance
+        favor_level:
+          anyOf:
+          - type: integer
+          - type: string
+          title: Favor Level
+        length_level:
+          anyOf:
+          - type: integer
+          - type: string
+          title: Length Level
+        country:
+          type: string
+          title: Country
+        writing_style:
+          type: string
+          enum:
+          - Simple Plain Language
+          - Modern Legal Writing
+          - Traditional Legal Writing
+          - ''
+          title: Writing Style
+        use_advanced_model:
+          type: boolean
+          title: Use Advanced Model
+        document_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Document Type
+        is_same_type:
+          type: boolean
+          title: Is Same Type
+        priorities:
+          additionalProperties:
+            type: string
+          type: object
+          title: Priorities
+      type: object
+      required:
+      - document
+      - paragraphs
+      - outline
+      - contract_type
+      - industry
+      - party1
+      - party1_defined
+      - party2
+      - party2_defined
+      - governing_law
+      - general_guidance
+      - favor_level
+      - length_level
+      - country
+      - writing_style
+      - use_advanced_model
+      - document_type
+      - is_same_type
+      title: AddinReferenceDoc
+    PartyQuery:
+      properties:
+        text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Text
+      type: object
+      required:
+      - text
+      title: PartyQuery
+    GenerateContractOutlineUpdate:
+      properties:
+        indexNum:
+          type: integer
+          title: Indexnum
+        updateNum:
+          type: integer
+          title: Updatenum
+        newSectionTitle:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Newsectiontitle
+          default: ''
+      type: object
+      required:
+      - indexNum
+      - updateNum
+      title: GenerateContractOutlineUpdate
+    Body_contract_intake_contract_intake_post:
+      properties:
+        url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Url
+        text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Text
+        file:
+          anyOf:
+          - type: string
+            contentMediaType: application/octet-stream
+          - type: 'null'
+          title: File
+        module_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Module Name
+      type: object
+      title: Body_contract_intake_contract_intake_post
+    RequestedChanges:
+      properties:
+        originalParagraph:
+          type: string
+          title: Originalparagraph
+        updated_text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Updated Text
+        document_type:
+          type: string
+          title: Document Type
+        text_comment:
+          type: string
+          title: Text Comment
+        document:
+          type: string
+          title: Document
+        userRequest:
+          type: string
+          title: Userrequest
+        usage_data:
+          additionalProperties: true
+          type: object
+          title: Usage Data
+      type: object
+      required:
+      - originalParagraph
+      - updated_text
+      - document_type
+      - text_comment
+      - document
+      - userRequest
+      - usage_data
+      title: RequestedChanges
+    GenerateContractFileSection:
+      properties:
+        sectionTitle:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sectiontitle
+        sectionBody:
+          type: string
+          title: Sectionbody
+      type: object
+      required:
+      - sectionTitle
+      - sectionBody
+      title: GenerateContractFileSection
+    Body_negotiate_sections_contract_negotiate_review_post:
+      properties:
+        data:
+          type: string
+          title: Data
+      type: object
+      required:
+      - data
+      title: Body_negotiate_sections_contract_negotiate_review_post
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    GenerateContractOutlineUpdateRequest:
+      properties:
+        request:
+          $ref: '#/components/schemas/GenerateContractOutlineUpdate'
+      type: object
+      required:
+      - request
+      title: GenerateContractOutlineUpdateRequest
+    Body_contract_generate_contract_generate_post:
+      properties:
+        request:
+          type: string
+          title: Request
+        files:
+          items:
+            type: string
+            contentMediaType: application/octet-stream
+          type: array
+          title: Files
+        fileMetadata:
+          items:
+            type: string
+          type: array
+          title: Filemetadata
+        doc_ids:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Doc Ids
+      type: object
+      required:
+      - request
+      title: Body_contract_generate_contract_generate_post
+    AddinNamesAndDefinitions:
+      properties:
+        document:
+          type: string
+          title: Document
+      type: object
+      required:
+      - document
+      title: AddinNamesAndDefinitions
+    FollowupQuestions-Input:
+      properties:
+        type_of_contract:
+          type: string
+          title: Type Of Contract
+        industry:
+          type: string
+          title: Industry
+        party_1_name:
+          type: string
+          title: Party 1 Name
+        party_1_defined_name:
+          type: string
+          title: Party 1 Defined Name
+        party_2_name:
+          type: string
+          title: Party 2 Name
+        party_2_defined_name:
+          type: string
+          title: Party 2 Defined Name
+        who_to_favor:
+          type: integer
+          title: Who To Favor
+        how_lengthy:
+          type: integer
+          title: How Lengthy
+        governing_law:
+          type: string
+          title: Governing Law
+        facts_to_consider:
+          type: string
+          title: Facts To Consider
+        number_of_questions:
+          type: integer
+          title: Number Of Questions
+        usage_data:
+          additionalProperties: true
+          type: object
+          title: Usage Data
+      type: object
+      required:
+      - type_of_contract
+      - industry
+      - party_1_name
+      - party_1_defined_name
+      - party_2_name
+      - party_2_defined_name
+      - who_to_favor
+      - how_lengthy
+      - governing_law
+      - facts_to_consider
+      - number_of_questions
+      - usage_data
+      title: FollowupQuestions
     RequestedChangesComment:
       properties:
         originalParagraph:
@@ -1715,30 +2600,15 @@ components:
       - userRequest
       - usage_data
       title: RequestedChangesComment
-    AddinNamesAndDefinitions:
+    HTTPValidationError:
       properties:
-        document:
-          type: string
-          title: Document
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
       type: object
-      required:
-      - document
-      title: AddinNamesAndDefinitions
-    GenerateContractFileSection:
-      properties:
-        sectionTitle:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Sectiontitle
-        sectionBody:
-          type: string
-          title: Sectionbody
-      type: object
-      required:
-      - sectionTitle
-      - sectionBody
-      title: GenerateContractFileSection
+      title: HTTPValidationError
     ControlPanelOptions:
       properties:
         legalQuestionsCount:
@@ -1845,747 +2715,6 @@ components:
           default: notInteracted
       type: object
       title: ControlPanelOptions
-    Body_contract_generate_outline_contract_generate_outline_post:
-      properties:
-        request:
-          type: string
-          title: Request
-        files:
-          items:
-            type: string
-            contentMediaType: application/octet-stream
-          type: array
-          title: Files
-        fileMetadata:
-          items:
-            type: string
-          type: array
-          title: Filemetadata
-        doc_ids:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Doc Ids
-      type: object
-      required:
-      - request
-      title: Body_contract_generate_outline_contract_generate_outline_post
-    Body_negotiate_sections_contract_negotiate_review_post:
-      properties:
-        data:
-          type: string
-          title: Data
-      type: object
-      required:
-      - data
-      title: Body_negotiate_sections_contract_negotiate_review_post
-    TermOptions:
-      properties:
-        text:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Text
-        question:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Question
-      type: object
-      required:
-      - text
-      - question
-      title: TermOptions
-    GenerateContractFileRequest:
-      properties:
-        request:
-          $ref: '#/components/schemas/GenerateContractFileBody'
-        conversationId:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Conversationid
-        referenceDoc:
-          type: boolean
-          title: Referencedoc
-          default: false
-      type: object
-      required:
-      - request
-      title: GenerateContractFileRequest
-    Body_contract_intake_contract_intake_post:
-      properties:
-        url:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Url
-        text:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Text
-        file:
-          anyOf:
-          - type: string
-            contentMediaType: application/octet-stream
-          - type: 'null'
-          title: File
-        module_name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Module Name
-      type: object
-      title: Body_contract_intake_contract_intake_post
-    AddinReferenceDoc:
-      properties:
-        document:
-          type: string
-          title: Document
-        paragraphs:
-          items:
-            additionalProperties:
-              type: string
-            type: object
-          type: array
-          title: Paragraphs
-        outline:
-          items:
-            type: string
-          type: array
-          title: Outline
-        contract_type:
-          type: string
-          title: Contract Type
-        industry:
-          type: string
-          title: Industry
-        party1:
-          type: string
-          title: Party1
-        party1_defined:
-          type: string
-          title: Party1 Defined
-        party2:
-          type: string
-          title: Party2
-        party2_defined:
-          type: string
-          title: Party2 Defined
-        governing_law:
-          type: string
-          title: Governing Law
-        general_guidance:
-          type: string
-          title: General Guidance
-        favor_level:
-          anyOf:
-          - type: integer
-          - type: string
-          title: Favor Level
-        length_level:
-          anyOf:
-          - type: integer
-          - type: string
-          title: Length Level
-        country:
-          type: string
-          title: Country
-        writing_style:
-          type: string
-          enum:
-          - Simple Plain Language
-          - Modern Legal Writing
-          - Traditional Legal Writing
-          - ''
-          title: Writing Style
-        use_advanced_model:
-          type: boolean
-          title: Use Advanced Model
-        document_type:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Document Type
-        is_same_type:
-          type: boolean
-          title: Is Same Type
-        priorities:
-          additionalProperties:
-            type: string
-          type: object
-          title: Priorities
-      type: object
-      required:
-      - document
-      - paragraphs
-      - outline
-      - contract_type
-      - industry
-      - party1
-      - party1_defined
-      - party2
-      - party2_defined
-      - governing_law
-      - general_guidance
-      - favor_level
-      - length_level
-      - country
-      - writing_style
-      - use_advanced_model
-      - document_type
-      - is_same_type
-      title: AddinReferenceDoc
-    Body_contract_generate_agent_contract_generate_agent_post:
-      properties:
-        request:
-          type: string
-          title: Request
-      type: object
-      required:
-      - request
-      title: Body_contract_generate_agent_contract_generate_agent_post
-    Body_negotiate_relevant_documents_contract_negotiate_relevant_documents_post:
-      properties:
-        file0:
-          anyOf:
-          - type: string
-            contentMediaType: application/octet-stream
-          - type: 'null'
-          title: File0
-        file1:
-          anyOf:
-          - type: string
-            contentMediaType: application/octet-stream
-          - type: 'null'
-          title: File1
-        file2:
-          anyOf:
-          - type: string
-            contentMediaType: application/octet-stream
-          - type: 'null'
-          title: File2
-        file3:
-          anyOf:
-          - type: string
-            contentMediaType: application/octet-stream
-          - type: 'null'
-          title: File3
-        file4:
-          anyOf:
-          - type: string
-            contentMediaType: application/octet-stream
-          - type: 'null'
-          title: File4
-        fileType0:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Filetype0
-        fileType1:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Filetype1
-        fileType2:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Filetype2
-        fileType3:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Filetype3
-        fileType4:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Filetype4
-      type: object
-      title: Body_negotiate_relevant_documents_contract_negotiate_relevant_documents_post
-    PartyQueryRequest:
-      properties:
-        request:
-          $ref: '#/components/schemas/PartyQuery'
-      type: object
-      required:
-      - request
-      title: PartyQueryRequest
-    AddinGenerateOutline:
-      properties:
-        document:
-          type: string
-          title: Document
-        paragraphs:
-          items:
-            additionalProperties:
-              type: string
-            type: object
-          type: array
-          title: Paragraphs
-        conversation_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Conversation Id
-        usage_data:
-          additionalProperties: true
-          type: object
-          title: Usage Data
-      type: object
-      required:
-      - document
-      - paragraphs
-      - conversation_id
-      - usage_data
-      title: AddinGenerateOutline
-    LoadContractRequest:
-      properties:
-        request:
-          type: string
-          title: Request
-      type: object
-      required:
-      - request
-      title: LoadContractRequest
-    RequestedChanges:
-      properties:
-        originalParagraph:
-          type: string
-          title: Originalparagraph
-        updated_text:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Updated Text
-        document_type:
-          type: string
-          title: Document Type
-        text_comment:
-          type: string
-          title: Text Comment
-        document:
-          type: string
-          title: Document
-        userRequest:
-          type: string
-          title: Userrequest
-        usage_data:
-          additionalProperties: true
-          type: object
-          title: Usage Data
-      type: object
-      required:
-      - originalParagraph
-      - updated_text
-      - document_type
-      - text_comment
-      - document
-      - userRequest
-      - usage_data
-      title: RequestedChanges
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    PartyQuery:
-      properties:
-        text:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Text
-      type: object
-      required:
-      - text
-      title: PartyQuery
-    GenerateContractFileBody:
-      properties:
-        contract:
-          items:
-            $ref: '#/components/schemas/GenerateContractFileSection'
-          type: array
-          title: Contract
-        contractType:
-          type: string
-          title: Contracttype
-        documentStyles:
-          anyOf:
-          - additionalProperties:
-              $ref: '#/components/schemas/DocumentStyle'
-            type: object
-          - type: 'null'
-          title: Documentstyles
-      type: object
-      required:
-      - contract
-      - contractType
-      title: GenerateContractFileBody
-    Body_process_review_files_contract_negotiate_review_process_files_post:
-      properties:
-        data:
-          type: string
-          title: Data
-      type: object
-      required:
-      - data
-      title: Body_process_review_files_contract_negotiate_review_process_files_post
-    Provision:
-      properties:
-        context:
-          type: string
-          title: Context
-        previous_text:
-          type: string
-          title: Previous Text
-        document_type:
-          type: string
-          title: Document Type
-        current_text:
-          type: string
-          title: Current Text
-        next_text:
-          type: string
-          title: Next Text
-        document:
-          type: string
-          title: Document
-        concise_robust:
-          type: integer
-          title: Concise Robust
-        requiresContext:
-          type: boolean
-          title: Requirescontext
-        usage_data:
-          additionalProperties: true
-          type: object
-          title: Usage Data
-      type: object
-      required:
-      - context
-      - previous_text
-      - document_type
-      - current_text
-      - next_text
-      - document
-      - concise_robust
-      - requiresContext
-      - usage_data
-      title: Provision
-    AddinNegotiate:
-      properties:
-        paragraphs:
-          anyOf:
-          - additionalProperties: true
-            type: object
-          - type: 'null'
-          title: Paragraphs
-          default: {}
-        industry:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Industry
-          default: ''
-        parties:
-          anyOf:
-          - items:
-              additionalProperties:
-                type: string
-              type: object
-            type: array
-          - type: 'null'
-          title: Parties
-          default: []
-        text:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Text
-          default: ''
-        contract_text:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Contract Text
-          default: ''
-        term_text:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Term Text
-          default: ''
-        question:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Question
-          default: ''
-        rewrite_type:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Rewrite Type
-          default: ''
-        custom_instructions:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Custom Instructions
-          default: ''
-        representing_party:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Representing Party
-          default: ''
-      type: object
-      title: AddinNegotiate
-    GenerateContractOutlineUpdate:
-      properties:
-        indexNum:
-          type: integer
-          title: Indexnum
-        updateNum:
-          type: integer
-          title: Updatenum
-        newSectionTitle:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Newsectiontitle
-          default: ''
-      type: object
-      required:
-      - indexNum
-      - updateNum
-      title: GenerateContractOutlineUpdate
-    AddinProofRead:
-      properties:
-        document:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Document
-        paragraphs:
-          items:
-            additionalProperties:
-              type: string
-            type: object
-          type: array
-          title: Paragraphs
-        ai_strength:
-          type: integer
-          title: Ai Strength
-        query:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Query
-        mode:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Mode
-        legal_authorities:
-          type: boolean
-          title: Legal Authorities
-        add_points:
-          type: boolean
-          title: Add Points
-        document_type:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Document Type
-        concise_robust:
-          type: integer
-          title: Concise Robust
-        standard_grammar:
-          type: boolean
-          title: Standard Grammar
-        clarity:
-          type: boolean
-          title: Clarity
-        legal_writing_lens:
-          type: boolean
-          title: Legal Writing Lens
-        provision_references:
-          type: boolean
-          title: Provision References
-        defined_terms:
-          type: boolean
-          title: Defined Terms
-        comment_only:
-          type: boolean
-          title: Comment Only
-        add_arguments:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Add Arguments
-        high_quality_writing:
-          type: boolean
-          title: High Quality Writing
-        true_spelling:
-          type: boolean
-          title: True Spelling
-        check_facts:
-          type: boolean
-          title: Check Facts
-        usage_data:
-          additionalProperties: true
-          type: object
-          title: Usage Data
-      type: object
-      required:
-      - document
-      - paragraphs
-      - ai_strength
-      - query
-      - mode
-      - legal_authorities
-      - add_points
-      - document_type
-      - concise_robust
-      - standard_grammar
-      - clarity
-      - legal_writing_lens
-      - provision_references
-      - defined_terms
-      - comment_only
-      - add_arguments
-      - high_quality_writing
-      - true_spelling
-      - check_facts
-      - usage_data
-      title: AddinProofRead
-    GenerateAgentResponse:
-      properties:
-        job_id:
-          type: string
-          title: Job Id
-      type: object
-      required:
-      - job_id
-      title: GenerateAgentResponse
-    GenerateContractOutlineUpdateRequest:
-      properties:
-        request:
-          $ref: '#/components/schemas/GenerateContractOutlineUpdate'
-      type: object
-      required:
-      - request
-      title: GenerateContractOutlineUpdateRequest
-    Body_contract_generate_contract_generate_post:
-      properties:
-        request:
-          type: string
-          title: Request
-        files:
-          items:
-            type: string
-            contentMediaType: application/octet-stream
-          type: array
-          title: Files
-        fileMetadata:
-          items:
-            type: string
-          type: array
-          title: Filemetadata
-        doc_ids:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Doc Ids
-      type: object
-      required:
-      - request
-      title: Body_contract_generate_contract_generate_post
-    Body_contract_generate_followup_contract_generate_followup_post:
-      properties:
-        request:
-          type: string
-          title: Request
-        files:
-          items:
-            type: string
-            contentMediaType: application/octet-stream
-          type: array
-          title: Files
-        fileMetadata:
-          items:
-            type: string
-          type: array
-          title: Filemetadata
-        doc_ids:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Doc Ids
-      type: object
-      required:
-      - request
-      title: Body_contract_generate_followup_contract_generate_followup_post
-    GenerateAgentStatusResponse:
-      properties:
-        status:
-          type: string
-          title: Status
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-        contract_type:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Contract Type
-        doc_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Doc Id
-        filename:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Filename
-        docx_base64:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Docx Base64
-        step:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Step
-        total_steps:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Total Steps
-        phase:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Phase
-      type: object
-      required:
-      - status
-      title: GenerateAgentStatusResponse
-      description: 'Durable agent-draft job status. Non-terminal states carry ``status`` +
-
-        ``message``; the terminal ``done`` state adds the rendered file.'
     DocumentStyle:
       properties:
         fontName:
@@ -2599,132 +2728,3 @@ components:
       - fontName
       - fontSize
       title: DocumentStyle
-    FollowupQuestions-Input:
-      properties:
-        type_of_contract:
-          type: string
-          title: Type Of Contract
-        industry:
-          type: string
-          title: Industry
-        party_1_name:
-          type: string
-          title: Party 1 Name
-        party_1_defined_name:
-          type: string
-          title: Party 1 Defined Name
-        party_2_name:
-          type: string
-          title: Party 2 Name
-        party_2_defined_name:
-          type: string
-          title: Party 2 Defined Name
-        who_to_favor:
-          type: integer
-          title: Who To Favor
-        how_lengthy:
-          type: integer
-          title: How Lengthy
-        governing_law:
-          type: string
-          title: Governing Law
-        facts_to_consider:
-          type: string
-          title: Facts To Consider
-        number_of_questions:
-          type: integer
-          title: Number Of Questions
-        usage_data:
-          additionalProperties: true
-          type: object
-          title: Usage Data
-      type: object
-      required:
-      - type_of_contract
-      - industry
-      - party_1_name
-      - party_1_defined_name
-      - party_2_name
-      - party_2_defined_name
-      - who_to_favor
-      - how_lengthy
-      - governing_law
-      - facts_to_consider
-      - number_of_questions
-      - usage_data
-      title: FollowupQuestions
-    ChatQuery:
-      properties:
-        request:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Request
-        control_options:
-          anyOf:
-          - $ref: '#/components/schemas/ControlPanelOptions'
-          - type: 'null'
-          default:
-            legalQuestionsCount: 3
-            casePerQuestionsCount: 3
-            casesToInclude: 3
-            legalResearchFollowUpQuestions: 5
-            followUpQuestions: 3
-            statutesCount: 3
-            showHoldings: true
-            analysisDepth: 2
-            creativity: 0.0
-            argumentBias: objective
-            documentType: ''
-            partyToFavour: ''
-            focusArea: ''
-            legalFocus: notInteracted
-            jurisdictions: ''
-            responseLength: 2
-            grammarCheck: false
-            activeVoiceCheck: false
-            legalWritingCheck: false
-            persuasiveCheck: false
-            narrativeCheck: false
-            expositoryCheck: false
-            descriptiveCheck: false
-            summaryMethod: notInteracted
-            summaryType: notInteracted
-      type: object
-      required:
-      - request
-      title: ChatQuery
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    TermOptionRequest:
-      properties:
-        request:
-          $ref: '#/components/schemas/TermOptions'
-      type: object
-      required:
-      - request
-      title: TermOptionRequest

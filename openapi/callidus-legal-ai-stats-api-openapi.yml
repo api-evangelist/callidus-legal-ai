@@ -72,19 +72,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    ClickRequest:
-      properties:
-        path:
-          type: string
-          title: Path
-        button:
-          type: string
-          title: Button
-      type: object
-      required:
-      - path
-      - button
-      title: ClickRequest
     ValidationError:
       properties:
         loc:
@@ -111,15 +98,19 @@ components:
       - msg
       - type
       title: ValidationError
-    HTTPValidationError:
+    ClickRequest:
       properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
+        path:
+          type: string
+          title: Path
+        button:
+          type: string
+          title: Button
       type: object
-      title: HTTPValidationError
+      required:
+      - path
+      - button
+      title: ClickRequest
     ViewRequest:
       properties:
         path:
@@ -137,3 +128,12 @@ components:
       - isReturningVisitor
       - isBot
       title: ViewRequest
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError

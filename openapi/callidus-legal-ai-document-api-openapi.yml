@@ -2858,7 +2858,7 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    Body_optp_export_document_export_post:
+    Body_optp_redlines_document_redlines_post:
       properties:
         file_content_base:
           anyOf:
@@ -2881,7 +2881,16 @@ components:
           - type: 'null'
           title: Module Name
       type: object
-      title: Body_optp_export_document_export_post
+      title: Body_optp_redlines_document_redlines_post
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     ValidationError:
       properties:
         loc:
@@ -2908,16 +2917,7 @@ components:
       - msg
       - type
       title: ValidationError
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    Body_optp_redlines_document_redlines_post:
+    Body_optp_export_document_export_post:
       properties:
         file_content_base:
           anyOf:
@@ -2940,32 +2940,736 @@ components:
           - type: 'null'
           title: Module Name
       type: object
-      title: Body_optp_redlines_document_redlines_post
-    DeletionImpactResponse:
+      title: Body_optp_export_document_export_post
+    PollDocumentsV2Item:
       properties:
-        total_file_count:
+        id:
+          type: string
+          title: Id
+        name:
+          type: string
+          title: Name
+        filename:
+          type: string
+          title: Filename
+          default: ''
+        size_bytes:
           type: integer
-          title: Total File Count
-          description: Distinct files affected (deduped across placements).
+          title: Size Bytes
           default: 0
-        matters:
-          items:
-            $ref: '#/components/schemas/AffectedMatter'
-          type: array
-          title: Matters
-          description: Distinct matters any affected file is linked to; [] if none.
+        percent_complete:
+          type: integer
+          title: Percent Complete
+          default: 0
+        failure_reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Failure Reason
       type: object
-      title: DeletionImpactResponse
-      description: 'Result for POST deletion-impact: read-only; mutates nothing.
+      required:
+      - id
+      - name
+      title: PollDocumentsV2Item
+      description: Per-document detail for display (up to 3 per category).
+    UploadStateItem:
+      properties:
+        blob_path:
+          type: string
+          title: Blob Path
+        complete:
+          type: boolean
+          title: Complete
+          description: Storage already holds this exact file, finished. Do not send it again.
+        staged_blocks:
+          items:
+            type: string
+          type: array
+          title: Staged Blocks
+          description: Block ids staged against this blob but not committed. A resumed upload sends only the blocks missing from this list. Empty when the blob is absent, complete, or was not staged in blocks.
+      type: object
+      required:
+      - blob_path
+      - complete
+      title: UploadStateItem
+    RenameDocumentResponse:
+      properties:
+        previous_name:
+          type: string
+          title: Previous Name
+        new_name:
+          type: string
+          title: New Name
+        error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error
+      type: object
+      required:
+      - previous_name
+      - new_name
+      title: RenameDocumentResponse
+    FolderNodeSchema:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        name:
+          type: string
+          title: Name
+        parent_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Parent Id
+        file_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: File Count
+          description: Files placed directly in this folder
+        subfolder_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Subfolder Count
+          description: Direct child folders
+        path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Path
+          description: Scope-relative ancestry path (root→leaf, e.g. 'Bank/2024/drafts'); set on name-search hits so a flat result folder is navigable/disambiguated, null on normal level listings.
+        created_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Created At
+          description: Folder creation time — the folder-side analogue of a file's upload_datetime, and what sort_by=date_added orders folders by. Render this in a 'Date Added' column so the sort is visible.
+      type: object
+      required:
+      - id
+      - name
+      title: FolderNodeSchema
+    MoveDocumentsRequest:
+      properties:
+        doc_ids:
+          items:
+            type: string
+            format: uuid
+          type: array
+          maxItems: 1000
+          title: Doc Ids
+          description: Documents to move (bulk, one transaction).
+        target_folder_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Target Folder Id
+          description: Destination folder; null/omit for root
+        source_folder_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Source Folder Id
+          description: Folder the docs are currently filed in (null = root); the placement being moved (DocHub only).
+        matter_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Matter Id
+          description: Matter scope; omit for DocHub
+      type: object
+      required:
+      - doc_ids
+      title: MoveDocumentsRequest
+    RemoveDocumentFromMatterRequest:
+      properties:
+        doc_id:
+          type: string
+          format: uuid
+          title: Doc Id
+          description: UUID of the document to remove
+        matter_id:
+          type: string
+          minLength: 1
+          title: Matter Id
+          description: CUID of the matter to remove the document from
+        prune_empty_folders:
+          type: boolean
+          title: Prune Empty Folders
+          description: If true, delete the folder this file vacated (and its ancestors) if now empty.
+          default: false
+      type: object
+      required:
+      - doc_id
+      - matter_id
+      title: RemoveDocumentFromMatterRequest
+    DocumentSource:
+      type: string
+      enum:
+      - user
+      - strongsuit
+      title: DocumentSource
+      description: 'Origin of a document: user-uploaded or system-generated (strongsuit).'
+    UploadStateResponse:
+      properties:
+        blobs:
+          items:
+            $ref: '#/components/schemas/UploadStateItem'
+          type: array
+          title: Blobs
+      type: object
+      required:
+      - blobs
+      title: UploadStateResponse
+    DocumentSortField:
+      type: string
+      enum:
+      - date_added
+      - name
+      - size
+      - category
+      - type
+      - added_by
+      title: DocumentSortField
+      description: 'Sortable fields for the document list.
 
 
-        ``total_file_count`` is every file under the folders (recursive) plus the loose
+        ``TYPE`` and ``ADDED_BY`` mirror the members of the same name on :class:`FolderSortField` and
 
-        files, de-duped across multi-placements. ``matters`` is the union of distinct
+        reuse its ordering expressions, so the flat list and the folder browser order the two columns
 
-        matters any affected file is linked to (empty if none) — so the UI can warn that
+        identically — they render the same values on the same screen.
 
-        deleting also removes those files from the listed matters.'
+
+        Matters and Tasks are absent here for the same reason they are absent there: those names are
+
+        encrypted at rest, so ordering on them would sort ciphertext.'
+    BatchDocumentsResponse:
+      properties:
+        documents:
+          items:
+            $ref: '#/components/schemas/BatchDocumentsItem'
+          type: array
+          title: Documents
+        total:
+          type: integer
+          title: Total
+        page:
+          type: integer
+          title: Page
+        page_size:
+          type: integer
+          title: Page Size
+        has_more:
+          type: boolean
+          title: Has More
+        archives_pending:
+          type: integer
+          title: Archives Pending
+          description: Upload containers in this batch that have not finished extracting. Silence in the document list means 'not written yet' while this is > 0 and 'never going to be written' once it is 0 — without it a client cannot tell the two apart and can only guess with a stall timer.
+          default: 0
+        extraction_complete:
+          type: boolean
+          title: Extraction Complete
+          description: True when no container in this batch is still extracting (``archives_pending == 0``).
+          default: true
+      type: object
+      required:
+      - documents
+      - total
+      - page
+      - page_size
+      - has_more
+      title: BatchDocumentsResponse
+      description: Paginated response for GET /document/batch/{batch_id}/documents.
+    AddDocumentResponse:
+      properties:
+        success:
+          type: boolean
+          title: Success
+        document_id:
+          type: string
+          format: uuid
+          title: Document Id
+        task_linked:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Task Linked
+          description: True if document was linked to the requested task; False if link was attempted and failed; None if no task_id was provided.
+        matter_linked:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Matter Linked
+          description: True if document was linked to the requested matter; False if link was attempted and failed; None if no matter_id was provided.
+      type: object
+      required:
+      - success
+      - document_id
+      title: AddDocumentResponse
+    EmailProvenance:
+      properties:
+        subject:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Subject
+          description: The email's Subject header.
+        sender:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sender
+          description: From header, as 'Display Name <address>' when the message carried both.
+        to:
+          items:
+            type: string
+          type: array
+          title: To
+          description: To recipients, as 'Display Name <address>'. Capped at 25; a longer list is truncated.
+        cc:
+          items:
+            type: string
+          type: array
+          title: Cc
+          description: Cc recipients, same shape and cap as `to`.
+        sent_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sent At
+          description: The Date header, as an ISO 8601 string. A string rather than a timestamp because a sender whose client wrote a malformed date is passed through verbatim rather than dropped — parse it if you can, otherwise render it as text.
+        message_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message Id
+          description: RFC 5322 Message-ID, angle brackets included. The same value in every mailbox holding a copy.
+      type: object
+      title: EmailProvenance
+      description: 'The message an attachment arrived on (ENG-22885).
+
+
+        Recorded on the email document when its attachments were extracted, and read
+
+        here through ``parent_id``. Every field is optional because it mirrors the
+
+        headers the message actually carried: an email with no ``Cc`` has none, and a
+
+        message whose headers could not be decoded has nothing at all.
+
+
+        Absent entirely for a file that is not an email attachment, and for one whose
+
+        email was ingested before the extractor recorded provenance — re-ingesting
+
+        that email fills it in.'
+    MoveFolderRequest:
+      properties:
+        new_parent_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: New Parent Id
+          description: Destination parent; omit/null to move to root
+        matter_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Matter Id
+          description: Matter scope; omit for DocHub
+      type: object
+      title: MoveFolderRequest
+    FolderResponse:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        name:
+          type: string
+          title: Name
+        parent_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Parent Id
+      type: object
+      required:
+      - id
+      - name
+      title: FolderResponse
+    IngestionStatus:
+      type: string
+      enum:
+      - queued
+      - processing
+      - done
+      - failed
+      - cancelled
+      - stranded
+      - unknown
+      title: IngestionStatus
+      description: 'Derived per-doc ingestion status for API responses.
+
+
+        Projected from (DocMetadata.status, latest INGEST DocHubJob.status, job age).
+
+        Response-only: not persisted. See `_derive_ingestion_status` in
+
+        `app/modules/document/routes.py`.'
+    FolderListingOrderEntry:
+      properties:
+        kind:
+          type: string
+          enum:
+          - folder
+          - file
+          title: Kind
+        id:
+          type: string
+          format: uuid
+          title: Id
+      type: object
+      required:
+      - kind
+      - id
+      title: FolderListingOrderEntry
+      description: One position in the merged folder+file render order (ENG-19278).
+    ExportStatusResponse:
+      properties:
+        status:
+          type: string
+          title: Status
+          description: 'Workflow status: ''running'', ''completed'', or ''failed''.'
+        url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Url
+          description: Download URL when status is 'completed'.
+        expires_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Expires At
+          description: URL expiry when status is 'completed'.
+        document_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Document Count
+          description: Number of documents in the zip.
+        skipped_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Skipped Count
+          description: Number of documents that could not be included.
+        error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error
+          description: Error message when status is 'failed'.
+      type: object
+      required:
+      - status
+      title: ExportStatusResponse
+      description: Polling response for an export-documents workflow.
+    MoveDocumentsResponse:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          default: true
+        moved_count:
+          type: integer
+          title: Moved Count
+          description: Documents whose placement was updated.
+        skipped_doc_ids:
+          items:
+            type: string
+            format: uuid
+          type: array
+          title: Skipped Doc Ids
+          description: Docs skipped because an identical file (same contents + name) already exists in the target folder.
+      type: object
+      required:
+      - moved_count
+      title: MoveDocumentsResponse
+    FolderTreeResponse:
+      properties:
+        folders:
+          items:
+            $ref: '#/components/schemas/FolderNodeSchema'
+          type: array
+          title: Folders
+      type: object
+      title: FolderTreeResponse
+      description: 'Lightweight folder-only tree for the folder-picker dialog (ENG-22636).
+
+
+        Returns every folder in the scope as a flat list; the client rebuilds the
+
+        tree from parent_id pointers. No files, no counts, no pagination — just
+
+        the skeleton needed to render a destination picker.'
+    ProcessingFileItem:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+          description: Filename; null for a client-authored upload container, which the UI labels by member count.
+        is_upload_package:
+          type: boolean
+          title: Is Upload Package
+          description: True for a hidden bulk-upload container whose members are still being extracted.
+          default: false
+        ingestion_status:
+          $ref: '#/components/schemas/IngestionStatus'
+        percent_complete:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Percent Complete
+        archive_members_done:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Archive Members Done
+        archive_members_total:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Archive Members Total
+        folder_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Folder Id
+          description: Leaf folder for deep-linking; null at the scope root.
+        folder_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Folder Path
+          description: Folder breadcrumb from the scope root (e.g. 'DocHub/Discovery/2024'), no filename.
+      type: object
+      required:
+      - id
+      - ingestion_status
+      title: ProcessingFileItem
+      description: One document still ingesting, with where it lives, for the banner's file list.
+    CursorPaginationMetadata:
+      properties:
+        page_size:
+          type: integer
+          title: Page Size
+          description: Items per page
+        has_next:
+          type: boolean
+          title: Has Next
+          description: Whether there are more items after this page
+        has_previous:
+          type: boolean
+          title: Has Previous
+          description: Whether there are items before this page (cursor was provided)
+        next_cursor:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Next Cursor
+          description: Opaque cursor for the next page; null on last page
+      type: object
+      required:
+      - page_size
+      - has_next
+      - has_previous
+      title: CursorPaginationMetadata
+      description: 'Cursor-based pagination metadata (ENG-22724).
+
+
+        Replaces offset-based ``PaginationMetadata`` for the folder listing. No total
+
+        count is computed — the expensive ``COUNT(*)`` over 1M+ rows is eliminated.
+
+        The client navigates with opaque cursor strings instead of page numbers.'
+    ExportDocumentsResponse:
+      properties:
+        workflow_id:
+          type: string
+          title: Workflow Id
+      type: object
+      required:
+      - workflow_id
+      title: ExportDocumentsResponse
+    AdminFailedDocItem:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        name:
+          type: string
+          title: Name
+        mime_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Mime Type
+        size_bytes:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Size Bytes
+        upload_datetime:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Upload Datetime
+        location:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Location
+        failure_reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Failure Reason
+        failure_detail:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Failure Detail
+          description: Human-readable why this row is FAILED_NO_RETRY and whether retry can help.
+        last_transient_failure:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Transient Failure
+        job_error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Job Error
+          description: Latest DocHubJob.error_message for this document, if any.
+        percent_complete:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Percent Complete
+        retryable:
+          type: boolean
+          title: Retryable
+        skip_reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Skip Reason
+          description: 'Why this row cannot be re-queued: permanent, empty_blob, alias.'
+        has_location:
+          type: boolean
+          title: Has Location
+          default: false
+      type: object
+      required:
+      - id
+      - name
+      - retryable
+      title: AdminFailedDocItem
+      description: One FAILED_NO_RETRY DocHub file for the admin failed-ingest tool.
+    AddFoldersToMatterResponse:
+      properties:
+        added_doc_count:
+          type: integer
+          title: Added Doc Count
+          description: Docs newly associated with the matter.
+        folder_count:
+          type: integer
+          title: Folder Count
+          description: Matter folders created for the mirrored subtree.
+        skipped_count:
+          type: integer
+          title: Skipped Count
+          description: Docs already associated with the matter (re-filed, not re-added).
+      type: object
+      required:
+      - added_doc_count
+      - folder_count
+      - skipped_count
+      title: AddFoldersToMatterResponse
+    DocumentEstimateRequest:
+      properties:
+        files:
+          items:
+            $ref: '#/components/schemas/DocumentEstimateFileRequest'
+          type: array
+          maxItems: 10000
+          minItems: 1
+          title: Files
+      type: object
+      required:
+      - files
+      title: DocumentEstimateRequest
+      description: 'Request for POST /document/estimate: estimate processing credits before upload.'
+    AdminFailedIngestDownloadRequest:
+      properties:
+        target_user_id:
+          type: string
+          minLength: 1
+          title: Target User Id
+        document_ids:
+          items:
+            type: string
+            format: uuid
+          type: array
+          minItems: 1
+          title: Document Ids
+      type: object
+      required:
+      - target_user_id
+      - document_ids
+      title: AdminFailedIngestDownloadRequest
+    RenameFolderRequest:
+      properties:
+        name:
+          type: string
+          maxLength: 250
+          minLength: 1
+          title: Name
+          description: New folder display name
+        matter_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Matter Id
+          description: Matter scope; omit for DocHub
+      type: object
+      required:
+      - name
+      title: RenameFolderRequest
     BatchAddDocumentItem:
       properties:
         filename:
@@ -3065,799 +3769,6 @@ components:
       - hash
       title: BatchAddDocumentItem
       description: Single document in a batch add-documents request.
-    ExportStatusResponse:
-      properties:
-        status:
-          type: string
-          title: Status
-          description: 'Workflow status: ''running'', ''completed'', or ''failed''.'
-        url:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Url
-          description: Download URL when status is 'completed'.
-        expires_at:
-          anyOf:
-          - type: string
-            format: date-time
-          - type: 'null'
-          title: Expires At
-          description: URL expiry when status is 'completed'.
-        document_count:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Document Count
-          description: Number of documents in the zip.
-        skipped_count:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Skipped Count
-          description: Number of documents that could not be included.
-        error:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Error
-          description: Error message when status is 'failed'.
-      type: object
-      required:
-      - status
-      title: ExportStatusResponse
-      description: Polling response for an export-documents workflow.
-    DocumentLinkResponse:
-      properties:
-        success:
-          type: boolean
-          title: Success
-      type: object
-      required:
-      - success
-      title: DocumentLinkResponse
-      description: Shared response for add/remove document-to-matter and document-to-task operations.
-    CreateAliasRequest:
-      properties:
-        hash:
-          type: string
-          title: Hash
-          description: Content hash of the file (must match an existing canonical's checksum).
-        filename:
-          type: string
-          maxLength: 4096
-          minLength: 1
-          title: Filename
-          description: Display name for the alias record.
-        relative_path:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Relative Path
-          description: Same relative_path you'd send to /add-document.
-        target_directory_id:
-          anyOf:
-          - type: string
-            format: uuid
-          - type: 'null'
-          title: Target Directory Id
-          description: Same target_directory_id you'd send to /add-document.
-        task_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Task Id
-          description: Optional task (Conversation) ID to link the alias to.
-        lr:
-          type: boolean
-          title: Lr
-          default: false
-        matter_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Matter Id
-          description: Optional matter ID to link the alias to.
-        matter_directory_id:
-          anyOf:
-          - type: string
-            format: uuid
-          - type: 'null'
-          title: Matter Directory Id
-          description: Same matter_directory_id you'd send to /add-document.
-        source:
-          anyOf:
-          - $ref: '#/components/schemas/DocumentSource'
-          - type: 'null'
-        file_content_type:
-          anyOf:
-          - $ref: '#/components/schemas/DocumentType'
-          - type: 'null'
-      type: object
-      required:
-      - hash
-      - filename
-      title: CreateAliasRequest
-      description: 'Hardwire a symlink alias for content already in DocHub — no blob upload (ENG-17767).
-
-
-        Send this instead of uploading + calling /add-document when /check-duplicates returned
-
-        action=''alias''. Mirrors the linking/placement fields of AddDocumentRequest but carries no
-
-        blob ''filename'' (there is nothing to upload — the alias points at the existing canonical).'
-    AdminIngestHealthResponse:
-      properties:
-        evaluated_at:
-          type: string
-          format: date-time
-          title: Evaluated At
-        window_minutes:
-          type: integer
-          title: Window Minutes
-        completed:
-          $ref: '#/components/schemas/AdminIngestHealthCompleted'
-        failures_by_class:
-          additionalProperties:
-            type: integer
-          type: object
-          title: Failures By Class
-        throughput_per_hour:
-          type: number
-          title: Throughput Per Hour
-          default: 0.0
-        queue:
-          $ref: '#/components/schemas/AdminIngestHealthQueue'
-      type: object
-      required:
-      - evaluated_at
-      - window_minutes
-      - completed
-      - queue
-      title: AdminIngestHealthResponse
-      description: Platform-wide Doc Hub ingestion health for the alerting monitor.
-    AddDocumentsToTaskResponse:
-      properties:
-        success:
-          type: boolean
-          title: Success
-        added:
-          type: integer
-          title: Added
-          default: 0
-        already_linked:
-          type: integer
-          title: Already Linked
-          default: 0
-        failed:
-          type: integer
-          title: Failed
-          default: 0
-      type: object
-      required:
-      - success
-      title: AddDocumentsToTaskResponse
-    ListDocumentsResponse:
-      properties:
-        success:
-          type: boolean
-          title: Success
-        documents:
-          items:
-            $ref: '#/components/schemas/DocumentMetadataSummary'
-          type: array
-          title: Documents
-        total_count:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Total Count
-          description: Total matching documents (set when pagination is used)
-      type: object
-      required:
-      - success
-      title: ListDocumentsResponse
-      description: 'Response for get_documents_by_task and get_documents_by_matter: success and list of document summaries.
-
-
-        When the caller passes ``limit``, ``total_count`` is populated with the
-
-        unsliced row count so the frontend can render paging controls. When
-
-        ``limit`` is omitted (legacy behaviour), ``total_count`` is ``None``.'
-    CursorPaginationMetadata:
-      properties:
-        page_size:
-          type: integer
-          title: Page Size
-          description: Items per page
-        has_next:
-          type: boolean
-          title: Has Next
-          description: Whether there are more items after this page
-        has_previous:
-          type: boolean
-          title: Has Previous
-          description: Whether there are items before this page (cursor was provided)
-        next_cursor:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Next Cursor
-          description: Opaque cursor for the next page; null on last page
-      type: object
-      required:
-      - page_size
-      - has_next
-      - has_previous
-      title: CursorPaginationMetadata
-      description: 'Cursor-based pagination metadata (ENG-22724).
-
-
-        Replaces offset-based ``PaginationMetadata`` for the folder listing. No total
-
-        count is computed — the expensive ``COUNT(*)`` over 1M+ rows is eliminated.
-
-        The client navigates with opaque cursor strings instead of page numbers.'
-    BatchAddDocumentsResponse:
-      properties:
-        documents:
-          items:
-            $ref: '#/components/schemas/BatchAddDocumentResult'
-          type: array
-          title: Documents
-      type: object
-      required:
-      - documents
-      title: BatchAddDocumentsResponse
-      description: Response for POST /document/add-documents. Array order matches request order.
-    CheckDuplicatesResponse:
-      properties:
-        files:
-          items:
-            $ref: '#/components/schemas/CheckDuplicateOne'
-          type: array
-          title: Files
-          description: List of files with duplicate status.
-      type: object
-      required:
-      - files
-      title: CheckDuplicatesResponse
-    SelectAllSharedCountRequest:
-      properties:
-        select_all_folder_id:
-          anyOf:
-          - type: string
-            format: uuid
-          - type: 'null'
-          title: Select All Folder Id
-          description: Folder the select-all was taken in; omit for the DocHub root.
-        exclude_doc_ids:
-          items:
-            type: string
-            format: uuid
-          type: array
-          maxItems: 5000
-          title: Exclude Doc Ids
-          description: Doc IDs the user unchecked after select-all.
-      type: object
-      title: SelectAllSharedCountRequest
-      description: 'Request for POST select-all-shared-count: a DocHub select-all about to be deleted (ENG-23079).'
-    DocumentTokenEstimateRequest:
-      properties:
-        files:
-          items:
-            $ref: '#/components/schemas/DocumentTokenEstimateFileRequest'
-          type: array
-          maxItems: 10000
-          minItems: 1
-          title: Files
-      type: object
-      required:
-      - files
-      title: DocumentTokenEstimateRequest
-      description: 'Request for POST /document/estimate/tokens: price locally counted token totals.'
-    DocumentSortField:
-      type: string
-      enum:
-      - date_added
-      - name
-      - size
-      - category
-      - type
-      - added_by
-      title: DocumentSortField
-      description: 'Sortable fields for the document list.
-
-
-        ``TYPE`` and ``ADDED_BY`` mirror the members of the same name on :class:`FolderSortField` and
-
-        reuse its ordering expressions, so the flat list and the folder browser order the two columns
-
-        identically — they render the same values on the same screen.
-
-
-        Matters and Tasks are absent here for the same reason they are absent there: those names are
-
-        encrypted at rest, so ordering on them would sort ciphertext.'
-    AddDocumentsV2Request:
-      properties:
-        manifest_blob_path:
-          type: string
-          maxLength: 4096
-          minLength: 1
-          title: Manifest Blob Path
-          description: Path to the manifest JSON blob in the user's Azure container.
-        batch_id:
-          anyOf:
-          - type: string
-            format: uuid
-          - type: 'null'
-          title: Batch Id
-          description: Frontend-generated batch ID (from /batch-start). Created server-side if omitted.
-        task_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Task Id
-        matter_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Matter Id
-        matter_directory_id:
-          anyOf:
-          - type: string
-            format: uuid
-          - type: 'null'
-          title: Matter Directory Id
-        lr:
-          type: boolean
-          title: Lr
-          default: false
-      type: object
-      required:
-      - manifest_blob_path
-      title: AddDocumentsV2Request
-      description: 'Request for POST /document/add-documents-v2: fire-and-forget manifest-based registration.'
-    AdminFailedDocsUser:
-      properties:
-        id:
-          type: string
-          title: Id
-        email:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Email
-        full_name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Full Name
-      type: object
-      required:
-      - id
-      title: AdminFailedDocsUser
-      description: Customer whose FAILED_NO_RETRY docs are listed.
-    DocumentEstimateRequest:
-      properties:
-        files:
-          items:
-            $ref: '#/components/schemas/DocumentEstimateFileRequest'
-          type: array
-          maxItems: 10000
-          minItems: 1
-          title: Files
-      type: object
-      required:
-      - files
-      title: DocumentEstimateRequest
-      description: 'Request for POST /document/estimate: estimate processing credits before upload.'
-    AdminFailedIngestSkip:
-      properties:
-        id:
-          type: string
-          format: uuid
-          title: Id
-        reason:
-          type: string
-          title: Reason
-      type: object
-      required:
-      - id
-      - reason
-      title: AdminFailedIngestSkip
-    DeleteFolderResponse:
-      properties:
-        success:
-          type: boolean
-          title: Success
-          default: true
-        removed_folder_count:
-          type: integer
-          title: Removed Folder Count
-          description: Directory rows dropped (the deleted subtree).
-        unlinked_doc_count:
-          type: integer
-          title: Unlinked Doc Count
-          description: 'Matter scope: docs un-associated from the matter (still in DocHub).'
-          default: 0
-        hard_deleted_doc_count:
-          type: integer
-          title: Hard Deleted Doc Count
-          description: 'DocHub scope: docs hard-deleted (their only placement was inside the subtree).'
-          default: 0
-        pruned_folder_count:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Pruned Folder Count
-          description: 'When prune_empty_folders=true: folders pruned inline (matter scope, or DocHub with no async purge). None means pruning was deferred to the background drain (DocHub with files to purge) or wasn''t requested.'
-      type: object
-      required:
-      - removed_folder_count
-      title: DeleteFolderResponse
-    GetDocumentResponse:
-      properties:
-        success:
-          type: boolean
-          title: Success
-        document:
-          anyOf:
-          - $ref: '#/components/schemas/DocumentMetadataSummary'
-          - type: 'null'
-      type: object
-      required:
-      - success
-      title: GetDocumentResponse
-      description: 'Response for get_document: success and optional document summary.'
-    SortOrder:
-      type: string
-      enum:
-      - asc
-      - desc
-      title: SortOrder
-      description: Sort direction.
-    BatchDocumentsItem:
-      properties:
-        id:
-          type: string
-          title: Id
-        name:
-          type: string
-          title: Name
-        status:
-          type: string
-          title: Status
-        location:
-          type: string
-          title: Location
-          default: ''
-        checksum:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Checksum
-          description: 'Content hash of the document. Match uploads to rows on THIS, not on ``location``: ``location`` encodes the id of whichever upload container first produced the file, so a de-duplicated re-upload keeps the earlier container''s path and a client that rebuilds ``extracted_<containerId>/<entry>`` can never match it.'
-        original_relative_path:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Original Relative Path
-          description: Folder-qualified path the file was uploaded under, when known. Not always set.
-        failure_reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Failure Reason
-          description: Why the document failed (e.g. 'corrupted_file'). Only set on FAILED_NO_RETRY. Without it a bundled member that failed could only be reported as a generic 'Processing failed' (ENG-22515).
-        retry_pending:
-          type: boolean
-          title: Retry Pending
-          description: True when the document is FAILED_NO_RETRY but the transient-failure sweep will re-queue it on its own, so its failure is not final yet.
-          default: false
-      type: object
-      required:
-      - id
-      - name
-      - status
-      title: BatchDocumentsItem
-      description: Single document in a batch documents listing.
-    PollDocumentsV2Request:
-      properties:
-        batch_id:
-          type: string
-          format: uuid
-          title: Batch Id
-          description: Batch ID from /add-documents-v2.
-      type: object
-      required:
-      - batch_id
-      title: PollDocumentsV2Request
-      description: Request for POST /document/poll-documents-v2.
-    BatchAddDocumentsRequest:
-      properties:
-        task_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Task Id
-          description: Optional task (Conversation) ID to link all documents to.
-        lr:
-          type: boolean
-          title: Lr
-          description: Whether task-document links are for legal research.
-          default: false
-        matter_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Matter Id
-          description: Optional matter ID to link all documents to (used when task_id is absent).
-        batch_id:
-          anyOf:
-          - type: string
-            format: uuid
-          - type: 'null'
-          title: Batch Id
-          description: DocHubUploadBatch ID from batch-start. When set, docs are tracked for batch completion.
-        matter_directory_id:
-          anyOf:
-          - type: string
-            format: uuid
-          - type: 'null'
-          title: Matter Directory Id
-          description: Optional folder in the MATTER's tree to file the doc into (requires matter_id). Distinct from target_directory_id, which is always a DocHub folder — folder ids do not cross scopes. When set, the doc is placed here explicitly and its DocHub folder ancestry is NOT mirrored into the matter, since the user picked the matter location directly (ENG-19239).
-        documents:
-          items:
-            $ref: '#/components/schemas/BatchAddDocumentItem'
-          type: array
-          maxItems: 100
-          minItems: 1
-          title: Documents
-      type: object
-      required:
-      - documents
-      title: BatchAddDocumentsRequest
-      description: 'Request for POST /document/add-documents: batch-register multiple uploaded documents.'
-    SelectAllSharedCountResponse:
-      properties:
-        shared_count:
-          type: integer
-          title: Shared Count
-          description: Selected files the caller did not upload.
-          default: 0
-      type: object
-      title: SelectAllSharedCountResponse
-      description: 'Result for POST select-all-shared-count: read-only; mutates nothing.
-
-
-        ``shared_count`` is how many files the select-all shows that a delete would skip:
-
-        shared in via a matter, owned by someone else.'
-    AddDocumentRequest:
-      properties:
-        filename:
-          type: string
-          maxLength: 4096
-          minLength: 1
-          title: Filename
-        hash:
-          type: string
-          title: Hash
-        original_filename:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Original Filename
-          description: Display name (e.g. user's filename). When provided, used instead of blob metadata so the client can send arbitrary Unicode in the request body instead of upload headers.
-        task_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Task Id
-          description: Optional task (Conversation) ID to link the document to.
-        lr:
-          type: boolean
-          title: Lr
-          description: Whether this task-document link is for legal research.
-          default: false
-        matter_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Matter Id
-          description: Optional matter ID to link the document to.
-        source:
-          anyOf:
-          - $ref: '#/components/schemas/DocumentSource'
-          - type: 'null'
-          description: 'Origin of the document: ''user'' (uploaded) or ''strongsuit'' (system-generated). Defaults to ''user'' when omitted.'
-        chunking_strategy:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Chunking Strategy
-          description: 'Text splitting strategy for ingestion. When set, overrides automatic classification-based splitter selection. Values: ''financial'' (transaction-aware, zero overlap), ''contract'' (default sentence splitter).'
-        file_content_type:
-          anyOf:
-          - $ref: '#/components/schemas/DocumentType'
-          - type: 'null'
-          description: Document classification (e.g. MATTER_MEMORY, TASK_MEMORY). When provided, bypasses LLM classification during ingestion.
-        purpose:
-          anyOf:
-          - $ref: '#/components/schemas/DocumentPurpose'
-          - type: 'null'
-          description: Intended use of this upload. When set to 'template', the file is content-sniffed and rejected unless it's a genuine .docx (ENG-17640). Omit for ordinary document uploads — this never restricts those.
-        archive_member_names_url_encoded:
-          type: boolean
-          title: Archive Member Names Url Encoded
-          description: Set when this upload is an archive whose member names were percent-encoded by the producer (e.g. a Dropbox folder-download zip). Extraction decodes member names before registering the children.
-          default: false
-        archive_member_path_prefix:
-          anyOf:
-          - type: string
-            maxLength: 255
-          - type: 'null'
-          title: Archive Member Path Prefix
-          description: Folder path to nest this archive's extracted members under, so the archive itself can sit beside the folder it produces instead of inside it (e.g. a Dropbox folder-download zip, whose members carry no wrapping directory of their own).
-        relative_path:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Relative Path
-          description: Folder-relative path from a folder upload (e.g. 'Taxes/2024/w2.pdf'), typically the browser's webkitRelativePath. Its directory part builds the user's DocHub folder tree and the basename becomes the display name. If omitted but original_filename contains '/', it is split as a fallback.
-        target_directory_id:
-          anyOf:
-          - type: string
-            format: uuid
-          - type: 'null'
-          title: Target Directory Id
-          description: Optional DocHub folder to upload into (the 'current folder'); defaults to root. Any relative_path is created beneath it.
-        matter_directory_id:
-          anyOf:
-          - type: string
-            format: uuid
-          - type: 'null'
-          title: Matter Directory Id
-          description: Optional folder in the MATTER's tree to file the doc into (requires matter_id). Distinct from target_directory_id, which is always a DocHub folder — folder ids do not cross scopes. When set, the doc is placed here explicitly and its DocHub folder ancestry is NOT mirrored into the matter, since the user picked the matter location directly (ENG-19239).
-        total_bytes:
-          type: integer
-          minimum: 0.0
-          title: Total Bytes
-          description: File size in bytes for pre-registration credit estimation (0 = per-doc floor).
-          default: 0
-        pages:
-          type: integer
-          minimum: 0.0
-          title: Pages
-          description: Known page count for pre-registration credit estimation (0 if unknown).
-          default: 0
-      type: object
-      required:
-      - filename
-      - hash
-      title: AddDocumentRequest
-    ProcessingFileItem:
-      properties:
-        id:
-          type: string
-          format: uuid
-          title: Id
-        name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Name
-          description: Filename; null for a client-authored upload container, which the UI labels by member count.
-        is_upload_package:
-          type: boolean
-          title: Is Upload Package
-          description: True for a hidden bulk-upload container whose members are still being extracted.
-          default: false
-        ingestion_status:
-          $ref: '#/components/schemas/IngestionStatus'
-        percent_complete:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Percent Complete
-        archive_members_done:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Archive Members Done
-        archive_members_total:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Archive Members Total
-        folder_id:
-          anyOf:
-          - type: string
-            format: uuid
-          - type: 'null'
-          title: Folder Id
-          description: Leaf folder for deep-linking; null at the scope root.
-        folder_path:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Folder Path
-          description: Folder breadcrumb from the scope root (e.g. 'DocHub/Discovery/2024'), no filename.
-      type: object
-      required:
-      - id
-      - ingestion_status
-      title: ProcessingFileItem
-      description: One document still ingesting, with where it lives, for the banner's file list.
-    CreateFolderRequest:
-      properties:
-        name:
-          type: string
-          maxLength: 250
-          minLength: 1
-          title: Name
-          description: Folder display name
-        parent_id:
-          anyOf:
-          - type: string
-            format: uuid
-          - type: 'null'
-          title: Parent Id
-          description: Parent folder; omit for a top-level folder
-        matter_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Matter Id
-          description: Matter scope; omit to target the caller's DocHub tree
-      type: object
-      required:
-      - name
-      title: CreateFolderRequest
-    DeletionImpactRequest:
-      properties:
-        folder_ids:
-          items:
-            type: string
-            format: uuid
-          type: array
-          title: Folder Ids
-          description: Folders to delete; each resolved recursively (whole subtree).
-        document_ids:
-          items:
-            type: string
-            format: uuid
-          type: array
-          title: Document Ids
-          description: Loose files to delete.
-        matter_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Matter Id
-          description: 'Scope: matter id for matter-scoped folders/files; omit for DocHub scope.'
-      type: object
-      title: DeletionImpactRequest
-      description: 'Request for POST deletion-impact: read-only preview of what a delete would affect.'
-    PollDocumentsResponse:
-      properties:
-        success:
-          type: boolean
-          title: Success
-        documents:
-          items:
-            $ref: '#/components/schemas/DocumentPollItem'
-          type: array
-          title: Documents
-          description: Document id, status, size, and percent_complete for documents the user can access.
-      type: object
-      required:
-      - success
-      title: PollDocumentsResponse
-      description: 'Response for POST poll-documents: id, status, size, and percent_complete for each document.'
     AdminIngestHealthCompleted:
       properties:
         succeeded:
@@ -3885,168 +3796,298 @@ components:
       - total
       title: AdminIngestHealthCompleted
       description: INGEST jobs that reached a terminal state inside the window.
-    AddDocumentsToMatterRequest:
+    PaginatedDocumentListResponse:
       properties:
+        success:
+          type: boolean
+          title: Success
+        documents:
+          items:
+            $ref: '#/components/schemas/DocumentMetadataSummary'
+          type: array
+          title: Documents
+        pagination:
+          $ref: '#/components/schemas/PaginationMetadata'
+      type: object
+      required:
+      - success
+      - documents
+      - pagination
+      title: PaginatedDocumentListResponse
+      description: Paginated response for GET /document/list.
+    AdminFailedIngestDownloadItem:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        name:
+          type: string
+          title: Name
+        url:
+          type: string
+          title: Url
+        expires_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Expires At
+      type: object
+      required:
+      - id
+      - name
+      - url
+      title: AdminFailedIngestDownloadItem
+    BatchAddDocumentsResponse:
+      properties:
+        documents:
+          items:
+            $ref: '#/components/schemas/BatchAddDocumentResult'
+          type: array
+          title: Documents
+      type: object
+      required:
+      - documents
+      title: BatchAddDocumentsResponse
+      description: Response for POST /document/add-documents. Array order matches request order.
+    CheckDuplicatesResponse:
+      properties:
+        files:
+          items:
+            $ref: '#/components/schemas/CheckDuplicateOne'
+          type: array
+          title: Files
+          description: List of files with duplicate status.
+      type: object
+      required:
+      - files
+      title: CheckDuplicatesResponse
+    MoveItemsRequest:
+      properties:
+        folder_ids:
+          items:
+            type: string
+            format: uuid
+          type: array
+          maxItems: 1000
+          title: Folder Ids
+          description: Folders to move.
         doc_ids:
           items:
             type: string
             format: uuid
           type: array
-          minItems: 1
+          maxItems: 1000
           title: Doc Ids
-          description: UUIDs of the documents to add
-        matter_id:
-          type: string
-          minLength: 1
-          title: Matter Id
-          description: CUID of the matter to add the documents to
-      type: object
-      required:
-      - doc_ids
-      - matter_id
-      title: AddDocumentsToMatterRequest
-    FolderSortField:
-      type: string
-      enum:
-      - name
-      - date_added
-      - category
-      - added_by
-      - type
-      title: FolderSortField
-      description: "Sortable fields for the folder listing (ENG-19278).\n\nDeliberately not the same set as ``DocumentSortField``: ``size`` isn't a column in the\nfolder browser, while ``added_by`` and ``type`` are. Matters/Tasks are absent on purpose —\nthose names are encrypted at rest, so ordering on them would sort ciphertext.\n\nFolders are sorted together with files, never pinned above them. How a folder places depends\non whether it has a value for the field:\n\n- ``NAME``, ``DATE_ADDED`` — a folder has its own name and ``created_at``, so it interleaves\n  with files on equal footing.\n- ``TYPE`` — a folder sorts as the literal ``\"folder\"``, so it interleaves alphabetically\n  among file extensions (``docx`` < ``folder`` < ``pdf``).\n- ``CATEGORY``, ``ADDED_BY`` — a folder has neither, so it carries NULL and pins to the top\n  in *both* directions (see ``_merged_order_by``)."
-    AdminFailedIngestRequeueResponse:
-      properties:
-        requeued:
+          description: Files to move.
+        target_folder_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Target Folder Id
+          description: Destination folder; null/omit for root.
+        source_folder_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Source Folder Id
+          description: The level being moved out of (null = root). Every selected item must currently live here.
+        move_all_at_source:
+          type: boolean
+          title: Move All At Source
+          description: Move everything at ``source_folder_id`` instead of an explicit selection, resolved server-side. Required for levels larger than one page — a paged client only holds the ids it has rendered. When true, ``folder_ids``/``doc_ids`` are ignored.
+          default: false
+        exclude_doc_ids:
           items:
             type: string
             format: uuid
           type: array
-          title: Requeued
-        skipped:
+          maxItems: 5000
+          title: Exclude Doc Ids
+          description: 'Doc IDs to exclude from move_all_at_source. Used for the mode+delta selection model: the user selected all, then unchecked a few files. Only effective when move_all_at_source is true.'
+        exclude_folder_ids:
           items:
-            $ref: '#/components/schemas/AdminFailedIngestSkip'
+            type: string
+            format: uuid
           type: array
-          title: Skipped
+          maxItems: 500
+          title: Exclude Folder Ids
+          description: Folder IDs to exclude from move_all_at_source. Only effective when move_all_at_source is true.
+        matter_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Matter Id
+          description: Matter scope; omit for DocHub.
       type: object
-      title: AdminFailedIngestRequeueResponse
-    RenameFolderRequest:
+      title: MoveItemsRequest
+    DocumentListView:
+      type: string
+      enum:
+      - all
+      - matter_files
+      - strongsuit
+      - unassigned
+      title: DocumentListView
+      description: Tab scope for the document list.
+    CancelUploadV2Response:
+      properties:
+        cancelled_count:
+          type: integer
+          title: Cancelled Count
+          description: Number of documents archived.
+      type: object
+      required:
+      - cancelled_count
+      title: CancelUploadV2Response
+      description: Response for POST /document/cancel-upload-v2.
+    CheckDuplicateEntry:
+      properties:
+        hash:
+          type: string
+          title: Hash
+          description: File hash, prefixed with its type (e.g. 'sha1:...').
+        filename:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Filename
+          description: 'The file''s display name (the SAME name you will send to /add-document, e.g. ''05_Affidavit.pdf''). REQUIRED for reliable same-name duplicate detection: ''skip'' vs ''alias'' turns on whether a file with this exact name already lives at the target folder. Falls back to the last segment of relative_path when omitted — but send it explicitly for bare-file/root uploads where relative_path is null, or a byte-identical re-upload to the same place is misdetected as an alias instead of a skip (ENG-17767).'
+        relative_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Relative Path
+          description: 'The SAME relative_path you will send to /add-document: the folder-upload path incl. filename (e.g. ''dir01/test.txt''), or null for a bare file (send the name in ''filename''). Combined with target_directory_id to resolve where the file will live. Enables path-aware duplicate detection (ENG-17767): byte-identical content at a DIFFERENT path is a distinct record (a symlink alias), not a duplicate, so ''skip'' is returned only for a true no-op (same bytes+name at the same current path).'
+        target_directory_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Target Directory Id
+          description: The SAME target_directory_id (current folder) you will send to /add-document. None = DocHub root.
+      type: object
+      required:
+      - hash
+      title: CheckDuplicateEntry
+    AddDocumentToTaskRequest:
+      properties:
+        doc_id:
+          type: string
+          format: uuid
+          title: Doc Id
+          description: UUID of the document to add
+        task_id:
+          type: string
+          minLength: 1
+          title: Task Id
+          description: CUID of the task (Conversation) to add the document to
+      type: object
+      required:
+      - doc_id
+      - task_id
+      title: AddDocumentToTaskRequest
+    DocumentPollItem:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+          description: Document id.
+        status:
+          type: string
+          title: Status
+          description: Document processing status (e.g. UNPROCESSED, PROCESSED, FAILED_NO_RETRY).
+        size:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Size
+          description: Document size in bytes.
+        percent_complete:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Percent Complete
+          description: Processing progress 0-100.
+        failure_reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Failure Reason
+          description: Why the document failed (e.g. 'password_protected'). Only set on FAILED_NO_RETRY.
+        retry_pending:
+          type: boolean
+          title: Retry Pending
+          description: True when the document is FAILED_NO_RETRY but the transient-failure sweep will re-queue it on its own. Clients should keep polling instead of reporting it failed.
+          default: false
+      type: object
+      required:
+      - id
+      - status
+      title: DocumentPollItem
+      description: 'Single document polling result: id, status, size, and percent_complete.'
+    CreateFolderRequest:
       properties:
         name:
           type: string
           maxLength: 250
           minLength: 1
           title: Name
-          description: New folder display name
+          description: Folder display name
+        parent_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Parent Id
+          description: Parent folder; omit for a top-level folder
         matter_id:
           anyOf:
           - type: string
           - type: 'null'
           title: Matter Id
-          description: Matter scope; omit for DocHub
+          description: Matter scope; omit to target the caller's DocHub tree
       type: object
       required:
       - name
-      title: RenameFolderRequest
-    RemoveDocumentFromTaskRequest:
+      title: CreateFolderRequest
+    MoveItemsSkipped:
       properties:
-        doc_id:
+        kind:
+          type: string
+          enum:
+          - folder
+          - file
+          title: Kind
+        id:
           type: string
           format: uuid
-          title: Doc Id
-          description: UUID of the document to remove
-        task_id:
-          type: string
-          minLength: 1
-          title: Task Id
-          description: CUID of the task (Conversation) to remove the document from
+          title: Id
+        reason:
+          $ref: '#/components/schemas/MoveSkipReason'
       type: object
       required:
-      - doc_id
-      - task_id
-      title: RemoveDocumentFromTaskRequest
-    DocumentType:
-      type: string
-      enum:
-      - COMPLAINT
-      - STATEMENT_OF_FACTS
-      - ANSWER
-      - PRIOR_MOTION
-      - CONTRACT
-      - BRIEF
-      - DEMAND_LETTER
-      - EXHIBITS
-      - OTHER
-      - VARIOUS
-      - FINANCIAL_DOCUMENT
-      - POLICY_DOCUMENT
-      - PERSONNEL_RECORD
-      - MEETING_MINUTES
-      - TESTIMONY_STATEMENT
-      - TECHNICAL_DOCUMENT
-      - MEDIA_CONTENT
-      - EMAIL
-      - MEDICAL_RECORD
-      - MATTER_MEMORY
-      - TASK_MEMORY
-      - MATTER_FORM_CACHE
-      - MATTER_PREFERENCES
-      - PRELIMINARY_ANALYSIS
-      - EARLY_INTAKE_MEMORY
-      title: DocumentType
-      description: Document type classification for matters.
-    AdminUploadSummaryResponse:
+      - kind
+      - id
+      - reason
+      title: MoveItemsSkipped
+    AdminFailedIngestSkip:
       properties:
-        user:
-          $ref: '#/components/schemas/AdminFailedDocsUser'
-        since:
+        id:
           type: string
-          format: date-time
-          title: Since
-        until:
+          format: uuid
+          title: Id
+        reason:
           type: string
-          format: date-time
-          title: Until
-        total:
-          type: integer
-          title: Total
-        by_status:
-          additionalProperties:
-            type: integer
-          type: object
-          title: By Status
-          description: DocMetadata.status -> row count inside the window.
-        first_upload:
-          anyOf:
-          - type: string
-            format: date-time
-          - type: 'null'
-          title: First Upload
-        last_upload:
-          anyOf:
-          - type: string
-            format: date-time
-          - type: 'null'
-          title: Last Upload
+          title: Reason
       type: object
       required:
-      - user
-      - since
-      - until
-      - total
-      title: AdminUploadSummaryResponse
-      description: Upload outcomes for one customer over a time window (Doc Hub alert triage).
-    CancelUploadResponse:
-      properties:
-        cancelled_ids:
-          items:
-            type: string
-            format: uuid
-          type: array
-          title: Cancelled Ids
-          description: Documents that were cancelled.
-      type: object
-      title: CancelUploadResponse
+      - id
+      - reason
+      title: AdminFailedIngestSkip
     BatchStartRequest:
       properties:
         task_id:
@@ -4066,270 +4107,6 @@ components:
       - task_id
       title: BatchStartRequest
       description: 'Request for POST /document/batch-start: declare an upload batch for a dataset task.'
-    UploadStateQuery:
-      properties:
-        blob_path:
-          type: string
-          maxLength: 1024
-          title: Blob Path
-          description: Blob name within the caller's own container, as it was uploaded.
-        total_bytes:
-          type: integer
-          minimum: 0.0
-          title: Total Bytes
-          description: Size the finished blob should be.
-        hash:
-          type: string
-          maxLength: 256
-          title: Hash
-          description: Type-prefixed content hash (e.g. 'sha1:...'), as written to blob metadata.
-      type: object
-      required:
-      - blob_path
-      - total_bytes
-      - hash
-      title: UploadStateQuery
-      description: One blob a client is about to send, or re-send.
-    PaginationMetadata:
-      properties:
-        page:
-          type: integer
-          title: Page
-          description: Current page number
-        page_size:
-          type: integer
-          title: Page Size
-          description: Number of items per page
-        total_count:
-          type: integer
-          title: Total Count
-          description: Total number of items
-        total_pages:
-          type: integer
-          title: Total Pages
-          description: Total number of pages
-        has_next:
-          type: boolean
-          title: Has Next
-          description: Whether there is a next page
-        has_previous:
-          type: boolean
-          title: Has Previous
-          description: Whether there is a previous page
-      type: object
-      required:
-      - page
-      - page_size
-      - total_count
-      - total_pages
-      - has_next
-      - has_previous
-      title: PaginationMetadata
-      description: Pagination metadata for list responses.
-    PollDocumentsRequest:
-      properties:
-        document_ids:
-          items:
-            type: string
-            format: uuid
-          type: array
-          maxItems: 2000
-          minItems: 1
-          title: Document Ids
-          description: Document UUIDs to poll for progress.
-      type: object
-      required:
-      - document_ids
-      title: PollDocumentsRequest
-      description: 'Request for POST poll-documents: list of document IDs to poll.'
-    CheckDuplicatesRequest:
-      properties:
-        files:
-          items:
-            type: string
-          type: array
-          title: Files
-          description: Legacy hash-only duplicate check. Prefer 'entries' for path-aware detection — with 'files', a byte-identical upload under a different name/folder is reported as a duplicate even though it would now become an independent alias record.
-        entries:
-          anyOf:
-          - items:
-              $ref: '#/components/schemas/CheckDuplicateEntry'
-            type: array
-          - type: 'null'
-          title: Entries
-          description: 'Path-aware duplicate check (ENG-17767): hash + relative_path per file. When set, ''files'' is ignored.'
-      type: object
-      title: CheckDuplicatesRequest
-    AddDocumentsToTaskRequest:
-      properties:
-        doc_ids:
-          items:
-            type: string
-            format: uuid
-          type: array
-          minItems: 1
-          title: Doc Ids
-          description: UUIDs of the documents to add
-        task_id:
-          type: string
-          minLength: 1
-          title: Task Id
-          description: CUID of the task (Conversation) to add the documents to
-        batch_id:
-          anyOf:
-          - type: string
-            format: uuid
-          - type: 'null'
-          title: Batch Id
-          description: DocHubUploadBatch ID from batch-start. When set, docs are tracked for batch completion.
-      type: object
-      required:
-      - doc_ids
-      - task_id
-      title: AddDocumentsToTaskRequest
-    ViewDocumentResponse:
-      properties:
-        success:
-          type: boolean
-          title: Success
-        url:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Url
-        expires_at:
-          anyOf:
-          - type: string
-            format: date-time
-          - type: 'null'
-          title: Expires At
-      type: object
-      required:
-      - success
-      title: ViewDocumentResponse
-    DocumentFilterOptionsResponse:
-      properties:
-        success:
-          type: boolean
-          title: Success
-        categories:
-          items:
-            $ref: '#/components/schemas/FilterOption'
-          type: array
-          title: Categories
-        types:
-          items:
-            $ref: '#/components/schemas/FilterOption'
-          type: array
-          title: Types
-        matters:
-          items:
-            $ref: '#/components/schemas/FilterOption'
-          type: array
-          title: Matters
-        tasks:
-          items:
-            $ref: '#/components/schemas/FilterOption'
-          type: array
-          title: Tasks
-        added_by_users:
-          items:
-            $ref: '#/components/schemas/FilterOption'
-          type: array
-          title: Added By Users
-      type: object
-      required:
-      - success
-      title: DocumentFilterOptionsResponse
-      description: Available filter values with counts for faceted search.
-    AddFoldersToTaskRequest:
-      properties:
-        task_id:
-          type: string
-          minLength: 1
-          title: Task Id
-          description: CUID of the task (Conversation) to add the documents to
-        folder_ids:
-          items:
-            type: string
-            format: uuid
-          type: array
-          title: Folder Ids
-          description: Folders to expand server-side. Scope is body.matter_id (matter tree) or omit for the caller's DocHub — same as delete-documents / listing. Not inferred from the task.
-        doc_ids:
-          items:
-            type: string
-            format: uuid
-          type: array
-          title: Doc Ids
-          description: Individually-selected loose files to link alongside the folders.
-        matter_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Matter Id
-          description: 'Scope for folder expansion: matter id for matter-scoped folders; omit for DocHub.'
-        batch_id:
-          anyOf:
-          - type: string
-            format: uuid
-          - type: 'null'
-          title: Batch Id
-          description: DocHubUploadBatch ID from batch-start. When set, expanded docs are tracked for batch completion.
-        include_subfolders:
-          type: boolean
-          title: Include Subfolders
-          description: Recurse into subfolders (default true).
-          default: true
-        return_doc_ids:
-          type: boolean
-          title: Return Doc Ids
-          description: When true, include resolved_doc_ids in the response. Opt-in so callers that only need the link (Doc Review, Timeline, Files tab) do not download the expanded list.
-          default: false
-      type: object
-      required:
-      - task_id
-      title: AddFoldersToTaskRequest
-      description: Expand folders server-side and link the resulting docs to a task (ENG-22527).
-    FolderResponse:
-      properties:
-        id:
-          type: string
-          format: uuid
-          title: Id
-        name:
-          type: string
-          title: Name
-        parent_id:
-          anyOf:
-          - type: string
-            format: uuid
-          - type: 'null'
-          title: Parent Id
-      type: object
-      required:
-      - id
-      - name
-      title: FolderResponse
-    IngestionStatus:
-      type: string
-      enum:
-      - queued
-      - processing
-      - done
-      - failed
-      - cancelled
-      - stranded
-      - unknown
-      title: IngestionStatus
-      description: 'Derived per-doc ingestion status for API responses.
-
-
-        Projected from (DocMetadata.status, latest INGEST DocHubJob.status, job age).
-
-        Response-only: not persisted. See `_derive_ingestion_status` in
-
-        `app/modules/document/routes.py`.'
     UserInfo:
       properties:
         user_id:
@@ -4355,6 +4132,17 @@ components:
       - user_id
       title: UserInfo
       description: Lightweight user info embedded in responses.
+    CancelUploadResponse:
+      properties:
+        cancelled_ids:
+          items:
+            type: string
+            format: uuid
+          type: array
+          title: Cancelled Ids
+          description: Documents that were cancelled.
+      type: object
+      title: CancelUploadResponse
     RemoveFoldersFromMatterRequest:
       properties:
         matter_id:
@@ -4417,599 +4205,158 @@ components:
       required:
       - matter_id
       title: RemoveFoldersFromMatterRequest
-    PaginatedDocumentListResponse:
+    SearchScope:
+      type: string
+      enum:
+      - subtree
+      - current
+      title: SearchScope
+      description: "How deep a folder-listing query reaches (ENG-23085).\n\nQuery mode (any ``search`` or file filter) flattens the listing into a match set. This\nchooses what that set spans:\n\n- ``SUBTREE`` — matches at and below ``folder_id`` (the whole scope at root). The default,\n  and the only behaviour before this flag existed, so an absent param is a no-op.\n- ``CURRENT`` — matches placed directly at ``folder_id``: its immediate child folders and\n  the files at that level, nothing deeper.\n\nThe endpoint holds no policy about which affordance maps to which value — the frontend\nsends ``CURRENT`` for filter chips and ``SUBTREE`` for search (ENG-23088). Keeping the\nmapping there means a scope control, if one is ever wanted, overrides this param without\na backend change.\n\nThe restriction is applied in the query, never after paging: a page filtered post-hoc\nwould render short or empty and make ``has_next`` describe rows the caller never sees."
+    DeleteFolderResponse:
       properties:
         success:
           type: boolean
           title: Success
-        documents:
-          items:
-            $ref: '#/components/schemas/DocumentMetadataSummary'
-          type: array
-          title: Documents
-        pagination:
-          $ref: '#/components/schemas/PaginationMetadata'
+          default: true
+        removed_folder_count:
+          type: integer
+          title: Removed Folder Count
+          description: Directory rows dropped (the deleted subtree).
+        unlinked_doc_count:
+          type: integer
+          title: Unlinked Doc Count
+          description: 'Matter scope: docs un-associated from the matter (still in DocHub).'
+          default: 0
+        hard_deleted_doc_count:
+          type: integer
+          title: Hard Deleted Doc Count
+          description: 'DocHub scope: docs hard-deleted (their only placement was inside the subtree).'
+          default: 0
+        pruned_folder_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Pruned Folder Count
+          description: 'When prune_empty_folders=true: folders pruned inline (matter scope, or DocHub with no async purge). None means pruning was deferred to the background drain (DocHub with files to purge) or wasn''t requested.'
       type: object
       required:
-      - success
-      - documents
-      - pagination
-      title: PaginatedDocumentListResponse
-      description: Paginated response for GET /document/list.
-    AddDocumentToTaskRequest:
+      - removed_folder_count
+      title: DeleteFolderResponse
+    AdminIngestHealthResponse:
       properties:
-        doc_id:
+        evaluated_at:
           type: string
-          format: uuid
-          title: Doc Id
-          description: UUID of the document to add
+          format: date-time
+          title: Evaluated At
+        window_minutes:
+          type: integer
+          title: Window Minutes
+        completed:
+          $ref: '#/components/schemas/AdminIngestHealthCompleted'
+        failures_by_class:
+          additionalProperties:
+            type: integer
+          type: object
+          title: Failures By Class
+        throughput_per_hour:
+          type: number
+          title: Throughput Per Hour
+          default: 0.0
+        queue:
+          $ref: '#/components/schemas/AdminIngestHealthQueue'
+      type: object
+      required:
+      - evaluated_at
+      - window_minutes
+      - completed
+      - queue
+      title: AdminIngestHealthResponse
+      description: Platform-wide Doc Hub ingestion health for the alerting monitor.
+    AddDocumentsV2Request:
+      properties:
+        manifest_blob_path:
+          type: string
+          maxLength: 4096
+          minLength: 1
+          title: Manifest Blob Path
+          description: Path to the manifest JSON blob in the user's Azure container.
+        batch_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Batch Id
+          description: Frontend-generated batch ID (from /batch-start). Created server-side if omitted.
         task_id:
-          type: string
-          minLength: 1
+          anyOf:
+          - type: string
+          - type: 'null'
           title: Task Id
-          description: CUID of the task (Conversation) to add the document to
-      type: object
-      required:
-      - doc_id
-      - task_id
-      title: AddDocumentToTaskRequest
-    DeleteDocumentsRequest:
-      properties:
-        document_ids:
-          items:
-            type: string
-            format: uuid
-          type: array
-          maxItems: 2000
-          title: Document Ids
-          description: Loose file UUIDs to delete. Use select_all for larger deletes.
-        folder_ids:
-          items:
-            type: string
-            format: uuid
-          type: array
-          title: Folder Ids
-          description: Folders to delete; each resolved recursively (whole subtree) on the server.
         matter_id:
           anyOf:
           - type: string
           - type: 'null'
           title: Matter Id
-          description: 'Scope for folder resolution: matter id for matter-scoped folders; omit for DocHub scope.'
-        select_all:
-          type: boolean
-          title: Select All
-          description: 'Delete all documents in the scope. With matter_id: all docs in the matter owned by the caller. Without matter_id: all visible user-owned docs (DocHub scope). When select_all_folder_id is also set, only docs under that folder subtree are deleted. document_ids and folder_ids are ignored.'
-          default: false
-        select_all_folder_id:
+        matter_directory_id:
           anyOf:
           - type: string
             format: uuid
           - type: 'null'
-          title: Select All Folder Id
-          description: Scope select_all to a specific folder subtree. Only effective when select_all is true.
-        exclude_doc_ids:
-          items:
-            type: string
-            format: uuid
-          type: array
-          maxItems: 5000
-          title: Exclude Doc Ids
-          description: 'Doc IDs to exclude from select_all. Used for the mode+delta selection model: the user selected all, then unchecked a few items. Bounded by user clicks (max 5000). Only effective when select_all is true.'
-        exclude_folder_ids:
-          items:
-            type: string
-            format: uuid
-          type: array
-          maxItems: 500
-          title: Exclude Folder Ids
-          description: Folder IDs to exclude from select_all. The server resolves each folder's subtree and excludes all contained docs. Bounded by user clicks (max 500). Only effective when select_all is true.
-        prune_empty_folders:
+          title: Matter Directory Id
+        lr:
           type: boolean
-          title: Prune Empty Folders
-          description: If true, once the background purge finishes, delete the folders these documents vacated (and their ancestors) if they are left empty. Runs at the tail of the delete job, so it can't race the async purge, and never touches unrelated empty folders.
-          default: false
-      type: object
-      title: DeleteDocumentsRequest
-      description: 'Request for POST delete-documents: hard-delete a batch of documents owned by the caller.
-
-
-        Accepts ``folder_ids`` (resolved server-side to all files in the subtree) and/or
-
-        ``document_ids`` (loose files). At least one must be non-empty. When ``folder_ids``
-
-        is provided, ``matter_id`` scopes the resolution; omit it for DocHub scope.
-
-
-        Backward-compatible: the old ``document_ids``-only shape still works unchanged.'
-    RemoveDocumentFromMatterRequest:
-      properties:
-        doc_id:
-          type: string
-          format: uuid
-          title: Doc Id
-          description: UUID of the document to remove
-        matter_id:
-          type: string
-          minLength: 1
-          title: Matter Id
-          description: CUID of the matter to remove the document from
-        prune_empty_folders:
-          type: boolean
-          title: Prune Empty Folders
-          description: If true, delete the folder this file vacated (and its ancestors) if now empty.
+          title: Lr
           default: false
       type: object
       required:
-      - doc_id
-      - matter_id
-      title: RemoveDocumentFromMatterRequest
-    AddFoldersToMatterRequest:
+      - manifest_blob_path
+      title: AddDocumentsV2Request
+      description: 'Request for POST /document/add-documents-v2: fire-and-forget manifest-based registration.'
+    RemoveFoldersFromMatterResponse:
       properties:
-        matter_id:
-          type: string
-          title: Matter Id
-          description: Target matter.
-        folder_ids:
-          items:
-            type: string
-            format: uuid
-          type: array
-          title: Folder Ids
-          description: Source DocHub folders to copy (subtree mirrored into the matter).
-        doc_ids:
-          items:
-            type: string
-            format: uuid
-          type: array
-          title: Doc Ids
-          description: Individually-selected loose files to add.
-        target_directory_id:
-          anyOf:
-          - type: string
-            format: uuid
-          - type: 'null'
-          title: Target Directory Id
-          description: Matter folder to nest the copied subtree under (the matter cwd); null = matter root.
-        include_subfolders:
-          type: boolean
-          title: Include Subfolders
-          description: Recurse into subfolders (default true).
-          default: true
+        removed_doc_count:
+          type: integer
+          title: Removed Doc Count
+          description: Docs un-associated from the matter (still in DocHub).
+        removed_folder_count:
+          type: integer
+          title: Removed Folder Count
+          description: Matter folder nodes dropped.
+        skipped_count:
+          type: integer
+          title: Skipped Count
+          description: Requested loose doc_ids that weren't associated (no-op).
       type: object
       required:
-      - matter_id
-      title: AddFoldersToMatterRequest
-    CheckDuplicateOne:
+      - removed_doc_count
+      - removed_folder_count
+      - skipped_count
+      title: RemoveFoldersFromMatterResponse
+    PollDocumentsV2Summary:
       properties:
-        hash:
-          type: string
-          title: Hash
-        exists:
-          type: boolean
-          title: Exists
-        action:
-          anyOf:
-          - type: string
-            enum:
-            - upload
-            - skip
-            - alias
-          - type: 'null'
-          title: Action
-          description: 'Path-aware mode only (set when the request used ''entries''): what the client should do. ''upload'' = content not present, upload the bytes via /add-document. ''skip'' = a byte-identical file already exists at this exact path, do nothing. ''alias'' = the bytes exist elsewhere; do NOT upload — call /create-alias to hardwire a symlink record instantly (no Azure transfer, no ingest).'
-        id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Id
-        name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Name
-        azure_path:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Azure Path
-        archived:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Archived
-        failed:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Failed
-        failure_reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Failure Reason
-          description: Why the document failed (e.g. 'password_protected'). Only set on FAILED_NO_RETRY.
-      type: object
-      required:
-      - hash
-      - exists
-      title: CheckDuplicateOne
-    AddFoldersToTaskResponse:
-      properties:
-        success:
-          type: boolean
-          title: Success
-        added:
+        total:
           type: integer
-          title: Added
+          title: Total
           default: 0
-        already_linked:
+        registering:
           type: integer
-          title: Already Linked
+          title: Registering
           default: 0
-        resolved_doc_count:
+        unprocessed:
           type: integer
-          title: Resolved Doc Count
+          title: Unprocessed
           default: 0
-        resolved_doc_ids:
-          items:
-            type: string
-            format: uuid
-          type: array
-          title: Resolved Doc Ids
-          description: Expanded file ids (folders + loose extras). Empty unless return_doc_ids was set.
-      type: object
-      required:
-      - success
-      title: AddFoldersToTaskResponse
-    PollDocumentsV2Item:
-      properties:
-        id:
-          type: string
-          title: Id
-        name:
-          type: string
-          title: Name
-        filename:
-          type: string
-          title: Filename
-          default: ''
-        size_bytes:
+        processed:
           type: integer
-          title: Size Bytes
-          default: 0
-        percent_complete:
-          type: integer
-          title: Percent Complete
-          default: 0
-        failure_reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Failure Reason
-      type: object
-      required:
-      - id
-      - name
-      title: PollDocumentsV2Item
-      description: Per-document detail for display (up to 3 per category).
-    ClearDocsRequest:
-      properties:
-        document_names:
-          items:
-            type: string
-          type: array
-          minItems: 1
-          title: Document Names
-          description: File names to match against doc_metadata.name.
-      type: object
-      required:
-      - document_names
-      title: ClearDocsRequest
-      description: 'Request for POST clear-docs: hard-delete documents by name.'
-    ProcessingStatusResponse:
-      properties:
-        processing:
-          type: integer
-          title: Processing
-          description: Files still ingesting anywhere in the scope. A hidden upload container counts as the members it has yet to register, not as one file, so this is a count of the customer's own files rather than of rows.
+          title: Processed
           default: 0
         failed:
           type: integer
           title: Failed
-          description: Documents whose ingestion ended failed, stranded or cancelled.
-          default: 0
-        archives_extracting:
-          type: integer
-          title: Archives Extracting
-          description: Customer-uploaded archives still extracting members. Hidden upload containers are excluded, so a non-zero value means the customer's own zip is being extracted.
-          default: 0
-        archive_members_done:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Archive Members Done
-          description: Members registered so far across extracting customer archives; null when none report counts.
-        archive_members_total:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Archive Members Total
-          description: Members planned across extracting customer archives; null when none report counts.
-        files:
-          anyOf:
-          - items:
-              $ref: '#/components/schemas/ProcessingFileItem'
-            type: array
-          - type: 'null'
-          title: Files
-          description: In-flight documents, newest first, capped; null unless include_files was requested.
-        files_truncated:
-          type: boolean
-          title: Files Truncated
-          description: True when more documents were in flight than the list carries.
-          default: false
-      type: object
-      title: ProcessingStatusResponse
-      description: 'Result for GET processing-status: scope-wide in-flight ingestion counts for the Doc Hub banner,
-
-        plus the in-flight rows when ``include_files`` was requested.'
-    DocumentPollItem:
-      properties:
-        id:
-          type: string
-          format: uuid
-          title: Id
-          description: Document id.
-        status:
-          type: string
-          title: Status
-          description: Document processing status (e.g. UNPROCESSED, PROCESSED, FAILED_NO_RETRY).
-        size:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Size
-          description: Document size in bytes.
-        percent_complete:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Percent Complete
-          description: Processing progress 0-100.
-        failure_reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Failure Reason
-          description: Why the document failed (e.g. 'password_protected'). Only set on FAILED_NO_RETRY.
-        retry_pending:
-          type: boolean
-          title: Retry Pending
-          description: True when the document is FAILED_NO_RETRY but the transient-failure sweep will re-queue it on its own. Clients should keep polling instead of reporting it failed.
-          default: false
-      type: object
-      required:
-      - id
-      - status
-      title: DocumentPollItem
-      description: 'Single document polling result: id, status, size, and percent_complete.'
-    AdminFailedIngestRequeueRequest:
-      properties:
-        target_user_id:
-          type: string
-          minLength: 1
-          title: Target User Id
-        document_ids:
-          items:
-            type: string
-            format: uuid
-          type: array
-          minItems: 1
-          title: Document Ids
-      type: object
-      required:
-      - target_user_id
-      - document_ids
-      title: AdminFailedIngestRequeueRequest
-    RenameDocumentRequest:
-      properties:
-        document_id:
-          type: string
-          format: uuid
-          title: Document Id
-          description: UUID of the document to rename
-        new_name:
-          type: string
-          maxLength: 250
-          minLength: 1
-          title: New Name
-          description: New name for the document
-      type: object
-      required:
-      - document_id
-      - new_name
-      title: RenameDocumentRequest
-    FolderListingOrderEntry:
-      properties:
-        kind:
-          type: string
-          enum:
-          - folder
-          - file
-          title: Kind
-        id:
-          type: string
-          format: uuid
-          title: Id
-      type: object
-      required:
-      - kind
-      - id
-      title: FolderListingOrderEntry
-      description: One position in the merged folder+file render order (ENG-19278).
-    MoveDocumentsResponse:
-      properties:
-        success:
-          type: boolean
-          title: Success
-          default: true
-        moved_count:
-          type: integer
-          title: Moved Count
-          description: Documents whose placement was updated.
-        skipped_doc_ids:
-          items:
-            type: string
-            format: uuid
-          type: array
-          title: Skipped Doc Ids
-          description: Docs skipped because an identical file (same contents + name) already exists in the target folder.
-      type: object
-      required:
-      - moved_count
-      title: MoveDocumentsResponse
-    DocumentEstimateResponse:
-      properties:
-        total_credits:
-          type: integer
-          title: Total Credits
-          description: Total estimated credits for all files, rounded up once for the batch.
-        total_tokens:
-          type: integer
-          title: Total Tokens
-          description: Total estimated tokens across all files.
-        estimate_min_seconds:
-          type: integer
-          title: Estimate Min Seconds
-          description: Lower bound of estimated total processing time in seconds.
-        estimate_max_seconds:
-          type: integer
-          title: Estimate Max Seconds
-          description: Upper bound of estimated total processing time in seconds.
-        empirical:
-          type: boolean
-          title: Empirical
-          description: True when time estimates are based on historical processing data; False when using default constants.
-        documents:
-          items:
-            $ref: '#/components/schemas/DocumentEstimateItem'
-          type: array
-          title: Documents
-          description: Per-document breakdown.
-        credits_pending:
-          type: integer
-          title: Credits Pending
-          description: Credits already reserved by the caller's in-flight uploads this month.
-          default: 0
-        credits_remaining:
-          type: integer
-          title: Credits Remaining
-          description: Credits left in the caller's monthly budget.
-          default: 0
-        credit_limit:
-          type: integer
-          title: Credit Limit
-          description: The caller's monthly credit limit.
-          default: 0
-        would_exceed_budget:
-          type: boolean
-          title: Would Exceed Budget
-          description: True when total_credits + credits_pending exceeds credits_remaining. Computed the same way the registration gate computes it, so a False here means the upload will be accepted. Clients must block the upload when this is True.
-          default: false
-      type: object
-      required:
-      - total_credits
-      - total_tokens
-      - estimate_min_seconds
-      - estimate_max_seconds
-      - empirical
-      title: DocumentEstimateResponse
-      description: 'Response for POST /document/estimate: per-document and aggregate credit estimates.'
-    FolderTreeResponse:
-      properties:
-        folders:
-          items:
-            $ref: '#/components/schemas/FolderNodeSchema'
-          type: array
-          title: Folders
-      type: object
-      title: FolderTreeResponse
-      description: 'Lightweight folder-only tree for the folder-picker dialog (ENG-22636).
-
-
-        Returns every folder in the scope as a flat list; the client rebuilds the
-
-        tree from parent_id pointers. No files, no counts, no pagination — just
-
-        the skeleton needed to render a destination picker.'
-    FilterOption:
-      properties:
-        value:
-          type: string
-          title: Value
-        label:
-          type: string
-          title: Label
-        count:
-          type: integer
-          title: Count
-      type: object
-      required:
-      - value
-      - label
-      - count
-      title: FilterOption
-      description: Single option in a faceted filter (value, display label, count).
-    DocumentEstimateFileRequest:
-      properties:
-        name:
-          type: string
-          title: Name
-          description: File name including extension (e.g. 'report.pdf').
-        total_bytes:
-          type: integer
-          exclusiveMinimum: 0.0
-          title: Total Bytes
-          description: File size in bytes.
-        pages:
-          type: integer
-          minimum: 0.0
-          title: Pages
-          description: Known page count (0 if unknown; bytes-based estimate is used).
           default: 0
       type: object
-      required:
-      - name
-      - total_bytes
-      title: DocumentEstimateFileRequest
-      description: Single file descriptor for cost estimation (mirrors discovery's FileRequest).
-    AddDocumentResponse:
-      properties:
-        success:
-          type: boolean
-          title: Success
-        document_id:
-          type: string
-          format: uuid
-          title: Document Id
-        task_linked:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Task Linked
-          description: True if document was linked to the requested task; False if link was attempted and failed; None if no task_id was provided.
-        matter_linked:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Matter Linked
-          description: True if document was linked to the requested matter; False if link was attempted and failed; None if no matter_id was provided.
-      type: object
-      required:
-      - success
-      - document_id
-      title: AddDocumentResponse
+      title: PollDocumentsV2Summary
+      description: Aggregate status counts for a batch.
     FolderListingResponse:
       properties:
         folder_id:
@@ -5076,125 +4423,6 @@ components:
       required:
       - root_label
       title: FolderListingResponse
-    DocumentEstimateItem:
-      properties:
-        name:
-          type: string
-          title: Name
-          description: File name.
-        estimated_tokens:
-          type: integer
-          title: Estimated Tokens
-          description: Estimated token count for ingestion + summarization.
-        estimated_credits:
-          type: number
-          title: Estimated Credits
-          description: 'Estimated credits for processing this document. Fractional: most documents cost well under one credit.'
-        estimated_seconds:
-          type: number
-          title: Estimated Seconds
-          description: Estimated processing time in seconds for this document.
-      type: object
-      required:
-      - name
-      - estimated_tokens
-      - estimated_credits
-      - estimated_seconds
-      title: DocumentEstimateItem
-      description: Per-document credit estimate returned by the estimation endpoint.
-    PollDocumentsV2Response:
-      properties:
-        registration_status:
-          type: string
-          title: Registration Status
-          description: 'Temporal workflow status: running, completed, failed, unknown.'
-          default: unknown
-        summary:
-          $ref: '#/components/schemas/PollDocumentsV2Summary'
-        registering:
-          items:
-            $ref: '#/components/schemas/PollDocumentsV2Item'
-          type: array
-          maxItems: 3
-          title: Registering
-        in_progress:
-          items:
-            $ref: '#/components/schemas/PollDocumentsV2Item'
-          type: array
-          maxItems: 3
-          title: In Progress
-        completed:
-          items:
-            $ref: '#/components/schemas/PollDocumentsV2Item'
-          type: array
-          maxItems: 3
-          title: Completed
-        failed:
-          items:
-            $ref: '#/components/schemas/PollDocumentsV2Item'
-          type: array
-          maxItems: 3
-          title: Failed
-      type: object
-      required:
-      - summary
-      title: PollDocumentsV2Response
-      description: Response for POST /document/poll-documents-v2.
-    AffectedMatter:
-      properties:
-        id:
-          type: string
-          title: Id
-        name:
-          type: string
-          title: Name
-          description: Matter name; may be encrypted (the FE proxy decrypts it).
-      type: object
-      required:
-      - id
-      - name
-      title: AffectedMatter
-      description: A matter that at least one about-to-be-deleted file is linked to.
-    BatchFinalizeResponse:
-      properties:
-        sealed:
-          type: boolean
-          title: Sealed
-          description: True if the batch was found and sealed with the given count.
-      type: object
-      required:
-      - sealed
-      title: BatchFinalizeResponse
-      description: Response for POST /document/batch-finalize.
-    MoveSkipReason:
-      type: string
-      enum:
-      - name_conflict
-      - batch_name_conflict
-      - redundant_descendant
-      - too_deep
-      - cycle
-      - already_there
-      - not_at_source
-      title: MoveSkipReason
-      description: 'Why one selected item did not move (ENG-19224).
-
-
-        Collisions are refused, never resolved: nothing is overwritten, merged, deleted, or unlinked by
-
-        a move. Every obstruction is one of these, so a caller renders them from a single flat list.'
-    GeneratedDocsByTasksResponse:
-      properties:
-        result:
-          additionalProperties:
-            type: string
-          type: object
-          title: Result
-      type: object
-      required:
-      - result
-      title: GeneratedDocsByTasksResponse
-      description: Map of task/conversation id → newest generated ``.docx`` document id.
     DeleteDocumentsResponse:
       properties:
         accepted:
@@ -5231,107 +4459,35 @@ components:
         only docs rejected before tombstoning (not found / not the owner / an archive
 
         still being extracted).'
-    UploadStateResponse:
+    ClearDocsRequest:
       properties:
-        blobs:
+        document_names:
           items:
-            $ref: '#/components/schemas/UploadStateItem'
+            type: string
           type: array
-          title: Blobs
+          minItems: 1
+          title: Document Names
+          description: File names to match against doc_metadata.name.
       type: object
       required:
-      - blobs
-      title: UploadStateResponse
-    AddDocumentToMatterResponse:
+      - document_names
+      title: ClearDocsRequest
+      description: 'Request for POST clear-docs: hard-delete documents by name.'
+    DeleteStatusResponse:
       properties:
-        success:
-          type: boolean
-          title: Success
-        already_linked:
-          type: boolean
-          title: Already Linked
-          default: false
-      type: object
-      required:
-      - success
-      title: AddDocumentToMatterResponse
-      description: Response for add-document-to-matter. Includes whether the link already existed.
-    BatchDocumentsResponse:
-      properties:
-        documents:
-          items:
-            $ref: '#/components/schemas/BatchDocumentsItem'
-          type: array
-          title: Documents
-        total:
+        pending:
           type: integer
-          title: Total
-        page:
-          type: integer
-          title: Page
-        page_size:
-          type: integer
-          title: Page Size
-        has_more:
-          type: boolean
-          title: Has More
-        archives_pending:
-          type: integer
-          title: Archives Pending
-          description: Upload containers in this batch that have not finished extracting. Silence in the document list means 'not written yet' while this is > 0 and 'never going to be written' once it is 0 — without it a client cannot tell the two apart and can only guess with a stall timer.
+          title: Pending
+          description: Documents still being purged (delete_state='deleting', or 'purging' once the drain claims them).
           default: 0
-        extraction_complete:
-          type: boolean
-          title: Extraction Complete
-          description: True when no container in this batch is still extracting (``archives_pending == 0``).
-          default: true
+        failed:
+          type: integer
+          title: Failed
+          description: Documents that couldn't be deleted (delete_state='delete_failed').
+          default: 0
       type: object
-      required:
-      - documents
-      - total
-      - page
-      - page_size
-      - has_more
-      title: BatchDocumentsResponse
-      description: Paginated response for GET /document/batch/{batch_id}/documents.
-    AddFoldersToMatterResponse:
-      properties:
-        added_doc_count:
-          type: integer
-          title: Added Doc Count
-          description: Docs newly associated with the matter.
-        folder_count:
-          type: integer
-          title: Folder Count
-          description: Matter folders created for the mirrored subtree.
-        skipped_count:
-          type: integer
-          title: Skipped Count
-          description: Docs already associated with the matter (re-filed, not re-added).
-      type: object
-      required:
-      - added_doc_count
-      - folder_count
-      - skipped_count
-      title: AddFoldersToMatterResponse
-    DocumentSource:
-      type: string
-      enum:
-      - user
-      - strongsuit
-      title: DocumentSource
-      description: 'Origin of a document: user-uploaded or system-generated (strongsuit).'
-    CancelUploadV2Response:
-      properties:
-        cancelled_count:
-          type: integer
-          title: Cancelled Count
-          description: Number of documents archived.
-      type: object
-      required:
-      - cancelled_count
-      title: CancelUploadV2Response
-      description: Response for POST /document/cancel-upload-v2.
+      title: DeleteStatusResponse
+      description: 'Result for GET delete-status: counts sourced from delete_state (no Temporal query).'
     AdminIngestHealthQueue:
       properties:
         queued:
@@ -5377,318 +4533,6 @@ components:
       - processing
       title: AdminIngestHealthQueue
       description: Current INGEST queue shape — depth, wait, concentration and stall signals.
-    AddDocumentToTaskResponse:
-      properties:
-        success:
-          type: boolean
-          title: Success
-        already_linked:
-          type: boolean
-          title: Already Linked
-          default: false
-      type: object
-      required:
-      - success
-      title: AddDocumentToTaskResponse
-      description: Response for add-document-to-task. Includes whether the link already existed.
-    CancelUploadV2Request:
-      properties:
-        batch_id:
-          type: string
-          format: uuid
-          title: Batch Id
-          description: Batch ID from /add-documents-v2.
-        task_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Task Id
-        matter_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Matter Id
-      type: object
-      required:
-      - batch_id
-      title: CancelUploadV2Request
-      description: Request for POST /document/cancel-upload-v2.
-    AdminFailedIngestDownloadRequest:
-      properties:
-        target_user_id:
-          type: string
-          minLength: 1
-          title: Target User Id
-        document_ids:
-          items:
-            type: string
-            format: uuid
-          type: array
-          minItems: 1
-          title: Document Ids
-      type: object
-      required:
-      - target_user_id
-      - document_ids
-      title: AdminFailedIngestDownloadRequest
-    DeleteStatusResponse:
-      properties:
-        pending:
-          type: integer
-          title: Pending
-          description: Documents still being purged (delete_state='deleting', or 'purging' once the drain claims them).
-          default: 0
-        failed:
-          type: integer
-          title: Failed
-          description: Documents that couldn't be deleted (delete_state='delete_failed').
-          default: 0
-      type: object
-      title: DeleteStatusResponse
-      description: 'Result for GET delete-status: counts sourced from delete_state (no Temporal query).'
-    SearchScope:
-      type: string
-      enum:
-      - subtree
-      - current
-      title: SearchScope
-      description: "How deep a folder-listing query reaches (ENG-23085).\n\nQuery mode (any ``search`` or file filter) flattens the listing into a match set. This\nchooses what that set spans:\n\n- ``SUBTREE`` — matches at and below ``folder_id`` (the whole scope at root). The default,\n  and the only behaviour before this flag existed, so an absent param is a no-op.\n- ``CURRENT`` — matches placed directly at ``folder_id``: its immediate child folders and\n  the files at that level, nothing deeper.\n\nThe endpoint holds no policy about which affordance maps to which value — the frontend\nsends ``CURRENT`` for filter chips and ``SUBTREE`` for search (ENG-23088). Keeping the\nmapping there means a scope control, if one is ever wanted, overrides this param without\na backend change.\n\nThe restriction is applied in the query, never after paging: a page filtered post-hoc\nwould render short or empty and make ``has_next`` describe rows the caller never sees."
-    MoveDocumentRequest:
-      properties:
-        doc_id:
-          type: string
-          format: uuid
-          title: Doc Id
-          description: Document to move
-        target_folder_id:
-          anyOf:
-          - type: string
-            format: uuid
-          - type: 'null'
-          title: Target Folder Id
-          description: Destination folder; null/omit for root
-        source_folder_id:
-          anyOf:
-          - type: string
-            format: uuid
-          - type: 'null'
-          title: Source Folder Id
-          description: Folder the doc is currently filed in (null = root); the placement being moved
-        matter_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Matter Id
-          description: Matter scope; omit for DocHub
-      type: object
-      required:
-      - doc_id
-      title: MoveDocumentRequest
-    BatchAddDocumentResult:
-      properties:
-        document_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Document Id
-          description: Document ID on success.
-        error:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Error
-          description: Error message on per-item failure.
-        task_linked:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Task Linked
-          description: True if document was linked to the requested task; False if link was attempted and failed; None if no task_id was provided.
-        matter_linked:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Matter Linked
-          description: True if document was linked to the requested matter; False if link was attempted and failed; None if no matter_id was provided.
-      type: object
-      title: BatchAddDocumentResult
-      description: Per-document result in a batch add-documents response.
-    AddDocumentToMatterRequest:
-      properties:
-        doc_id:
-          type: string
-          format: uuid
-          title: Doc Id
-          description: UUID of the document to add
-        matter_id:
-          type: string
-          minLength: 1
-          title: Matter Id
-          description: CUID of the matter to add the document to
-      type: object
-      required:
-      - doc_id
-      - matter_id
-      title: AddDocumentToMatterRequest
-    DocumentCreditsResponse:
-      properties:
-        credits:
-          type: integer
-          title: Credits
-          description: Total credits used for document processing in the requested window.
-      type: object
-      required:
-      - credits
-      title: DocumentCreditsResponse
-      description: 'Response for GET /document/credits: Doc Hub processing credits for a month or ``since`` window.'
-    DocumentListView:
-      type: string
-      enum:
-      - all
-      - matter_files
-      - strongsuit
-      - unassigned
-      title: DocumentListView
-      description: Tab scope for the document list.
-    TaskSummaryWithUser:
-      properties:
-        id:
-          type: string
-          title: Id
-          description: Task (Conversation) id.
-        matter_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Matter Id
-          description: Matter the task belongs to.
-        title:
-          type: string
-          title: Title
-          description: Task title.
-        module_number:
-          anyOf:
-          - type: integer
-          - type: string
-          - type: 'null'
-          title: Module Number
-          description: Module numeric identifier.
-        user:
-          anyOf:
-          - $ref: '#/components/schemas/UserInfo'
-          - type: 'null'
-          description: Task owner.
-      type: object
-      required:
-      - id
-      - title
-      title: TaskSummaryWithUser
-      description: Task reference with owner user info for document metadata.
-    MoveDocumentsRequest:
-      properties:
-        doc_ids:
-          items:
-            type: string
-            format: uuid
-          type: array
-          maxItems: 1000
-          title: Doc Ids
-          description: Documents to move (bulk, one transaction).
-        target_folder_id:
-          anyOf:
-          - type: string
-            format: uuid
-          - type: 'null'
-          title: Target Folder Id
-          description: Destination folder; null/omit for root
-        source_folder_id:
-          anyOf:
-          - type: string
-            format: uuid
-          - type: 'null'
-          title: Source Folder Id
-          description: Folder the docs are currently filed in (null = root); the placement being moved (DocHub only).
-        matter_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Matter Id
-          description: Matter scope; omit for DocHub
-      type: object
-      required:
-      - doc_ids
-      title: MoveDocumentsRequest
-    AddDocumentsToMatterResponse:
-      properties:
-        success:
-          type: boolean
-          title: Success
-        added:
-          type: integer
-          title: Added
-          default: 0
-        already_linked:
-          type: integer
-          title: Already Linked
-          default: 0
-      type: object
-      required:
-      - success
-      title: AddDocumentsToMatterResponse
-    CheckDuplicateEntry:
-      properties:
-        hash:
-          type: string
-          title: Hash
-          description: File hash, prefixed with its type (e.g. 'sha1:...').
-        filename:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Filename
-          description: 'The file''s display name (the SAME name you will send to /add-document, e.g. ''05_Affidavit.pdf''). REQUIRED for reliable same-name duplicate detection: ''skip'' vs ''alias'' turns on whether a file with this exact name already lives at the target folder. Falls back to the last segment of relative_path when omitted — but send it explicitly for bare-file/root uploads where relative_path is null, or a byte-identical re-upload to the same place is misdetected as an alias instead of a skip (ENG-17767).'
-        relative_path:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Relative Path
-          description: 'The SAME relative_path you will send to /add-document: the folder-upload path incl. filename (e.g. ''dir01/test.txt''), or null for a bare file (send the name in ''filename''). Combined with target_directory_id to resolve where the file will live. Enables path-aware duplicate detection (ENG-17767): byte-identical content at a DIFFERENT path is a distinct record (a symlink alias), not a duplicate, so ''skip'' is returned only for a true no-op (same bytes+name at the same current path).'
-        target_directory_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Target Directory Id
-          description: The SAME target_directory_id (current folder) you will send to /add-document. None = DocHub root.
-      type: object
-      required:
-      - hash
-      title: CheckDuplicateEntry
-    CancelUploadRequest:
-      properties:
-        doc_ids:
-          items:
-            type: string
-            format: uuid
-          type: array
-          minItems: 1
-          title: Doc Ids
-          description: UUIDs of the documents whose uploads should be cancelled.
-        task_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Task Id
-          description: If provided, only unlink docs from this specific task instead of all tasks.
-        matter_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Matter Id
-          description: If provided, also unlink docs from this specific matter.
-      type: object
-      required:
-      - doc_ids
-      title: CancelUploadRequest
     GetDownloadURLResponse:
       properties:
         url:
@@ -5704,18 +4548,53 @@ components:
           title: Expires At
       type: object
       title: GetDownloadURLResponse
-    DocumentPurpose:
-      type: string
-      enum:
-      - template
-      title: DocumentPurpose
-      description: 'What an uploaded document will be used for, on shared upload endpoints
+    ProcessingStatusResponse:
+      properties:
+        processing:
+          type: integer
+          title: Processing
+          description: Files still ingesting anywhere in the scope. A hidden upload container counts as the members it has yet to register, not as one file, so this is a count of the customer's own files rather than of rows.
+          default: 0
+        failed:
+          type: integer
+          title: Failed
+          description: Documents whose ingestion ended failed, stranded or cancelled.
+          default: 0
+        archives_extracting:
+          type: integer
+          title: Archives Extracting
+          description: Customer-uploaded archives still extracting members. Hidden upload containers are excluded, so a non-zero value means the customer's own zip is being extracted.
+          default: 0
+        archive_members_done:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Archive Members Done
+          description: Members registered so far across extracting customer archives; null when none report counts.
+        archive_members_total:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Archive Members Total
+          description: Members planned across extracting customer archives; null when none report counts.
+        files:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/ProcessingFileItem'
+            type: array
+          - type: 'null'
+          title: Files
+          description: In-flight documents, newest first, capped; null unless include_files was requested.
+        files_truncated:
+          type: boolean
+          title: Files Truncated
+          description: True when more documents were in flight than the list carries.
+          default: false
+      type: object
+      title: ProcessingStatusResponse
+      description: 'Result for GET processing-status: scope-wide in-flight ingestion counts for the Doc Hub banner,
 
-        that serve multiple callers. Lets a route apply purpose-specific validation
-
-        (e.g. TEMPLATE enforces .docx, ENG-17640) without affecting uploads that
-
-        omit it.'
+        plus the in-flight rows when ``include_files`` was requested.'
     MoveItemsResponse:
       properties:
         success:
@@ -5758,81 +4637,210 @@ components:
       - moved_folder_count
       - moved_file_count
       title: MoveItemsResponse
-    BatchFinalizeRequest:
+    AdminFailedDocsUser:
       properties:
-        batch_id:
+        id:
           type: string
-          format: uuid
-          title: Batch Id
-          description: UUID of the DocHubUploadBatch to seal.
-        expected_doc_count:
-          type: integer
-          minimum: 0.0
-          title: Expected Doc Count
-          description: Actual number of docs successfully registered this session (discounts failed/cancelled uploads).
+          title: Id
+        email:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Email
+        full_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Full Name
       type: object
       required:
-      - batch_id
-      - expected_doc_count
-      title: BatchFinalizeRequest
-      description: 'Request for POST /document/batch-finalize: seal an upload batch with its true size.'
-    EmailProvenance:
+      - id
+      title: AdminFailedDocsUser
+      description: Customer whose FAILED_NO_RETRY docs are listed.
+    BatchStartResponse:
       properties:
-        subject:
+        batch_id:
           anyOf:
           - type: string
+            format: uuid
           - type: 'null'
-          title: Subject
-          description: The email's Subject header.
-        sender:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Sender
-          description: From header, as 'Display Name <address>' when the message carried both.
-        to:
-          items:
-            type: string
-          type: array
-          title: To
-          description: To recipients, as 'Display Name <address>'. Capped at 25; a longer list is truncated.
-        cc:
-          items:
-            type: string
-          type: array
-          title: Cc
-          description: Cc recipients, same shape and cap as `to`.
-        sent_at:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Sent At
-          description: The Date header, as an ISO 8601 string. A string rather than a timestamp because a sender whose client wrote a malformed date is passed through verbatim rather than dropped — parse it if you can, otherwise render it as text.
-        message_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message Id
-          description: RFC 5322 Message-ID, angle brackets included. The same value in every mailbox holding a copy.
+          title: Batch Id
+          description: UUID of the created DocHubUploadBatch row. None for non-dataset uploads.
       type: object
-      title: EmailProvenance
-      description: 'The message an attachment arrived on (ENG-22885).
+      title: BatchStartResponse
+      description: 'Response for POST /document/batch-start: returns the batch_id to pass on each upload.'
+    AddDocumentsToMatterRequest:
+      properties:
+        doc_ids:
+          items:
+            type: string
+            format: uuid
+          type: array
+          minItems: 1
+          title: Doc Ids
+          description: UUIDs of the documents to add
+        matter_id:
+          type: string
+          minLength: 1
+          title: Matter Id
+          description: CUID of the matter to add the documents to
+      type: object
+      required:
+      - doc_ids
+      - matter_id
+      title: AddDocumentsToMatterRequest
+    BatchFinalizeResponse:
+      properties:
+        sealed:
+          type: boolean
+          title: Sealed
+          description: True if the batch was found and sealed with the given count.
+      type: object
+      required:
+      - sealed
+      title: BatchFinalizeResponse
+      description: Response for POST /document/batch-finalize.
+    RemoveDocumentFromTaskRequest:
+      properties:
+        doc_id:
+          type: string
+          format: uuid
+          title: Doc Id
+          description: UUID of the document to remove
+        task_id:
+          type: string
+          minLength: 1
+          title: Task Id
+          description: CUID of the task (Conversation) to remove the document from
+      type: object
+      required:
+      - doc_id
+      - task_id
+      title: RemoveDocumentFromTaskRequest
+    ClearDocsResponse:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          description: False when some documents were left behind — an archive still being extracted is refused rather than purged (ENG-22114). Compare deleted_count with the names requested to see how many.
+        deleted_count:
+          type: integer
+          title: Deleted Count
+          description: Number of doc_metadata rows deleted.
+      type: object
+      required:
+      - success
+      - deleted_count
+      title: ClearDocsResponse
+      description: 'Response for POST clear-docs: hard-deletes matching documents owned by the user.'
+    DocumentCreditsResponse:
+      properties:
+        credits:
+          type: integer
+          title: Credits
+          description: Total credits used for document processing in the requested window.
+      type: object
+      required:
+      - credits
+      title: DocumentCreditsResponse
+      description: 'Response for GET /document/credits: Doc Hub processing credits for a month or ``since`` window.'
+    FilterOption:
+      properties:
+        value:
+          type: string
+          title: Value
+        label:
+          type: string
+          title: Label
+        count:
+          type: integer
+          title: Count
+      type: object
+      required:
+      - value
+      - label
+      - count
+      title: FilterOption
+      description: Single option in a faceted filter (value, display label, count).
+    MoveSkipReason:
+      type: string
+      enum:
+      - name_conflict
+      - batch_name_conflict
+      - redundant_descendant
+      - too_deep
+      - cycle
+      - already_there
+      - not_at_source
+      title: MoveSkipReason
+      description: 'Why one selected item did not move (ENG-19224).
 
 
-        Recorded on the email document when its attachments were extracted, and read
+        Collisions are refused, never resolved: nothing is overwritten, merged, deleted, or unlinked by
 
-        here through ``parent_id``. Every field is optional because it mirrors the
-
-        headers the message actually carried: an email with no ``Cc`` has none, and a
-
-        message whose headers could not be decoded has nothing at all.
-
-
-        Absent entirely for a file that is not an email attachment, and for one whose
-
-        email was ingested before the extractor recorded provenance — re-ingesting
-
-        that email fills it in.'
+        a move. Every obstruction is one of these, so a caller renders them from a single flat list.'
+    DocumentType:
+      type: string
+      enum:
+      - COMPLAINT
+      - STATEMENT_OF_FACTS
+      - ANSWER
+      - PRIOR_MOTION
+      - CONTRACT
+      - BRIEF
+      - DEMAND_LETTER
+      - EXHIBITS
+      - OTHER
+      - VARIOUS
+      - FINANCIAL_DOCUMENT
+      - POLICY_DOCUMENT
+      - PERSONNEL_RECORD
+      - MEETING_MINUTES
+      - TESTIMONY_STATEMENT
+      - TECHNICAL_DOCUMENT
+      - MEDIA_CONTENT
+      - EMAIL
+      - MEDICAL_RECORD
+      - MATTER_MEMORY
+      - TASK_MEMORY
+      - MATTER_FORM_CACHE
+      - MATTER_PREFERENCES
+      - PRELIMINARY_ANALYSIS
+      - EARLY_INTAKE_MEMORY
+      title: DocumentType
+      description: Document type classification for matters.
+    AddDocumentToTaskResponse:
+      properties:
+        success:
+          type: boolean
+          title: Success
+        already_linked:
+          type: boolean
+          title: Already Linked
+          default: false
+      type: object
+      required:
+      - success
+      title: AddDocumentToTaskResponse
+      description: Response for add-document-to-task. Includes whether the link already existed.
+    CheckDuplicatesRequest:
+      properties:
+        files:
+          items:
+            type: string
+          type: array
+          title: Files
+          description: Legacy hash-only duplicate check. Prefer 'entries' for path-aware detection — with 'files', a byte-identical upload under a different name/folder is reported as a duplicate even though it would now become an independent alias record.
+        entries:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/CheckDuplicateEntry'
+            type: array
+          - type: 'null'
+          title: Entries
+          description: 'Path-aware duplicate check (ENG-17767): hash + relative_path per file. When set, ''files'' is ignored.'
+      type: object
+      title: CheckDuplicatesRequest
     DocumentMetadataSummary:
       properties:
         id:
@@ -6011,31 +5019,157 @@ components:
       - user_id
       title: DocumentMetadataSummary
       description: Abbreviated document metadata for API responses (subset of DocMetadata).
-    PollDocumentsV2Summary:
+    UploadStateQuery:
       properties:
+        blob_path:
+          type: string
+          maxLength: 1024
+          title: Blob Path
+          description: Blob name within the caller's own container, as it was uploaded.
+        total_bytes:
+          type: integer
+          minimum: 0.0
+          title: Total Bytes
+          description: Size the finished blob should be.
+        hash:
+          type: string
+          maxLength: 256
+          title: Hash
+          description: Type-prefixed content hash (e.g. 'sha1:...'), as written to blob metadata.
+      type: object
+      required:
+      - blob_path
+      - total_bytes
+      - hash
+      title: UploadStateQuery
+      description: One blob a client is about to send, or re-send.
+    CreateUploadUrlResponse:
+      properties:
+        upload_url:
+          type: string
+          title: Upload Url
+        expires_at:
+          type: string
+          format: date-time
+          title: Expires At
+      type: object
+      required:
+      - upload_url
+      - expires_at
+      title: CreateUploadUrlResponse
+    AdminUploadSummaryResponse:
+      properties:
+        user:
+          $ref: '#/components/schemas/AdminFailedDocsUser'
+        since:
+          type: string
+          format: date-time
+          title: Since
+        until:
+          type: string
+          format: date-time
+          title: Until
         total:
           type: integer
           title: Total
-          default: 0
-        registering:
-          type: integer
-          title: Registering
-          default: 0
-        unprocessed:
-          type: integer
-          title: Unprocessed
-          default: 0
-        processed:
-          type: integer
-          title: Processed
-          default: 0
-        failed:
-          type: integer
-          title: Failed
-          default: 0
+        by_status:
+          additionalProperties:
+            type: integer
+          type: object
+          title: By Status
+          description: DocMetadata.status -> row count inside the window.
+        first_upload:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: First Upload
+        last_upload:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Last Upload
       type: object
-      title: PollDocumentsV2Summary
-      description: Aggregate status counts for a batch.
+      required:
+      - user
+      - since
+      - until
+      - total
+      title: AdminUploadSummaryResponse
+      description: Upload outcomes for one customer over a time window (Doc Hub alert triage).
+    AdminFailedIngestRequeueRequest:
+      properties:
+        target_user_id:
+          type: string
+          minLength: 1
+          title: Target User Id
+        document_ids:
+          items:
+            type: string
+            format: uuid
+          type: array
+          minItems: 1
+          title: Document Ids
+      type: object
+      required:
+      - target_user_id
+      - document_ids
+      title: AdminFailedIngestRequeueRequest
+    CheckDuplicateOne:
+      properties:
+        hash:
+          type: string
+          title: Hash
+        exists:
+          type: boolean
+          title: Exists
+        action:
+          anyOf:
+          - type: string
+            enum:
+            - upload
+            - skip
+            - alias
+          - type: 'null'
+          title: Action
+          description: 'Path-aware mode only (set when the request used ''entries''): what the client should do. ''upload'' = content not present, upload the bytes via /add-document. ''skip'' = a byte-identical file already exists at this exact path, do nothing. ''alias'' = the bytes exist elsewhere; do NOT upload — call /create-alias to hardwire a symlink record instantly (no Azure transfer, no ingest).'
+        id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Id
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+        azure_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Azure Path
+        archived:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Archived
+        failed:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Failed
+        failure_reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Failure Reason
+          description: Why the document failed (e.g. 'password_protected'). Only set on FAILED_NO_RETRY.
+      type: object
+      required:
+      - hash
+      - exists
+      title: CheckDuplicateOne
     DocumentTokenEstimateFileRequest:
       properties:
         name:
@@ -6080,6 +5214,859 @@ components:
         server prices those from its own per-page figure so the constant lives in one place.
 
         A container (zip, email) is sent as one entry carrying the sum of its members.'
+    BatchAddDocumentsRequest:
+      properties:
+        task_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Task Id
+          description: Optional task (Conversation) ID to link all documents to.
+        lr:
+          type: boolean
+          title: Lr
+          description: Whether task-document links are for legal research.
+          default: false
+        matter_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Matter Id
+          description: Optional matter ID to link all documents to (used when task_id is absent).
+        batch_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Batch Id
+          description: DocHubUploadBatch ID from batch-start. When set, docs are tracked for batch completion.
+        matter_directory_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Matter Directory Id
+          description: Optional folder in the MATTER's tree to file the doc into (requires matter_id). Distinct from target_directory_id, which is always a DocHub folder — folder ids do not cross scopes. When set, the doc is placed here explicitly and its DocHub folder ancestry is NOT mirrored into the matter, since the user picked the matter location directly (ENG-19239).
+        documents:
+          items:
+            $ref: '#/components/schemas/BatchAddDocumentItem'
+          type: array
+          maxItems: 100
+          minItems: 1
+          title: Documents
+      type: object
+      required:
+      - documents
+      title: BatchAddDocumentsRequest
+      description: 'Request for POST /document/add-documents: batch-register multiple uploaded documents.'
+    DeletionImpactResponse:
+      properties:
+        total_file_count:
+          type: integer
+          title: Total File Count
+          description: Distinct files affected (deduped across placements).
+          default: 0
+        matters:
+          items:
+            $ref: '#/components/schemas/AffectedMatter'
+          type: array
+          title: Matters
+          description: Distinct matters any affected file is linked to; [] if none.
+      type: object
+      title: DeletionImpactResponse
+      description: 'Result for POST deletion-impact: read-only; mutates nothing.
+
+
+        ``total_file_count`` is every file under the folders (recursive) plus the loose
+
+        files, de-duped across multi-placements. ``matters`` is the union of distinct
+
+        matters any affected file is linked to (empty if none) — so the UI can warn that
+
+        deleting also removes those files from the listed matters.'
+    SelectAllSharedCountResponse:
+      properties:
+        shared_count:
+          type: integer
+          title: Shared Count
+          description: Selected files the caller did not upload.
+          default: 0
+      type: object
+      title: SelectAllSharedCountResponse
+      description: 'Result for POST select-all-shared-count: read-only; mutates nothing.
+
+
+        ``shared_count`` is how many files the select-all shows that a delete would skip:
+
+        shared in via a matter, owned by someone else.'
+    GetDocumentResponse:
+      properties:
+        success:
+          type: boolean
+          title: Success
+        document:
+          anyOf:
+          - $ref: '#/components/schemas/DocumentMetadataSummary'
+          - type: 'null'
+      type: object
+      required:
+      - success
+      title: GetDocumentResponse
+      description: 'Response for get_document: success and optional document summary.'
+    FailedDocDelete:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        reason:
+          type: string
+          title: Reason
+      type: object
+      required:
+      - id
+      - reason
+      title: FailedDocDelete
+      description: One per-doc failure entry for bulk delete responses.
+    SortOrder:
+      type: string
+      enum:
+      - asc
+      - desc
+      title: SortOrder
+      description: Sort direction.
+    MatterSummaryWithUser:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Matter id.
+        name:
+          type: string
+          title: Name
+          description: Matter name/title.
+        user:
+          anyOf:
+          - $ref: '#/components/schemas/UserInfo'
+          - type: 'null'
+          description: Matter owner.
+      type: object
+      required:
+      - id
+      - name
+      title: MatterSummaryWithUser
+      description: Matter reference with owner user info for document metadata.
+    AddFoldersToMatterRequest:
+      properties:
+        matter_id:
+          type: string
+          title: Matter Id
+          description: Target matter.
+        folder_ids:
+          items:
+            type: string
+            format: uuid
+          type: array
+          title: Folder Ids
+          description: Source DocHub folders to copy (subtree mirrored into the matter).
+        doc_ids:
+          items:
+            type: string
+            format: uuid
+          type: array
+          title: Doc Ids
+          description: Individually-selected loose files to add.
+        target_directory_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Target Directory Id
+          description: Matter folder to nest the copied subtree under (the matter cwd); null = matter root.
+        include_subfolders:
+          type: boolean
+          title: Include Subfolders
+          description: Recurse into subfolders (default true).
+          default: true
+      type: object
+      required:
+      - matter_id
+      title: AddFoldersToMatterRequest
+    SelectAllSharedCountRequest:
+      properties:
+        select_all_folder_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Select All Folder Id
+          description: Folder the select-all was taken in; omit for the DocHub root.
+        exclude_doc_ids:
+          items:
+            type: string
+            format: uuid
+          type: array
+          maxItems: 5000
+          title: Exclude Doc Ids
+          description: Doc IDs the user unchecked after select-all.
+      type: object
+      title: SelectAllSharedCountRequest
+      description: 'Request for POST select-all-shared-count: a DocHub select-all about to be deleted (ENG-23079).'
+    DocumentEstimateResponse:
+      properties:
+        total_credits:
+          type: integer
+          title: Total Credits
+          description: Total estimated credits for all files, rounded up once for the batch.
+        total_tokens:
+          type: integer
+          title: Total Tokens
+          description: Total estimated tokens across all files.
+        estimate_min_seconds:
+          type: integer
+          title: Estimate Min Seconds
+          description: Lower bound of estimated total processing time in seconds.
+        estimate_max_seconds:
+          type: integer
+          title: Estimate Max Seconds
+          description: Upper bound of estimated total processing time in seconds.
+        empirical:
+          type: boolean
+          title: Empirical
+          description: True when time estimates are based on historical processing data; False when using default constants.
+        documents:
+          items:
+            $ref: '#/components/schemas/DocumentEstimateItem'
+          type: array
+          title: Documents
+          description: Per-document breakdown.
+        credits_pending:
+          type: integer
+          title: Credits Pending
+          description: Credits already reserved by the caller's in-flight uploads this month.
+          default: 0
+        credits_remaining:
+          type: integer
+          title: Credits Remaining
+          description: Credits left in the caller's monthly budget.
+          default: 0
+        credit_limit:
+          type: integer
+          title: Credit Limit
+          description: The caller's monthly credit limit.
+          default: 0
+        would_exceed_budget:
+          type: boolean
+          title: Would Exceed Budget
+          description: True when total_credits + credits_pending exceeds credits_remaining. Computed the same way the registration gate computes it, so a False here means the upload will be accepted. Clients must block the upload when this is True.
+          default: false
+      type: object
+      required:
+      - total_credits
+      - total_tokens
+      - estimate_min_seconds
+      - estimate_max_seconds
+      - empirical
+      title: DocumentEstimateResponse
+      description: 'Response for POST /document/estimate: per-document and aggregate credit estimates.'
+    BatchAddDocumentResult:
+      properties:
+        document_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Document Id
+          description: Document ID on success.
+        error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error
+          description: Error message on per-item failure.
+        task_linked:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Task Linked
+          description: True if document was linked to the requested task; False if link was attempted and failed; None if no task_id was provided.
+        matter_linked:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Matter Linked
+          description: True if document was linked to the requested matter; False if link was attempted and failed; None if no matter_id was provided.
+      type: object
+      title: BatchAddDocumentResult
+      description: Per-document result in a batch add-documents response.
+    AddDocumentsToTaskRequest:
+      properties:
+        doc_ids:
+          items:
+            type: string
+            format: uuid
+          type: array
+          minItems: 1
+          title: Doc Ids
+          description: UUIDs of the documents to add
+        task_id:
+          type: string
+          minLength: 1
+          title: Task Id
+          description: CUID of the task (Conversation) to add the documents to
+        batch_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Batch Id
+          description: DocHubUploadBatch ID from batch-start. When set, docs are tracked for batch completion.
+      type: object
+      required:
+      - doc_ids
+      - task_id
+      title: AddDocumentsToTaskRequest
+    AdminFailedIngestDownloadResponse:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/AdminFailedIngestDownloadItem'
+          type: array
+          title: Items
+        skipped:
+          items:
+            $ref: '#/components/schemas/AdminFailedIngestSkip'
+          type: array
+          title: Skipped
+      type: object
+      title: AdminFailedIngestDownloadResponse
+    AffectedMatter:
+      properties:
+        id:
+          type: string
+          title: Id
+        name:
+          type: string
+          title: Name
+          description: Matter name; may be encrypted (the FE proxy decrypts it).
+      type: object
+      required:
+      - id
+      - name
+      title: AffectedMatter
+      description: A matter that at least one about-to-be-deleted file is linked to.
+    PaginationMetadata:
+      properties:
+        page:
+          type: integer
+          title: Page
+          description: Current page number
+        page_size:
+          type: integer
+          title: Page Size
+          description: Number of items per page
+        total_count:
+          type: integer
+          title: Total Count
+          description: Total number of items
+        total_pages:
+          type: integer
+          title: Total Pages
+          description: Total number of pages
+        has_next:
+          type: boolean
+          title: Has Next
+          description: Whether there is a next page
+        has_previous:
+          type: boolean
+          title: Has Previous
+          description: Whether there is a previous page
+      type: object
+      required:
+      - page
+      - page_size
+      - total_count
+      - total_pages
+      - has_next
+      - has_previous
+      title: PaginationMetadata
+      description: Pagination metadata for list responses.
+    DocumentTokenEstimateRequest:
+      properties:
+        files:
+          items:
+            $ref: '#/components/schemas/DocumentTokenEstimateFileRequest'
+          type: array
+          maxItems: 10000
+          minItems: 1
+          title: Files
+      type: object
+      required:
+      - files
+      title: DocumentTokenEstimateRequest
+      description: 'Request for POST /document/estimate/tokens: price locally counted token totals.'
+    DocumentLinkResponse:
+      properties:
+        success:
+          type: boolean
+          title: Success
+      type: object
+      required:
+      - success
+      title: DocumentLinkResponse
+      description: Shared response for add/remove document-to-matter and document-to-task operations.
+    DeletionImpactRequest:
+      properties:
+        folder_ids:
+          items:
+            type: string
+            format: uuid
+          type: array
+          title: Folder Ids
+          description: Folders to delete; each resolved recursively (whole subtree).
+        document_ids:
+          items:
+            type: string
+            format: uuid
+          type: array
+          title: Document Ids
+          description: Loose files to delete.
+        matter_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Matter Id
+          description: 'Scope: matter id for matter-scoped folders/files; omit for DocHub scope.'
+      type: object
+      title: DeletionImpactRequest
+      description: 'Request for POST deletion-impact: read-only preview of what a delete would affect.'
+    BatchDocumentsItem:
+      properties:
+        id:
+          type: string
+          title: Id
+        name:
+          type: string
+          title: Name
+        status:
+          type: string
+          title: Status
+        location:
+          type: string
+          title: Location
+          default: ''
+        checksum:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Checksum
+          description: 'Content hash of the document. Match uploads to rows on THIS, not on ``location``: ``location`` encodes the id of whichever upload container first produced the file, so a de-duplicated re-upload keeps the earlier container''s path and a client that rebuilds ``extracted_<containerId>/<entry>`` can never match it.'
+        original_relative_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Original Relative Path
+          description: Folder-qualified path the file was uploaded under, when known. Not always set.
+        failure_reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Failure Reason
+          description: Why the document failed (e.g. 'corrupted_file'). Only set on FAILED_NO_RETRY. Without it a bundled member that failed could only be reported as a generic 'Processing failed' (ENG-22515).
+        retry_pending:
+          type: boolean
+          title: Retry Pending
+          description: True when the document is FAILED_NO_RETRY but the transient-failure sweep will re-queue it on its own, so its failure is not final yet.
+          default: false
+      type: object
+      required:
+      - id
+      - name
+      - status
+      title: BatchDocumentsItem
+      description: Single document in a batch documents listing.
+    GeneratedDocsByTasksResponse:
+      properties:
+        result:
+          additionalProperties:
+            type: string
+          type: object
+          title: Result
+      type: object
+      required:
+      - result
+      title: GeneratedDocsByTasksResponse
+      description: Map of task/conversation id → newest generated ``.docx`` document id.
+    ViewDocumentResponse:
+      properties:
+        success:
+          type: boolean
+          title: Success
+        url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Url
+        expires_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Expires At
+      type: object
+      required:
+      - success
+      title: ViewDocumentResponse
+    PollDocumentsResponse:
+      properties:
+        success:
+          type: boolean
+          title: Success
+        documents:
+          items:
+            $ref: '#/components/schemas/DocumentPollItem'
+          type: array
+          title: Documents
+          description: Document id, status, size, and percent_complete for documents the user can access.
+      type: object
+      required:
+      - success
+      title: PollDocumentsResponse
+      description: 'Response for POST poll-documents: id, status, size, and percent_complete for each document.'
+    AddDocumentRequest:
+      properties:
+        filename:
+          type: string
+          maxLength: 4096
+          minLength: 1
+          title: Filename
+        hash:
+          type: string
+          title: Hash
+        original_filename:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Original Filename
+          description: Display name (e.g. user's filename). When provided, used instead of blob metadata so the client can send arbitrary Unicode in the request body instead of upload headers.
+        task_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Task Id
+          description: Optional task (Conversation) ID to link the document to.
+        lr:
+          type: boolean
+          title: Lr
+          description: Whether this task-document link is for legal research.
+          default: false
+        matter_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Matter Id
+          description: Optional matter ID to link the document to.
+        source:
+          anyOf:
+          - $ref: '#/components/schemas/DocumentSource'
+          - type: 'null'
+          description: 'Origin of the document: ''user'' (uploaded) or ''strongsuit'' (system-generated). Defaults to ''user'' when omitted.'
+        chunking_strategy:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Chunking Strategy
+          description: 'Text splitting strategy for ingestion. When set, overrides automatic classification-based splitter selection. Values: ''financial'' (transaction-aware, zero overlap), ''contract'' (default sentence splitter).'
+        file_content_type:
+          anyOf:
+          - $ref: '#/components/schemas/DocumentType'
+          - type: 'null'
+          description: Document classification (e.g. MATTER_MEMORY, TASK_MEMORY). When provided, bypasses LLM classification during ingestion.
+        purpose:
+          anyOf:
+          - $ref: '#/components/schemas/DocumentPurpose'
+          - type: 'null'
+          description: Intended use of this upload. When set to 'template', the file is content-sniffed and rejected unless it's a genuine .docx (ENG-17640). Omit for ordinary document uploads — this never restricts those.
+        archive_member_names_url_encoded:
+          type: boolean
+          title: Archive Member Names Url Encoded
+          description: Set when this upload is an archive whose member names were percent-encoded by the producer (e.g. a Dropbox folder-download zip). Extraction decodes member names before registering the children.
+          default: false
+        archive_member_path_prefix:
+          anyOf:
+          - type: string
+            maxLength: 255
+          - type: 'null'
+          title: Archive Member Path Prefix
+          description: Folder path to nest this archive's extracted members under, so the archive itself can sit beside the folder it produces instead of inside it (e.g. a Dropbox folder-download zip, whose members carry no wrapping directory of their own).
+        relative_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Relative Path
+          description: Folder-relative path from a folder upload (e.g. 'Taxes/2024/w2.pdf'), typically the browser's webkitRelativePath. Its directory part builds the user's DocHub folder tree and the basename becomes the display name. If omitted but original_filename contains '/', it is split as a fallback.
+        target_directory_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Target Directory Id
+          description: Optional DocHub folder to upload into (the 'current folder'); defaults to root. Any relative_path is created beneath it.
+        matter_directory_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Matter Directory Id
+          description: Optional folder in the MATTER's tree to file the doc into (requires matter_id). Distinct from target_directory_id, which is always a DocHub folder — folder ids do not cross scopes. When set, the doc is placed here explicitly and its DocHub folder ancestry is NOT mirrored into the matter, since the user picked the matter location directly (ENG-19239).
+        total_bytes:
+          type: integer
+          minimum: 0.0
+          title: Total Bytes
+          description: File size in bytes for pre-registration credit estimation (0 = per-doc floor).
+          default: 0
+        pages:
+          type: integer
+          minimum: 0.0
+          title: Pages
+          description: Known page count for pre-registration credit estimation (0 if unknown).
+          default: 0
+      type: object
+      required:
+      - filename
+      - hash
+      title: AddDocumentRequest
+    UploadStateRequest:
+      properties:
+        blobs:
+          items:
+            $ref: '#/components/schemas/UploadStateQuery'
+          type: array
+          maxItems: 1000
+          title: Blobs
+      type: object
+      required:
+      - blobs
+      title: UploadStateRequest
+    DocumentPurpose:
+      type: string
+      enum:
+      - template
+      title: DocumentPurpose
+      description: 'What an uploaded document will be used for, on shared upload endpoints
+
+        that serve multiple callers. Lets a route apply purpose-specific validation
+
+        (e.g. TEMPLATE enforces .docx, ENG-17640) without affecting uploads that
+
+        omit it.'
+    CancelUploadV2Request:
+      properties:
+        batch_id:
+          type: string
+          format: uuid
+          title: Batch Id
+          description: Batch ID from /add-documents-v2.
+        task_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Task Id
+        matter_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Matter Id
+      type: object
+      required:
+      - batch_id
+      title: CancelUploadV2Request
+      description: Request for POST /document/cancel-upload-v2.
+    AdminFailedIngestRequeueResponse:
+      properties:
+        requeued:
+          items:
+            type: string
+            format: uuid
+          type: array
+          title: Requeued
+        skipped:
+          items:
+            $ref: '#/components/schemas/AdminFailedIngestSkip'
+          type: array
+          title: Skipped
+      type: object
+      title: AdminFailedIngestRequeueResponse
+    AddDocumentsV2Response:
+      properties:
+        batch_id:
+          type: string
+          title: Batch Id
+          description: Batch ID for polling via /poll-documents-v2.
+        workflow_id:
+          type: string
+          title: Workflow Id
+          description: Temporal workflow ID.
+        doc_count:
+          type: integer
+          title: Doc Count
+          description: Number of documents in the manifest.
+      type: object
+      required:
+      - batch_id
+      - workflow_id
+      - doc_count
+      title: AddDocumentsV2Response
+      description: Response for POST /document/add-documents-v2.
+    PollDocumentsRequest:
+      properties:
+        document_ids:
+          items:
+            type: string
+            format: uuid
+          type: array
+          maxItems: 2000
+          minItems: 1
+          title: Document Ids
+          description: Document UUIDs to poll for progress.
+      type: object
+      required:
+      - document_ids
+      title: PollDocumentsRequest
+      description: 'Request for POST poll-documents: list of document IDs to poll.'
+    ListDocumentsResponse:
+      properties:
+        success:
+          type: boolean
+          title: Success
+        documents:
+          items:
+            $ref: '#/components/schemas/DocumentMetadataSummary'
+          type: array
+          title: Documents
+        total_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Total Count
+          description: Total matching documents (set when pagination is used)
+      type: object
+      required:
+      - success
+      title: ListDocumentsResponse
+      description: 'Response for get_documents_by_task and get_documents_by_matter: success and list of document summaries.
+
+
+        When the caller passes ``limit``, ``total_count`` is populated with the
+
+        unsliced row count so the frontend can render paging controls. When
+
+        ``limit`` is omitted (legacy behaviour), ``total_count`` is ``None``.'
+    TaskSummaryWithUser:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Task (Conversation) id.
+        matter_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Matter Id
+          description: Matter the task belongs to.
+        title:
+          type: string
+          title: Title
+          description: Task title.
+        module_number:
+          anyOf:
+          - type: integer
+          - type: string
+          - type: 'null'
+          title: Module Number
+          description: Module numeric identifier.
+        user:
+          anyOf:
+          - $ref: '#/components/schemas/UserInfo'
+          - type: 'null'
+          description: Task owner.
+      type: object
+      required:
+      - id
+      - title
+      title: TaskSummaryWithUser
+      description: Task reference with owner user info for document metadata.
+    CancelUploadRequest:
+      properties:
+        doc_ids:
+          items:
+            type: string
+            format: uuid
+          type: array
+          minItems: 1
+          title: Doc Ids
+          description: UUIDs of the documents whose uploads should be cancelled.
+        task_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Task Id
+          description: If provided, only unlink docs from this specific task instead of all tasks.
+        matter_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Matter Id
+          description: If provided, also unlink docs from this specific matter.
+      type: object
+      required:
+      - doc_ids
+      title: CancelUploadRequest
+    RenameDocumentRequest:
+      properties:
+        document_id:
+          type: string
+          format: uuid
+          title: Document Id
+          description: UUID of the document to rename
+        new_name:
+          type: string
+          maxLength: 250
+          minLength: 1
+          title: New Name
+          description: New name for the document
+      type: object
+      required:
+      - document_id
+      - new_name
+      title: RenameDocumentRequest
+    AddDocumentsToMatterResponse:
+      properties:
+        success:
+          type: boolean
+          title: Success
+        added:
+          type: integer
+          title: Added
+          default: 0
+        already_linked:
+          type: integer
+          title: Already Linked
+          default: 0
+      type: object
+      required:
+      - success
+      title: AddDocumentsToMatterResponse
+    DeleteDocumentRequest:
+      properties:
+        document_id:
+          type: string
+          format: uuid
+          title: Document Id
+          description: UUID of the document to delete.
+      type: object
+      required:
+      - document_id
+      title: DeleteDocumentRequest
     AdminFailedIngestListResponse:
       properties:
         user:
@@ -6117,268 +6104,147 @@ components:
       - permanent_count
       - empty_blob_count
       title: AdminFailedIngestListResponse
-    RenameDocumentResponse:
+    DocumentEstimateFileRequest:
       properties:
-        previous_name:
-          type: string
-          title: Previous Name
-        new_name:
-          type: string
-          title: New Name
-        error:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Error
-      type: object
-      required:
-      - previous_name
-      - new_name
-      title: RenameDocumentResponse
-    AdminFailedDocItem:
-      properties:
-        id:
-          type: string
-          format: uuid
-          title: Id
         name:
           type: string
           title: Name
-        mime_type:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Mime Type
-        size_bytes:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Size Bytes
-        upload_datetime:
-          anyOf:
-          - type: string
-            format: date-time
-          - type: 'null'
-          title: Upload Datetime
-        location:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Location
-        failure_reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Failure Reason
-        failure_detail:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Failure Detail
-          description: Human-readable why this row is FAILED_NO_RETRY and whether retry can help.
-        last_transient_failure:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Last Transient Failure
-        job_error:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Job Error
-          description: Latest DocHubJob.error_message for this document, if any.
-        percent_complete:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Percent Complete
-        retryable:
-          type: boolean
-          title: Retryable
-        skip_reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Skip Reason
-          description: 'Why this row cannot be re-queued: permanent, empty_blob, alias.'
-        has_location:
-          type: boolean
-          title: Has Location
-          default: false
+          description: File name including extension (e.g. 'report.pdf').
+        total_bytes:
+          type: integer
+          exclusiveMinimum: 0.0
+          title: Total Bytes
+          description: File size in bytes.
+        pages:
+          type: integer
+          minimum: 0.0
+          title: Pages
+          description: Known page count (0 if unknown; bytes-based estimate is used).
+          default: 0
       type: object
       required:
-      - id
       - name
-      - retryable
-      title: AdminFailedDocItem
-      description: One FAILED_NO_RETRY DocHub file for the admin failed-ingest tool.
-    RemoveFoldersFromMatterResponse:
+      - total_bytes
+      title: DocumentEstimateFileRequest
+      description: Single file descriptor for cost estimation (mirrors discovery's FileRequest).
+    CreateAliasRequest:
       properties:
-        removed_doc_count:
-          type: integer
-          title: Removed Doc Count
-          description: Docs un-associated from the matter (still in DocHub).
-        removed_folder_count:
-          type: integer
-          title: Removed Folder Count
-          description: Matter folder nodes dropped.
-        skipped_count:
-          type: integer
-          title: Skipped Count
-          description: Requested loose doc_ids that weren't associated (no-op).
-      type: object
-      required:
-      - removed_doc_count
-      - removed_folder_count
-      - skipped_count
-      title: RemoveFoldersFromMatterResponse
-    MoveFolderRequest:
-      properties:
-        new_parent_id:
+        hash:
+          type: string
+          title: Hash
+          description: Content hash of the file (must match an existing canonical's checksum).
+        filename:
+          type: string
+          maxLength: 4096
+          minLength: 1
+          title: Filename
+          description: Display name for the alias record.
+        relative_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Relative Path
+          description: Same relative_path you'd send to /add-document.
+        target_directory_id:
           anyOf:
           - type: string
             format: uuid
           - type: 'null'
-          title: New Parent Id
-          description: Destination parent; omit/null to move to root
+          title: Target Directory Id
+          description: Same target_directory_id you'd send to /add-document.
+        task_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Task Id
+          description: Optional task (Conversation) ID to link the alias to.
+        lr:
+          type: boolean
+          title: Lr
+          default: false
         matter_id:
           anyOf:
           - type: string
           - type: 'null'
           title: Matter Id
-          description: Matter scope; omit for DocHub
-      type: object
-      title: MoveFolderRequest
-    DeleteDocumentRequest:
-      properties:
-        document_id:
-          type: string
-          format: uuid
-          title: Document Id
-          description: UUID of the document to delete.
-      type: object
-      required:
-      - document_id
-      title: DeleteDocumentRequest
-    CreateUploadUrlResponse:
-      properties:
-        upload_url:
-          type: string
-          title: Upload Url
-        expires_at:
-          type: string
-          format: date-time
-          title: Expires At
+          description: Optional matter ID to link the alias to.
+        matter_directory_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Matter Directory Id
+          description: Same matter_directory_id you'd send to /add-document.
+        source:
+          anyOf:
+          - $ref: '#/components/schemas/DocumentSource'
+          - type: 'null'
+        file_content_type:
+          anyOf:
+          - $ref: '#/components/schemas/DocumentType'
+          - type: 'null'
       type: object
       required:
-      - upload_url
-      - expires_at
-      title: CreateUploadUrlResponse
-    UploadStateItem:
+      - hash
+      - filename
+      title: CreateAliasRequest
+      description: 'Hardwire a symlink alias for content already in DocHub — no blob upload (ENG-17767).
+
+
+        Send this instead of uploading + calling /add-document when /check-duplicates returned
+
+        action=''alias''. Mirrors the linking/placement fields of AddDocumentRequest but carries no
+
+        blob ''filename'' (there is nothing to upload — the alias points at the existing canonical).'
+    AddDocumentToMatterResponse:
       properties:
-        blob_path:
-          type: string
-          title: Blob Path
-        complete:
+        success:
           type: boolean
-          title: Complete
-          description: Storage already holds this exact file, finished. Do not send it again.
-        staged_blocks:
+          title: Success
+        already_linked:
+          type: boolean
+          title: Already Linked
+          default: false
+      type: object
+      required:
+      - success
+      title: AddDocumentToMatterResponse
+      description: Response for add-document-to-matter. Includes whether the link already existed.
+    DeleteDocumentsRequest:
+      properties:
+        document_ids:
           items:
             type: string
+            format: uuid
           type: array
-          title: Staged Blocks
-          description: Block ids staged against this blob but not committed. A resumed upload sends only the blocks missing from this list. Empty when the blob is absent, complete, or was not staged in blocks.
-      type: object
-      required:
-      - blob_path
-      - complete
-      title: UploadStateItem
-    FailedDocDelete:
-      properties:
-        id:
-          type: string
-          format: uuid
-          title: Id
-        reason:
-          type: string
-          title: Reason
-      type: object
-      required:
-      - id
-      - reason
-      title: FailedDocDelete
-      description: One per-doc failure entry for bulk delete responses.
-    UploadStateRequest:
-      properties:
-        blobs:
-          items:
-            $ref: '#/components/schemas/UploadStateQuery'
-          type: array
-          maxItems: 1000
-          title: Blobs
-      type: object
-      required:
-      - blobs
-      title: UploadStateRequest
-    MatterSummaryWithUser:
-      properties:
-        id:
-          type: string
-          title: Id
-          description: Matter id.
-        name:
-          type: string
-          title: Name
-          description: Matter name/title.
-        user:
-          anyOf:
-          - $ref: '#/components/schemas/UserInfo'
-          - type: 'null'
-          description: Matter owner.
-      type: object
-      required:
-      - id
-      - name
-      title: MatterSummaryWithUser
-      description: Matter reference with owner user info for document metadata.
-    MoveItemsRequest:
-      properties:
+          maxItems: 2000
+          title: Document Ids
+          description: Loose file UUIDs to delete. Use select_all for larger deletes.
         folder_ids:
           items:
             type: string
             format: uuid
           type: array
-          maxItems: 1000
           title: Folder Ids
-          description: Folders to move.
-        doc_ids:
-          items:
-            type: string
-            format: uuid
-          type: array
-          maxItems: 1000
-          title: Doc Ids
-          description: Files to move.
-        target_folder_id:
+          description: Folders to delete; each resolved recursively (whole subtree) on the server.
+        matter_id:
           anyOf:
           - type: string
-            format: uuid
           - type: 'null'
-          title: Target Folder Id
-          description: Destination folder; null/omit for root.
-        source_folder_id:
-          anyOf:
-          - type: string
-            format: uuid
-          - type: 'null'
-          title: Source Folder Id
-          description: The level being moved out of (null = root). Every selected item must currently live here.
-        move_all_at_source:
+          title: Matter Id
+          description: 'Scope for folder resolution: matter id for matter-scoped folders; omit for DocHub scope.'
+        select_all:
           type: boolean
-          title: Move All At Source
-          description: Move everything at ``source_folder_id`` instead of an explicit selection, resolved server-side. Required for levels larger than one page — a paged client only holds the ids it has rendered. When true, ``folder_ids``/``doc_ids`` are ignored.
+          title: Select All
+          description: 'Delete all documents in the scope. With matter_id: all docs in the matter owned by the caller. Without matter_id: all visible user-owned docs (DocHub scope). When select_all_folder_id is also set, only docs under that folder subtree are deleted. document_ids and folder_ids are ignored.'
           default: false
+        select_all_folder_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Select All Folder Id
+          description: Scope select_all to a specific folder subtree. Only effective when select_all is true.
         exclude_doc_ids:
           items:
             type: string
@@ -6386,7 +6252,7 @@ components:
           type: array
           maxItems: 5000
           title: Exclude Doc Ids
-          description: 'Doc IDs to exclude from move_all_at_source. Used for the mode+delta selection model: the user selected all, then unchecked a few files. Only effective when move_all_at_source is true.'
+          description: 'Doc IDs to exclude from select_all. Used for the mode+delta selection model: the user selected all, then unchecked a few items. Bounded by user clicks (max 5000). Only effective when select_all is true.'
         exclude_folder_ids:
           items:
             type: string
@@ -6394,83 +6260,272 @@ components:
           type: array
           maxItems: 500
           title: Exclude Folder Ids
-          description: Folder IDs to exclude from move_all_at_source. Only effective when move_all_at_source is true.
+          description: Folder IDs to exclude from select_all. The server resolves each folder's subtree and excludes all contained docs. Bounded by user clicks (max 500). Only effective when select_all is true.
+        prune_empty_folders:
+          type: boolean
+          title: Prune Empty Folders
+          description: If true, once the background purge finishes, delete the folders these documents vacated (and their ancestors) if they are left empty. Runs at the tail of the delete job, so it can't race the async purge, and never touches unrelated empty folders.
+          default: false
+      type: object
+      title: DeleteDocumentsRequest
+      description: 'Request for POST delete-documents: hard-delete a batch of documents owned by the caller.
+
+
+        Accepts ``folder_ids`` (resolved server-side to all files in the subtree) and/or
+
+        ``document_ids`` (loose files). At least one must be non-empty. When ``folder_ids``
+
+        is provided, ``matter_id`` scopes the resolution; omit it for DocHub scope.
+
+
+        Backward-compatible: the old ``document_ids``-only shape still works unchanged.'
+    DocumentEstimateItem:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: File name.
+        estimated_tokens:
+          type: integer
+          title: Estimated Tokens
+          description: Estimated token count for ingestion + summarization.
+        estimated_credits:
+          type: number
+          title: Estimated Credits
+          description: 'Estimated credits for processing this document. Fractional: most documents cost well under one credit.'
+        estimated_seconds:
+          type: number
+          title: Estimated Seconds
+          description: Estimated processing time in seconds for this document.
+      type: object
+      required:
+      - name
+      - estimated_tokens
+      - estimated_credits
+      - estimated_seconds
+      title: DocumentEstimateItem
+      description: Per-document credit estimate returned by the estimation endpoint.
+    BatchFinalizeRequest:
+      properties:
+        batch_id:
+          type: string
+          format: uuid
+          title: Batch Id
+          description: UUID of the DocHubUploadBatch to seal.
+        expected_doc_count:
+          type: integer
+          minimum: 0.0
+          title: Expected Doc Count
+          description: Actual number of docs successfully registered this session (discounts failed/cancelled uploads).
+      type: object
+      required:
+      - batch_id
+      - expected_doc_count
+      title: BatchFinalizeRequest
+      description: 'Request for POST /document/batch-finalize: seal an upload batch with its true size.'
+    AddFoldersToTaskRequest:
+      properties:
+        task_id:
+          type: string
+          minLength: 1
+          title: Task Id
+          description: CUID of the task (Conversation) to add the documents to
+        folder_ids:
+          items:
+            type: string
+            format: uuid
+          type: array
+          title: Folder Ids
+          description: Folders to expand server-side. Scope is body.matter_id (matter tree) or omit for the caller's DocHub — same as delete-documents / listing. Not inferred from the task.
+        doc_ids:
+          items:
+            type: string
+            format: uuid
+          type: array
+          title: Doc Ids
+          description: Individually-selected loose files to link alongside the folders.
         matter_id:
           anyOf:
           - type: string
           - type: 'null'
           title: Matter Id
-          description: Matter scope; omit for DocHub.
-      type: object
-      title: MoveItemsRequest
-    AdminFailedIngestDownloadResponse:
-      properties:
-        items:
-          items:
-            $ref: '#/components/schemas/AdminFailedIngestDownloadItem'
-          type: array
-          title: Items
-        skipped:
-          items:
-            $ref: '#/components/schemas/AdminFailedIngestSkip'
-          type: array
-          title: Skipped
-      type: object
-      title: AdminFailedIngestDownloadResponse
-    FolderNodeSchema:
-      properties:
-        id:
-          type: string
-          format: uuid
-          title: Id
-        name:
-          type: string
-          title: Name
-        parent_id:
+          description: 'Scope for folder expansion: matter id for matter-scoped folders; omit for DocHub.'
+        batch_id:
           anyOf:
           - type: string
             format: uuid
           - type: 'null'
-          title: Parent Id
-        file_count:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: File Count
-          description: Files placed directly in this folder
-        subfolder_count:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Subfolder Count
-          description: Direct child folders
-        path:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Path
-          description: Scope-relative ancestry path (root→leaf, e.g. 'Bank/2024/drafts'); set on name-search hits so a flat result folder is navigable/disambiguated, null on normal level listings.
-        created_at:
-          anyOf:
-          - type: string
-            format: date-time
-          - type: 'null'
-          title: Created At
-          description: Folder creation time — the folder-side analogue of a file's upload_datetime, and what sort_by=date_added orders folders by. Render this in a 'Date Added' column so the sort is visible.
+          title: Batch Id
+          description: DocHubUploadBatch ID from batch-start. When set, expanded docs are tracked for batch completion.
+        include_subfolders:
+          type: boolean
+          title: Include Subfolders
+          description: Recurse into subfolders (default true).
+          default: true
+        return_doc_ids:
+          type: boolean
+          title: Return Doc Ids
+          description: When true, include resolved_doc_ids in the response. Opt-in so callers that only need the link (Doc Review, Timeline, Files tab) do not download the expanded list.
+          default: false
       type: object
       required:
-      - id
+      - task_id
+      title: AddFoldersToTaskRequest
+      description: Expand folders server-side and link the resulting docs to a task (ENG-22527).
+    FolderSortField:
+      type: string
+      enum:
       - name
-      title: FolderNodeSchema
-    ExportDocumentsResponse:
+      - date_added
+      - category
+      - added_by
+      - type
+      title: FolderSortField
+      description: "Sortable fields for the folder listing (ENG-19278).\n\nDeliberately not the same set as ``DocumentSortField``: ``size`` isn't a column in the\nfolder browser, while ``added_by`` and ``type`` are. Matters/Tasks are absent on purpose —\nthose names are encrypted at rest, so ordering on them would sort ciphertext.\n\nFolders are sorted together with files, never pinned above them. How a folder places depends\non whether it has a value for the field:\n\n- ``NAME``, ``DATE_ADDED`` — a folder has its own name and ``created_at``, so it interleaves\n  with files on equal footing.\n- ``TYPE`` — a folder sorts as the literal ``\"folder\"``, so it interleaves alphabetically\n  among file extensions (``docx`` < ``folder`` < ``pdf``).\n- ``CATEGORY``, ``ADDED_BY`` — a folder has neither, so it carries NULL and pins to the top\n  in *both* directions (see ``_merged_order_by``)."
+    DocumentFilterOptionsResponse:
       properties:
-        workflow_id:
-          type: string
-          title: Workflow Id
+        success:
+          type: boolean
+          title: Success
+        categories:
+          items:
+            $ref: '#/components/schemas/FilterOption'
+          type: array
+          title: Categories
+        types:
+          items:
+            $ref: '#/components/schemas/FilterOption'
+          type: array
+          title: Types
+        matters:
+          items:
+            $ref: '#/components/schemas/FilterOption'
+          type: array
+          title: Matters
+        tasks:
+          items:
+            $ref: '#/components/schemas/FilterOption'
+          type: array
+          title: Tasks
+        added_by_users:
+          items:
+            $ref: '#/components/schemas/FilterOption'
+          type: array
+          title: Added By Users
       type: object
       required:
-      - workflow_id
-      title: ExportDocumentsResponse
+      - success
+      title: DocumentFilterOptionsResponse
+      description: Available filter values with counts for faceted search.
+    AddFoldersToTaskResponse:
+      properties:
+        success:
+          type: boolean
+          title: Success
+        added:
+          type: integer
+          title: Added
+          default: 0
+        already_linked:
+          type: integer
+          title: Already Linked
+          default: 0
+        resolved_doc_count:
+          type: integer
+          title: Resolved Doc Count
+          default: 0
+        resolved_doc_ids:
+          items:
+            type: string
+            format: uuid
+          type: array
+          title: Resolved Doc Ids
+          description: Expanded file ids (folders + loose extras). Empty unless return_doc_ids was set.
+      type: object
+      required:
+      - success
+      title: AddFoldersToTaskResponse
+    AddDocumentsToTaskResponse:
+      properties:
+        success:
+          type: boolean
+          title: Success
+        added:
+          type: integer
+          title: Added
+          default: 0
+        already_linked:
+          type: integer
+          title: Already Linked
+          default: 0
+        failed:
+          type: integer
+          title: Failed
+          default: 0
+      type: object
+      required:
+      - success
+      title: AddDocumentsToTaskResponse
+    PollDocumentsV2Request:
+      properties:
+        batch_id:
+          type: string
+          format: uuid
+          title: Batch Id
+          description: Batch ID from /add-documents-v2.
+      type: object
+      required:
+      - batch_id
+      title: PollDocumentsV2Request
+      description: Request for POST /document/poll-documents-v2.
+    MoveDocumentRequest:
+      properties:
+        doc_id:
+          type: string
+          format: uuid
+          title: Doc Id
+          description: Document to move
+        target_folder_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Target Folder Id
+          description: Destination folder; null/omit for root
+        source_folder_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Source Folder Id
+          description: Folder the doc is currently filed in (null = root); the placement being moved
+        matter_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Matter Id
+          description: Matter scope; omit for DocHub
+      type: object
+      required:
+      - doc_id
+      title: MoveDocumentRequest
+    AddDocumentToMatterRequest:
+      properties:
+        doc_id:
+          type: string
+          format: uuid
+          title: Doc Id
+          description: UUID of the document to add
+        matter_id:
+          type: string
+          minLength: 1
+          title: Matter Id
+          description: CUID of the matter to add the document to
+      type: object
+      required:
+      - doc_id
+      - matter_id
+      title: AddDocumentToMatterRequest
     EmailSource:
       properties:
         document_id:
@@ -6506,96 +6561,41 @@ components:
 
 
         ``document_id`` is the email''s own Doc Hub document, so a client can open it.'
-    AdminFailedIngestDownloadItem:
+    PollDocumentsV2Response:
       properties:
-        id:
+        registration_status:
           type: string
-          format: uuid
-          title: Id
-        name:
-          type: string
-          title: Name
-        url:
-          type: string
-          title: Url
-        expires_at:
-          anyOf:
-          - type: string
-            format: date-time
-          - type: 'null'
-          title: Expires At
+          title: Registration Status
+          description: 'Temporal workflow status: running, completed, failed, unknown.'
+          default: unknown
+        summary:
+          $ref: '#/components/schemas/PollDocumentsV2Summary'
+        registering:
+          items:
+            $ref: '#/components/schemas/PollDocumentsV2Item'
+          type: array
+          maxItems: 3
+          title: Registering
+        in_progress:
+          items:
+            $ref: '#/components/schemas/PollDocumentsV2Item'
+          type: array
+          maxItems: 3
+          title: In Progress
+        completed:
+          items:
+            $ref: '#/components/schemas/PollDocumentsV2Item'
+          type: array
+          maxItems: 3
+          title: Completed
+        failed:
+          items:
+            $ref: '#/components/schemas/PollDocumentsV2Item'
+          type: array
+          maxItems: 3
+          title: Failed
       type: object
       required:
-      - id
-      - name
-      - url
-      title: AdminFailedIngestDownloadItem
-    MoveItemsSkipped:
-      properties:
-        kind:
-          type: string
-          enum:
-          - folder
-          - file
-          title: Kind
-        id:
-          type: string
-          format: uuid
-          title: Id
-        reason:
-          $ref: '#/components/schemas/MoveSkipReason'
-      type: object
-      required:
-      - kind
-      - id
-      - reason
-      title: MoveItemsSkipped
-    ClearDocsResponse:
-      properties:
-        success:
-          type: boolean
-          title: Success
-          description: False when some documents were left behind — an archive still being extracted is refused rather than purged (ENG-22114). Compare deleted_count with the names requested to see how many.
-        deleted_count:
-          type: integer
-          title: Deleted Count
-          description: Number of doc_metadata rows deleted.
-      type: object
-      required:
-      - success
-      - deleted_count
-      title: ClearDocsResponse
-      description: 'Response for POST clear-docs: hard-deletes matching documents owned by the user.'
-    AddDocumentsV2Response:
-      properties:
-        batch_id:
-          type: string
-          title: Batch Id
-          description: Batch ID for polling via /poll-documents-v2.
-        workflow_id:
-          type: string
-          title: Workflow Id
-          description: Temporal workflow ID.
-        doc_count:
-          type: integer
-          title: Doc Count
-          description: Number of documents in the manifest.
-      type: object
-      required:
-      - batch_id
-      - workflow_id
-      - doc_count
-      title: AddDocumentsV2Response
-      description: Response for POST /document/add-documents-v2.
-    BatchStartResponse:
-      properties:
-        batch_id:
-          anyOf:
-          - type: string
-            format: uuid
-          - type: 'null'
-          title: Batch Id
-          description: UUID of the created DocHubUploadBatch row. None for non-dataset uploads.
-      type: object
-      title: BatchStartResponse
-      description: 'Response for POST /document/batch-start: returns the batch_id to pass on each upload.'
+      - summary
+      title: PollDocumentsV2Response
+      description: Response for POST /document/poll-documents-v2.

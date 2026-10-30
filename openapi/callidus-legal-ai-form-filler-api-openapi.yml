@@ -72,6 +72,26 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    ExtractKnownCausesResponse:
+      properties:
+        causes:
+          items:
+            type: string
+          type: array
+          title: Causes
+          description: Distinct causes of action taken from the matter's known-causes text (empty when none).
+      type: object
+      title: ExtractKnownCausesResponse
+      description: Response containing the causes of action extracted from a matter's known-causes text.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     FillFormRequest:
       properties:
         matter_id:
@@ -104,17 +124,6 @@ components:
       - matter_id
       title: FillFormRequest
       description: Request to populate a JSON form using matter context.
-    ExtractKnownCausesResponse:
-      properties:
-        causes:
-          items:
-            type: string
-          type: array
-          title: Causes
-          description: Distinct causes of action taken from the matter's known-causes text (empty when none).
-      type: object
-      title: ExtractKnownCausesResponse
-      description: Response containing the causes of action extracted from a matter's known-causes text.
     ExtractKnownCausesRequest:
       properties:
         matter_id:
@@ -126,29 +135,6 @@ components:
       - matter_id
       title: ExtractKnownCausesRequest
       description: Request to extract discrete causes of action from a matter's known-causes text.
-    FillFormResponse:
-      properties:
-        filled_form:
-          additionalProperties: true
-          type: object
-          title: Filled Form
-          description: The form structure with fields populated from matter context.
-        validation_issues:
-          items:
-            type: string
-          type: array
-          title: Validation Issues
-          description: Structural issues remaining after correction (empty when valid).
-        memory_enabled:
-          type: boolean
-          title: Memory Enabled
-          description: False when matter memory is disabled — frontend should not fall back to raw matter fields.
-          default: true
-      type: object
-      required:
-      - filled_form
-      title: FillFormResponse
-      description: Response containing the populated form.
     ValidationError:
       properties:
         loc:
@@ -175,12 +161,26 @@ components:
       - msg
       - type
       title: ValidationError
-    HTTPValidationError:
+    FillFormResponse:
       properties:
-        detail:
+        filled_form:
+          additionalProperties: true
+          type: object
+          title: Filled Form
+          description: The form structure with fields populated from matter context.
+        validation_issues:
           items:
-            $ref: '#/components/schemas/ValidationError'
+            type: string
           type: array
-          title: Detail
+          title: Validation Issues
+          description: Structural issues remaining after correction (empty when valid).
+        memory_enabled:
+          type: boolean
+          title: Memory Enabled
+          description: False when matter memory is disabled — frontend should not fall back to raw matter fields.
+          default: true
       type: object
-      title: HTTPValidationError
+      required:
+      - filled_form
+      title: FillFormResponse
+      description: Response containing the populated form.

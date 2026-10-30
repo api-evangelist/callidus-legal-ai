@@ -218,6 +218,289 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    DetectMatterRequest:
+      properties:
+        conversation_id:
+          anyOf:
+          - type: string
+            maxLength: 1024
+          - type: 'null'
+          title: Conversation Id
+          description: Graph conversation id of the open thread.
+        message_id:
+          anyOf:
+          - type: string
+            maxLength: 1024
+          - type: 'null'
+          title: Message Id
+          description: Graph id of the message being replied to, when the pane has one. A reply being composed has no id of its own until it is saved.
+        thread_messages:
+          type: integer
+          minimum: 0.0
+          title: Thread Messages
+          description: Messages the pane found in the open thread.
+          default: 0
+      type: object
+      title: DetectMatterRequest
+      description: What the pane knows about the message being replied to.
+    ContextCounts:
+      properties:
+        thread_messages:
+          type: integer
+          title: Thread Messages
+          default: 0
+        matter_files:
+          type: integer
+          title: Matter Files
+          default: 0
+        matter_emails:
+          type: integer
+          title: Matter Emails
+          default: 0
+      type: object
+      title: ContextCounts
+      description: 'What the pane''s three context checkboxes report.
+
+
+        ``thread_messages`` comes from the conversation as Graph reports it, which
+
+        is the same thread the draft is built from. The pane''s own parse of the
+
+        quoted block is used only when Graph cannot answer: it cannot see the
+
+        message being replied to and recognises only Outlook''s ``From:`` header
+
+        format, so it reads low against a chain quoted in another client''s style.'
+    app__modules__integrations__outlook__addin_schemas__MatterListResponse:
+      properties:
+        matters:
+          items:
+            $ref: '#/components/schemas/MatterSummary'
+          type: array
+          title: Matters
+      type: object
+      required:
+      - matters
+      title: MatterListResponse
+      description: Matters the caller can draft against, for the pane's Change picker.
+    DraftRefine:
+      properties:
+        mode:
+          type: string
+          enum:
+          - shorter
+          - more_formal
+          - more_direct
+          - custom
+          title: Mode
+        instruction:
+          anyOf:
+          - type: string
+            maxLength: 500
+          - type: 'null'
+          title: Instruction
+          description: The user's own wording. Required when mode is custom.
+        previous_draft:
+          type: string
+          maxLength: 30000
+          minLength: 1
+          title: Previous Draft
+      type: object
+      required:
+      - mode
+      - previous_draft
+      title: DraftRefine
+      description: 'A follow-up instruction applied to a draft the user already has.
+
+
+        ``previous_draft`` is sent by the pane rather than held server-side: the pane
+
+        owns the draft the user is looking at, including one they refined and then
+
+        restored with Original, so it is the only reliable source of what to change.'
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    DetectMatterResponse:
+      properties:
+        matter:
+          anyOf:
+          - $ref: '#/components/schemas/MatterSummary'
+          - type: 'null'
+        source:
+          type: string
+          title: Source
+          description: 'How the matter was established: ''folder'' when a connected Outlook folder answered it, ''none'' when nothing matched and the pane must ask the user to choose, ''ambiguous'' when the folder is linked to several matters and the user must pick one of ``candidates``.'
+        counts:
+          $ref: '#/components/schemas/ContextCounts'
+          default:
+            thread_messages: 0
+            matter_files: 0
+            matter_emails: 0
+        has_matters:
+          type: boolean
+          title: Has Matters
+          description: Whether the caller can view any matter at all. False lets the pane offer Create Matter instead of a picker with nothing in it. Only meaningful when no matter was detected; a detected matter implies True.
+          default: true
+        candidates:
+          items:
+            $ref: '#/components/schemas/MatterSummary'
+          type: array
+          title: Candidates
+          description: 'When source is ''ambiguous'': the matters the thread could belong to, in the order the picker should list them. Empty otherwise.'
+        candidate_source:
+          type: string
+          title: Candidate Source
+          description: 'Which lookup produced the match — ``candidates`` when ambiguous, ``matter`` otherwise: ''folder'' when a connected Outlook folder answered, ''thread'' when this thread was already synced into the matter(s). The pane words the pinned-group heading and the card''s ''Detected from …'' line from this, so neither can claim a folder connection that does not exist. Defaults to ''folder'', which is what every caller assumed before this field existed.'
+          default: folder
+      type: object
+      required:
+      - source
+      title: DetectMatterResponse
+      description: The matter the open thread belongs to, if it can be established.
+    MatterSummary:
+      properties:
+        id:
+          type: string
+          title: Id
+        name:
+          type: string
+          title: Name
+        client:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Client
+          description: Client display name. None when the matter has no client attached.
+        role:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Role
+          description: Party role, e.g. Defendant/Respondent.
+        practice_area:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Practice Area
+          description: Matter type, e.g. Employment Law.
+      type: object
+      required:
+      - id
+      - name
+      title: MatterSummary
+      description: A matter as the add-in's matter card renders it.
+    DraftContextSelection:
+      properties:
+        thread:
+          type: boolean
+          title: Thread
+          default: true
+        matter_files:
+          type: boolean
+          title: Matter Files
+          default: true
+        matter_emails:
+          type: boolean
+          title: Matter Emails
+          default: true
+      type: object
+      title: DraftContextSelection
+      description: Which sources the user left checked in the pane.
+    DraftSender:
+      properties:
+        name:
+          anyOf:
+          - type: string
+            maxLength: 200
+          - type: 'null'
+          title: Name
+        email:
+          anyOf:
+          - type: string
+            maxLength: 320
+          - type: 'null'
+          title: Email
+      type: object
+      title: DraftSender
+      description: Who the draft is signed as, taken from the Outlook account.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    SuggestInstructionRequest:
+      properties:
+        conversation_id:
+          anyOf:
+          - type: string
+            maxLength: 1024
+          - type: 'null'
+          title: Conversation Id
+          description: Graph conversation id. When present the thread is fetched from Graph; ``thread`` is the fallback, as on the draft endpoint.
+        thread:
+          $ref: '#/components/schemas/DraftThread'
+          default:
+            subject: ''
+            messages: []
+      type: object
+      title: SuggestInstructionRequest
+      description: The open thread, for writing a starting instruction from it.
+    ThreadMessage:
+      properties:
+        from:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: From
+          description: Sender, formatted as the pane displays it.
+        to:
+          items:
+            type: string
+          type: array
+          maxItems: 50
+          title: To
+        sent_at:
+          anyOf:
+          - type: string
+            maxLength: 64
+          - type: 'null'
+          title: Sent At
+        body_text:
+          type: string
+          maxLength: 50000
+          title: Body Text
+          default: ''
+      type: object
+      title: ThreadMessage
+      description: One message of the open Outlook thread, as the pane read it.
     DraftRequest:
       properties:
         matter_id:
@@ -260,55 +543,6 @@ components:
       - instruction
       title: DraftRequest
       description: Everything the draft endpoint needs to write one reply.
-    DraftContextSelection:
-      properties:
-        thread:
-          type: boolean
-          title: Thread
-          default: true
-        matter_files:
-          type: boolean
-          title: Matter Files
-          default: true
-        matter_emails:
-          type: boolean
-          title: Matter Emails
-          default: true
-      type: object
-      title: DraftContextSelection
-      description: Which sources the user left checked in the pane.
-    MatterSummary:
-      properties:
-        id:
-          type: string
-          title: Id
-        name:
-          type: string
-          title: Name
-        client:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Client
-          description: Client display name. None when the matter has no client attached.
-        role:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Role
-          description: Party role, e.g. Defendant/Respondent.
-        practice_area:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Practice Area
-          description: Matter type, e.g. Employment Law.
-      type: object
-      required:
-      - id
-      - name
-      title: MatterSummary
-      description: A matter as the add-in's matter card renders it.
     SuggestInstructionResponse:
       properties:
         instruction:
@@ -325,188 +559,6 @@ components:
       - generated
       title: SuggestInstructionResponse
       description: One sentence for the pane to put in the prompt box.
-    ContextCounts:
-      properties:
-        thread_messages:
-          type: integer
-          title: Thread Messages
-          default: 0
-        matter_files:
-          type: integer
-          title: Matter Files
-          default: 0
-        matter_emails:
-          type: integer
-          title: Matter Emails
-          default: 0
-      type: object
-      title: ContextCounts
-      description: 'What the pane''s three context checkboxes report.
-
-
-        ``thread_messages`` comes from the conversation as Graph reports it, which
-
-        is the same thread the draft is built from. The pane''s own parse of the
-
-        quoted block is used only when Graph cannot answer: it cannot see the
-
-        message being replied to and recognises only Outlook''s ``From:`` header
-
-        format, so it reads low against a chain quoted in another client''s style.'
-    DetectMatterResponse:
-      properties:
-        matter:
-          anyOf:
-          - $ref: '#/components/schemas/MatterSummary'
-          - type: 'null'
-        source:
-          type: string
-          title: Source
-          description: 'How the matter was established: ''folder'' when a connected Outlook folder answered it, ''none'' when nothing matched and the pane must ask the user to choose, ''ambiguous'' when the folder is linked to several matters and the user must pick one of ``candidates``.'
-        counts:
-          $ref: '#/components/schemas/ContextCounts'
-          default:
-            thread_messages: 0
-            matter_files: 0
-            matter_emails: 0
-        has_matters:
-          type: boolean
-          title: Has Matters
-          description: Whether the caller can view any matter at all. False lets the pane offer Create Matter instead of a picker with nothing in it. Only meaningful when no matter was detected; a detected matter implies True.
-          default: true
-        candidates:
-          items:
-            $ref: '#/components/schemas/MatterSummary'
-          type: array
-          title: Candidates
-          description: 'When source is ''ambiguous'': the matters the thread could belong to, in the order the picker should list them. Empty otherwise.'
-        candidate_source:
-          type: string
-          title: Candidate Source
-          description: 'Which lookup produced the match — ``candidates`` when ambiguous, ``matter`` otherwise: ''folder'' when a connected Outlook folder answered, ''thread'' when this thread was already synced into the matter(s). The pane words the pinned-group heading and the card''s ''Detected from …'' line from this, so neither can claim a folder connection that does not exist. Defaults to ''folder'', which is what every caller assumed before this field existed.'
-          default: folder
-      type: object
-      required:
-      - source
-      title: DetectMatterResponse
-      description: The matter the open thread belongs to, if it can be established.
-    DraftRefine:
-      properties:
-        mode:
-          type: string
-          enum:
-          - shorter
-          - more_formal
-          - more_direct
-          - custom
-          title: Mode
-        instruction:
-          anyOf:
-          - type: string
-            maxLength: 500
-          - type: 'null'
-          title: Instruction
-          description: The user's own wording. Required when mode is custom.
-        previous_draft:
-          type: string
-          maxLength: 30000
-          minLength: 1
-          title: Previous Draft
-      type: object
-      required:
-      - mode
-      - previous_draft
-      title: DraftRefine
-      description: 'A follow-up instruction applied to a draft the user already has.
-
-
-        ``previous_draft`` is sent by the pane rather than held server-side: the pane
-
-        owns the draft the user is looking at, including one they refined and then
-
-        restored with Original, so it is the only reliable source of what to change.'
-    SuggestInstructionRequest:
-      properties:
-        conversation_id:
-          anyOf:
-          - type: string
-            maxLength: 1024
-          - type: 'null'
-          title: Conversation Id
-          description: Graph conversation id. When present the thread is fetched from Graph; ``thread`` is the fallback, as on the draft endpoint.
-        thread:
-          $ref: '#/components/schemas/DraftThread'
-          default:
-            subject: ''
-            messages: []
-      type: object
-      title: SuggestInstructionRequest
-      description: The open thread, for writing a starting instruction from it.
-    app__modules__integrations__outlook__addin_schemas__MatterListResponse:
-      properties:
-        matters:
-          items:
-            $ref: '#/components/schemas/MatterSummary'
-          type: array
-          title: Matters
-      type: object
-      required:
-      - matters
-      title: MatterListResponse
-      description: Matters the caller can draft against, for the pane's Change picker.
-    DetectMatterRequest:
-      properties:
-        conversation_id:
-          anyOf:
-          - type: string
-            maxLength: 1024
-          - type: 'null'
-          title: Conversation Id
-          description: Graph conversation id of the open thread.
-        message_id:
-          anyOf:
-          - type: string
-            maxLength: 1024
-          - type: 'null'
-          title: Message Id
-          description: Graph id of the message being replied to, when the pane has one. A reply being composed has no id of its own until it is saved.
-        thread_messages:
-          type: integer
-          minimum: 0.0
-          title: Thread Messages
-          description: Messages the pane found in the open thread.
-          default: 0
-      type: object
-      title: DetectMatterRequest
-      description: What the pane knows about the message being replied to.
-    ThreadMessage:
-      properties:
-        from:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: From
-          description: Sender, formatted as the pane displays it.
-        to:
-          items:
-            type: string
-          type: array
-          maxItems: 50
-          title: To
-        sent_at:
-          anyOf:
-          - type: string
-            maxLength: 64
-          - type: 'null'
-          title: Sent At
-        body_text:
-          type: string
-          maxLength: 50000
-          title: Body Text
-          default: ''
-      type: object
-      title: ThreadMessage
-      description: One message of the open Outlook thread, as the pane read it.
     DraftThread:
       properties:
         subject:
@@ -523,55 +575,3 @@ components:
       type: object
       title: DraftThread
       description: The email thread the reply belongs to. The first message is the one being replied to.
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    DraftSender:
-      properties:
-        name:
-          anyOf:
-          - type: string
-            maxLength: 200
-          - type: 'null'
-          title: Name
-        email:
-          anyOf:
-          - type: string
-            maxLength: 320
-          - type: 'null'
-          title: Email
-      type: object
-      title: DraftSender
-      description: Who the draft is signed as, taken from the Outlook account.

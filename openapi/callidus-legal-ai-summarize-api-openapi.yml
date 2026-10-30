@@ -77,26 +77,15 @@ components:
           default: ''
       type: object
       title: CaseSummary
-    SummarizeAttachmentRequest:
+    HTTPValidationError:
       properties:
-        summary:
-          anyOf:
-          - $ref: '#/components/schemas/CaseSummary'
-          - type: string
-          - type: 'null'
-          title: Summary
-          description: An existing summary to create the pdf for, can either be a string or a CaseSummary object
-        output_format:
-          anyOf:
-          - type: string
-            enum:
-            - pdf
-            - docx
-          - type: 'null'
-          title: Output Format
-          description: The format of the output file, either pdf or docx. If not provided, earlier provided value will be used. If no value was provided earlier, pdf will be used by default.
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
       type: object
-      title: SummarizeAttachmentRequest
+      title: HTTPValidationError
     SummarizeAttachmentRequestWrapped:
       properties:
         request:
@@ -131,12 +120,23 @@ components:
       - msg
       - type
       title: ValidationError
-    HTTPValidationError:
+    SummarizeAttachmentRequest:
       properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
+        summary:
+          anyOf:
+          - $ref: '#/components/schemas/CaseSummary'
+          - type: string
+          - type: 'null'
+          title: Summary
+          description: An existing summary to create the pdf for, can either be a string or a CaseSummary object
+        output_format:
+          anyOf:
+          - type: string
+            enum:
+            - pdf
+            - docx
+          - type: 'null'
+          title: Output Format
+          description: The format of the output file, either pdf or docx. If not provided, earlier provided value will be used. If no value was provided earlier, pdf will be used by default.
       type: object
-      title: HTTPValidationError
+      title: SummarizeAttachmentRequest

@@ -104,16 +104,6 @@ components:
         Frontend sends paragraphs directly - no need to split text.
 
         Citation details are extracted later.'
-    Body_convert_to_word_addin_litigate_convert_to_word_post:
-      properties:
-        file:
-          type: string
-          contentMediaType: application/octet-stream
-          title: File
-      type: object
-      required:
-      - file
-      title: Body_convert_to_word_addin_litigate_convert_to_word_post
     ParagraphData:
       properties:
         index:
@@ -143,6 +133,25 @@ components:
       - text
       title: ParagraphData
       description: Model for paragraph data structure.
+    Body_convert_to_word_addin_litigate_convert_to_word_post:
+      properties:
+        file:
+          type: string
+          contentMediaType: application/octet-stream
+          title: File
+      type: object
+      required:
+      - file
+      title: Body_convert_to_word_addin_litigate_convert_to_word_post
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     ValidationError:
       properties:
         loc:
@@ -169,12 +178,3 @@ components:
       - msg
       - type
       title: ValidationError
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError

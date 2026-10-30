@@ -414,6 +414,307 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    DocAgentDebugRunRequest:
+      properties:
+        document_title:
+          type: string
+          title: Document Title
+        instructions:
+          type: string
+          title: Instructions
+        matter_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Matter Id
+        template_doc_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Template Doc Id
+        max_iterations:
+          type: integer
+          title: Max Iterations
+          default: 35
+        authored_content:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authored Content
+      type: object
+      required:
+      - document_title
+      - instructions
+      title: DocAgentDebugRunRequest
+      description: 'Mirrors the smart-bot ``draft_document`` tool payload (see
+
+        ``temporal/activities/doc_agent_v2/draft.py``''s ``DraftDocumentInput``),
+
+        plus a client-tunable (but server-clamped) iteration cap.'
+    DocAgentDebugSearchResponse:
+      properties:
+        runs:
+          items:
+            $ref: '#/components/schemas/DocAgentDebugSearchRunRow'
+          type: array
+          title: Runs
+        truncated:
+          type: boolean
+          title: Truncated
+      type: object
+      required:
+      - runs
+      - truncated
+      title: DocAgentDebugSearchResponse
+      description: '``GET /doc-agent-debug/runs/search``: up to 50 runs, newest first.
+
+
+        ``truncated`` is ``True`` when more than 50 rows matched — the search
+
+        box''s own hint to narrow with ``status``/``from``/``to`` rather than a
+
+        silent, misleadingly-complete-looking list of exactly 50.'
+    DocAgentDebugOverviewRunsResponse:
+      properties:
+        runs:
+          items:
+            $ref: '#/components/schemas/DocAgentDebugOverviewRunRow'
+          type: array
+          title: Runs
+      type: object
+      required:
+      - runs
+      title: DocAgentDebugOverviewRunsResponse
+      description: 'Drill-down shape of ``GET /doc-agent-debug/overview`` when ``status``
+
+        and/or ``date`` is given: the matching run list instead of the aggregate.'
+    DocAgentDebugConversationResponse:
+      properties:
+        run_id:
+          type: string
+          title: Run Id
+        conversation_id:
+          type: string
+          title: Conversation Id
+        messages:
+          items:
+            $ref: '#/components/schemas/DocAgentDebugConversationMessageRow'
+          type: array
+          title: Messages
+        draft_handoff_message_index:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Draft Handoff Message Index
+        draft_handoff_args:
+          anyOf:
+          - $ref: '#/components/schemas/DocAgentDebugDraftHandoffArgs'
+          - type: 'null'
+      type: object
+      required:
+      - run_id
+      - conversation_id
+      - messages
+      - draft_handoff_message_index
+      - draft_handoff_args
+      title: DocAgentDebugConversationResponse
+      description: '``GET /doc-agent-debug/runs/{run_id}/conversation``: the run''s
+
+        conversation, decoded up to the run''s own ``UpdatedAt``, with the
+
+        ``generate_word_document`` tool call that started this run pinned via
+
+        ``is_draft_handoff`` when it could be identified (exactly, by the
+
+        resolved draft workflow id''s ledger key; or, failing that, by being the
+
+        single such call in the window, or the closest in time to the run''s
+
+        ``CreatedAt``) — see ``conversation.get_run_conversation``.
+
+        ``draft_handoff_message_index`` and ``draft_handoff_args`` are ``None``
+
+        when no ``generate_word_document`` call could be found in the window at
+
+        all (e.g. history predating the ``Index`` column, or a run started some
+
+        other way).'
+    DocAgentDebugOverviewRunRow:
+      properties:
+        id:
+          type: string
+          title: Id
+        status:
+          type: string
+          title: Status
+        created_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Created At
+        updated_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Updated At
+      type: object
+      required:
+      - id
+      - status
+      - created_at
+      - updated_at
+      title: DocAgentDebugOverviewRunRow
+      description: 'One run in a drill-down list (``?status=``/``?date=``) — deliberately
+
+        thinner than :class:`DocAgentDebugRunView`, which is for inspecting a
+
+        single run, not listing many.'
+    DocAgentDebugUsageLedgerRow:
+      properties:
+        step:
+          type: string
+          title: Step
+        model:
+          type: string
+          title: Model
+        input_tokens:
+          type: integer
+          title: Input Tokens
+        output_tokens:
+          type: integer
+          title: Output Tokens
+        cached_tokens:
+          type: integer
+          title: Cached Tokens
+        cost_usd:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Cost Usd
+        credits_charged:
+          type: string
+          title: Credits Charged
+        event_time:
+          type: string
+          title: Event Time
+        idempotency_key:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Idempotency Key
+        metadata:
+          additionalProperties: true
+          type: object
+          title: Metadata
+      type: object
+      required:
+      - step
+      - model
+      - input_tokens
+      - output_tokens
+      - cached_tokens
+      - cost_usd
+      - credits_charged
+      - event_time
+      - idempotency_key
+      - metadata
+      title: DocAgentDebugUsageLedgerRow
+      description: One ``model_usage_ledger`` row, for the run inspection routes below.
+    DocAgentDebugOutputRow:
+      properties:
+        doc_id:
+          type: string
+          title: Doc Id
+        name:
+          type: string
+          title: Name
+        location:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Location
+        storage_account_alias:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Storage Account Alias
+        storage_container:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Storage Container
+        upload_datetime:
+          type: string
+          title: Upload Datetime
+      type: object
+      required:
+      - doc_id
+      - name
+      - location
+      - storage_account_alias
+      - storage_container
+      - upload_datetime
+      title: DocAgentDebugOutputRow
+      description: 'One ``doc_metadata`` row matched to a run as one of its drafted outputs —
+
+        see ``run_links.resolve_run_links``.
+
+
+        ``storage_account_alias``/``storage_container`` (plus ``location``) are the
+
+        exact three fields ``doc_storage.blob_ref_from_doc_metadata`` needs to build
+
+        a ``BlobRef`` for signing a download URL (see ``service._sign_output_download``);
+
+        kept alongside the display fields rather than requiring a second DocMetadata
+
+        fetch just to sign what this resolver already read once.'
+    DocAgentDebugConversationMessageRow:
+      properties:
+        index:
+          type: integer
+          title: Index
+        message_id:
+          type: string
+          title: Message Id
+        role:
+          type: string
+          title: Role
+        content:
+          title: Content
+        created_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Created At
+        is_draft_handoff:
+          type: boolean
+          title: Is Draft Handoff
+      type: object
+      required:
+      - index
+      - message_id
+      - role
+      - content
+      - created_at
+      - is_draft_handoff
+      title: DocAgentDebugConversationMessageRow
+      description: 'One persisted Smart Bot ``Message`` row, decoded through
+
+        ``smart_bot.services.history.rebuild_agent_history`` — see
+
+        ``GET /doc-agent-debug/runs/{run_id}/conversation``.
+
+
+        ``content`` is the raw Anthropic-style history entry''s ``content``
+
+        verbatim — a plain string, or a list of ``text``/``tool_use``/
+
+        ``tool_result``/``ask_user`` blocks — passed through with no reshaping,
+
+        matching this package''s "raw persisted shape, no second schema"
+
+        convention (see :class:`DocAgentDebugTraceResponse`).'
     DocAgentDebugResolvedInputs:
       properties:
         document_title:
@@ -466,6 +767,82 @@ components:
         ``authored_content`` (those are just noted as present in the prompt, not
 
         echoed verbatim).'
+    DocAgentDebugOutputDownloadRow:
+      properties:
+        doc_id:
+          type: string
+          title: Doc Id
+        name:
+          type: string
+          title: Name
+        filename:
+          type: string
+          title: Filename
+        download_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Download Url
+        unresolved_reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Unresolved Reason
+      type: object
+      required:
+      - doc_id
+      - name
+      - filename
+      - download_url
+      - unresolved_reason
+      title: DocAgentDebugOutputDownloadRow
+      description: 'A resolved output''s signed download URL — one row per
+
+        ``DocAgentDebugRunLinks.outputs`` entry, signed with the same
+
+        account/expiry/content-disposition approach as
+
+        ``doc_agent_v2/routes/router.py``''s ``doc_agent_output`` route (see
+
+        ``service._sign_output_download``). ``filename`` is the run-id-prefixed
+
+        name (``"{run_id}-{name}"``) baked into the signed URL''s
+
+        ``Content-Disposition`` header, so a browser download always lands with
+
+        that name regardless of what the URL''s query string carries.'
+    DocAgentDebugDraftHandoffArgs:
+      properties:
+        document_title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Document Title
+        instructions:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Instructions
+        authored_content:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authored Content
+      type: object
+      required:
+      - document_title
+      - instructions
+      - authored_content
+      title: DocAgentDebugDraftHandoffArgs
+      description: 'The ``generate_word_document`` tool-call args on the message pinned as
+
+        this run''s handoff — see ``conversation._find_draft_handoff``. ``None``
+
+        fields mean that arg simply wasn''t passed on the call (``template_doc_id``
+
+        is intentionally omitted here; it isn''t part of what a debug reader needs
+
+        pinned alongside the handoff).'
     DocAgentDebugPricingResponse:
       properties:
         pricing:
@@ -488,67 +865,6 @@ components:
         (unpersisted) test-run path, which has no ``model_usage_ledger`` row to
 
         read a real cost from (see ``GET /doc-agent-debug/pricing``).'
-    DocAgentDebugOverviewRunRow:
-      properties:
-        id:
-          type: string
-          title: Id
-        status:
-          type: string
-          title: Status
-        created_at:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Created At
-        updated_at:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Updated At
-      type: object
-      required:
-      - id
-      - status
-      - created_at
-      - updated_at
-      title: DocAgentDebugOverviewRunRow
-      description: 'One run in a drill-down list (``?status=``/``?date=``) — deliberately
-
-        thinner than :class:`DocAgentDebugRunView`, which is for inspecting a
-
-        single run, not listing many.'
-    DocAgentDebugWorkflowIdRow:
-      properties:
-        workflow_id:
-          type: string
-          title: Workflow Id
-        workflow_type:
-          type: string
-          title: Workflow Type
-        matched_by_time:
-          type: boolean
-          title: Matched By Time
-      type: object
-      required:
-      - workflow_id
-      - workflow_type
-      - matched_by_time
-      title: DocAgentDebugWorkflowIdRow
-      description: 'One Temporal workflow id linked to a run.
-
-
-        ``matched_by_time`` is always ``True`` for chat-turn ids today (Smart Bot''s
-
-        chat-turn billing prefix is the run id, not a workflow id, so there is no
-
-        exact key to match on — see ``run_links.py``''s module docstring); kept as
-
-        a field rather than a hardcoded constant so a future exact-match source
-
-        (e.g. a workflow id persisted somewhere) can set it ``False`` without a
-
-        schema change.'
     DocAgentDebugTraceResponse:
       properties:
         run_id:
@@ -600,602 +916,6 @@ components:
         ``next_seq=None`` means the run has no more records past the requested
 
         cursor.'
-    DocAgentDebugOverviewDayRow:
-      properties:
-        day:
-          type: string
-          title: Day
-        total_runs:
-          type: integer
-          title: Total Runs
-        failed_runs:
-          type: integer
-          title: Failed Runs
-        stuck_runs:
-          type: integer
-          title: Stuck Runs
-        avg_turns_per_run:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Avg Turns Per Run
-        avg_iterations_per_run:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Avg Iterations Per Run
-        avg_iterations_per_done_run:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Avg Iterations Per Done Run
-        avg_tool_calls_per_run:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Avg Tool Calls Per Run
-        avg_errors_per_run:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Avg Errors Per Run
-        total_errors:
-          type: integer
-          title: Total Errors
-        outcome_finish:
-          type: integer
-          title: Outcome Finish
-        outcome_max_iterations:
-          type: integer
-          title: Outcome Max Iterations
-        outcome_error:
-          type: integer
-          title: Outcome Error
-        p50_duration_seconds:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: P50 Duration Seconds
-        p95_duration_seconds:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: P95 Duration Seconds
-        avg_cost_usd:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Avg Cost Usd
-        total_cost_usd:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Total Cost Usd
-      type: object
-      required:
-      - day
-      - total_runs
-      - failed_runs
-      - stuck_runs
-      - avg_turns_per_run
-      - avg_iterations_per_run
-      - avg_iterations_per_done_run
-      - avg_tool_calls_per_run
-      - avg_errors_per_run
-      - total_errors
-      - outcome_finish
-      - outcome_max_iterations
-      - outcome_error
-      - p50_duration_seconds
-      - p95_duration_seconds
-      - avg_cost_usd
-      - total_cost_usd
-      title: DocAgentDebugOverviewDayRow
-      description: 'One day''s aggregate row for ``GET /doc-agent-debug/overview`` — see
-
-        ``routes/router.py`` and ``platform/queries/doc_agent_v2_run.py``''s
-
-        ``get_overview_day_rows``.
-
-
-        ``avg_*``/``p50_*``/``p95_*`` fields are ``None`` for a day with no
-
-        matching rows (Postgres ``AVG``/``percentile_cont`` over an empty set),
-
-        not ``0`` — a debug chart should render a gap, not a false zero.'
-    DocAgentDebugDraftHandoffArgs:
-      properties:
-        document_title:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Document Title
-        instructions:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Instructions
-        authored_content:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Authored Content
-      type: object
-      required:
-      - document_title
-      - instructions
-      - authored_content
-      title: DocAgentDebugDraftHandoffArgs
-      description: 'The ``generate_word_document`` tool-call args on the message pinned as
-
-        this run''s handoff — see ``conversation._find_draft_handoff``. ``None``
-
-        fields mean that arg simply wasn''t passed on the call (``template_doc_id``
-
-        is intentionally omitted here; it isn''t part of what a debug reader needs
-
-        pinned alongside the handoff).'
-    DocAgentDebugConversationMessageRow:
-      properties:
-        index:
-          type: integer
-          title: Index
-        message_id:
-          type: string
-          title: Message Id
-        role:
-          type: string
-          title: Role
-        content:
-          title: Content
-        created_at:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Created At
-        is_draft_handoff:
-          type: boolean
-          title: Is Draft Handoff
-      type: object
-      required:
-      - index
-      - message_id
-      - role
-      - content
-      - created_at
-      - is_draft_handoff
-      title: DocAgentDebugConversationMessageRow
-      description: 'One persisted Smart Bot ``Message`` row, decoded through
-
-        ``smart_bot.services.history.rebuild_agent_history`` — see
-
-        ``GET /doc-agent-debug/runs/{run_id}/conversation``.
-
-
-        ``content`` is the raw Anthropic-style history entry''s ``content``
-
-        verbatim — a plain string, or a list of ``text``/``tool_use``/
-
-        ``tool_result``/``ask_user`` blocks — passed through with no reshaping,
-
-        matching this package''s "raw persisted shape, no second schema"
-
-        convention (see :class:`DocAgentDebugTraceResponse`).'
-    DocAgentDebugWorkflowsResponse:
-      properties:
-        run_id:
-          type: string
-          title: Run Id
-        run_status:
-          type: string
-          title: Run Status
-        workflows:
-          items:
-            $ref: '#/components/schemas/DocAgentDebugWorkflowStatusRow'
-          type: array
-          title: Workflows
-        mismatches:
-          items:
-            type: string
-          type: array
-          title: Mismatches
-      type: object
-      required:
-      - run_id
-      - run_status
-      - workflows
-      - mismatches
-      title: DocAgentDebugWorkflowsResponse
-      description: '``GET /doc-agent-debug/runs/{run_id}/workflows``: live Temporal status
-
-        for every workflow id ``run_links.resolve_run_links`` resolved for this
-
-        run, plus plain-English diagnostics where Temporal and the run''s own
-
-        ``Status`` disagree (a workflow closed while the run is still
-
-        ``"running"``, or the run is ``"done"`` while a resolved workflow''s
-
-        terminal status was a failure — the latter happens because the draft
-
-        activity writes ``"done"`` before it uploads the output file; see
-
-        ``temporal/activities/doc_agent_v2/draft.py``) — see
-
-        ``service._workflow_mismatches``.'
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    DocAgentDebugFailingToolRow:
-      properties:
-        tool:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Tool
-        message:
-          type: string
-          title: Message
-        occurrences:
-          type: integer
-          title: Occurrences
-      type: object
-      required:
-      - tool
-      - message
-      - occurrences
-      title: DocAgentDebugFailingToolRow
-      description: 'One ``(tool, error message)`` bucket from the top-10 failing-tools table.
-
-
-        ``tool`` is ``None`` for a supervisor-level ``error`` event (a model-call
-
-        failure with no specific tool attached) rather than a step-level tool
-
-        error — see ``get_top_failing_tools``.'
-    DocAgentDebugConversationResponse:
-      properties:
-        run_id:
-          type: string
-          title: Run Id
-        conversation_id:
-          type: string
-          title: Conversation Id
-        messages:
-          items:
-            $ref: '#/components/schemas/DocAgentDebugConversationMessageRow'
-          type: array
-          title: Messages
-        draft_handoff_message_index:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Draft Handoff Message Index
-        draft_handoff_args:
-          anyOf:
-          - $ref: '#/components/schemas/DocAgentDebugDraftHandoffArgs'
-          - type: 'null'
-      type: object
-      required:
-      - run_id
-      - conversation_id
-      - messages
-      - draft_handoff_message_index
-      - draft_handoff_args
-      title: DocAgentDebugConversationResponse
-      description: '``GET /doc-agent-debug/runs/{run_id}/conversation``: the run''s
-
-        conversation, decoded up to the run''s own ``UpdatedAt``, with the
-
-        ``generate_word_document`` tool call that started this run pinned via
-
-        ``is_draft_handoff`` when it could be identified (exactly, by the
-
-        resolved draft workflow id''s ledger key; or, failing that, by being the
-
-        single such call in the window, or the closest in time to the run''s
-
-        ``CreatedAt``) — see ``conversation.get_run_conversation``.
-
-        ``draft_handoff_message_index`` and ``draft_handoff_args`` are ``None``
-
-        when no ``generate_word_document`` call could be found in the window at
-
-        all (e.g. history predating the ``Index`` column, or a run started some
-
-        other way).'
-    DocAgentDebugRunLinks:
-      properties:
-        run_id:
-          type: string
-          title: Run Id
-        outputs:
-          items:
-            $ref: '#/components/schemas/DocAgentDebugOutputRow'
-          type: array
-          title: Outputs
-        outputs_unresolved_reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Outputs Unresolved Reason
-        draft_workflow_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Draft Workflow Id
-        draft_workflow_unresolved_reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Draft Workflow Unresolved Reason
-        chat_turn_workflow_ids:
-          items:
-            $ref: '#/components/schemas/DocAgentDebugWorkflowIdRow'
-          type: array
-          title: Chat Turn Workflow Ids
-        chat_turn_workflow_ids_unresolved_reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Chat Turn Workflow Ids Unresolved Reason
-        inputs:
-          anyOf:
-          - $ref: '#/components/schemas/DocAgentDebugResolvedInputs'
-          - type: 'null'
-        inputs_unresolved_reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Inputs Unresolved Reason
-        cost:
-          $ref: '#/components/schemas/DocAgentDebugCostBreakdown'
-      type: object
-      required:
-      - run_id
-      - outputs
-      - outputs_unresolved_reason
-      - draft_workflow_id
-      - draft_workflow_unresolved_reason
-      - chat_turn_workflow_ids
-      - chat_turn_workflow_ids_unresolved_reason
-      - inputs
-      - inputs_unresolved_reason
-      - cost
-      title: DocAgentDebugRunLinks
-      description: 'Everything ``resolve_run_links`` could derive for one run, each
-
-        sub-resolution independently best-effort (see ``run_links.py``''s module
-
-        docstring): a failed lookup leaves its field empty/``None`` and sets the
-
-        matching ``*_unresolved_reason`` instead of failing the whole response.'
-    DocAgentDebugCostBreakdown:
-      properties:
-        total_cost_usd:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Total Cost Usd
-        source:
-          type: string
-          title: Source
-      type: object
-      required:
-      - total_cost_usd
-      - source
-      title: DocAgentDebugCostBreakdown
-      description: Exact-cost resolution result for one run — see ``run_links._resolve_cost``.
-    DocAgentDebugSearchResponse:
-      properties:
-        runs:
-          items:
-            $ref: '#/components/schemas/DocAgentDebugSearchRunRow'
-          type: array
-          title: Runs
-        truncated:
-          type: boolean
-          title: Truncated
-      type: object
-      required:
-      - runs
-      - truncated
-      title: DocAgentDebugSearchResponse
-      description: '``GET /doc-agent-debug/runs/search``: up to 50 runs, newest first.
-
-
-        ``truncated`` is ``True`` when more than 50 rows matched — the search
-
-        box''s own hint to narrow with ``status``/``from``/``to`` rather than a
-
-        silent, misleadingly-complete-looking list of exactly 50.'
-    DocAgentDebugSearchRunRow:
-      properties:
-        id:
-          type: string
-          title: Id
-        status:
-          type: string
-          title: Status
-        created_at:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Created At
-        conversation_id:
-          type: string
-          title: Conversation Id
-        user_id:
-          type: string
-          title: User Id
-        user_email:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: User Email
-        matched_document_name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Matched Document Name
-      type: object
-      required:
-      - id
-      - status
-      - created_at
-      - conversation_id
-      - user_id
-      - user_email
-      - matched_document_name
-      title: DocAgentDebugSearchRunRow
-      description: 'One matched run for ``GET /doc-agent-debug/runs/search`` — see
-
-        ``search.search_runs``. Deliberately thin, like
-
-        :class:`DocAgentDebugOverviewRunRow`; the full run detail (outputs,
-
-        inputs, cost, conversation, Temporal) is one click away via ``id``.
-
-
-        ``matched_document_name`` is set only when this run matched the search
-
-        box''s ``q`` through a document-name source (a ``doc_metadata`` output
-
-        name, a ``DocAgentSession.OutputFilename``, or a trace-parsed draft
-
-        title) — ``None`` when the run matched some other way (exact run/
-
-        conversation/user id, or exact email) or when no ``q`` was given at all.'
-    DocAgentDebugWorkflowStatusRow:
-      properties:
-        workflow_id:
-          type: string
-          title: Workflow Id
-        workflow_type:
-          type: string
-          title: Workflow Type
-        temporal_workflow_type:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Temporal Workflow Type
-        status:
-          type: string
-          title: Status
-        terminal:
-          type: boolean
-          title: Terminal
-        start_time:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Start Time
-        close_time:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Close Time
-        failure_message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Failure Message
-        unresolved_reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Unresolved Reason
-      type: object
-      required:
-      - workflow_id
-      - workflow_type
-      - temporal_workflow_type
-      - status
-      - terminal
-      - start_time
-      - close_time
-      - failure_message
-      - unresolved_reason
-      title: DocAgentDebugWorkflowStatusRow
-      description: 'One resolved workflow id''s live Temporal status — see
-
-        ``GET /doc-agent-debug/runs/{run_id}/workflows``.
-
-
-        ``status`` mirrors ``temporal/utils/workflow_status.py``''s
-
-        ``query_basic_workflow_status`` mapping (``"processing"``/``"completed"``/
-
-        ``"failed"``), plus ``"unknown"`` when the lookup itself failed here (see
-
-        ``unresolved_reason``, set instead of raising — matching this package''s
-
-        per-field best-effort convention). ``workflow_type`` is this module''s own
-
-        label (``"draft"``/``"chat_turn"``, matching
-
-        :class:`DocAgentDebugWorkflowIdRow`); ``temporal_workflow_type`` is the
-
-        actual registered Temporal workflow type name read off a plain
-
-        ``describe()`` call.'
-    DocAgentDebugOverviewRunsResponse:
-      properties:
-        runs:
-          items:
-            $ref: '#/components/schemas/DocAgentDebugOverviewRunRow'
-          type: array
-          title: Runs
-      type: object
-      required:
-      - runs
-      title: DocAgentDebugOverviewRunsResponse
-      description: 'Drill-down shape of ``GET /doc-agent-debug/overview`` when ``status``
-
-        and/or ``date`` is given: the matching run list instead of the aggregate.'
-    DocAgentDebugRunRequest:
-      properties:
-        document_title:
-          type: string
-          title: Document Title
-        instructions:
-          type: string
-          title: Instructions
-        matter_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Matter Id
-        template_doc_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Template Doc Id
-        max_iterations:
-          type: integer
-          title: Max Iterations
-          default: 35
-        authored_content:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Authored Content
-      type: object
-      required:
-      - document_title
-      - instructions
-      title: DocAgentDebugRunRequest
-      description: 'Mirrors the smart-bot ``draft_document`` tool payload (see
-
-        ``temporal/activities/doc_agent_v2/draft.py``''s ``DraftDocumentInput``),
-
-        plus a client-tunable (but server-clamped) iteration cap.'
     DocAgentDebugModelPriceRow:
       properties:
         input:
@@ -1216,129 +936,37 @@ components:
       description: 'Per-million-token USD rates for one model — mirrors one entry of
 
         ``services/pricing.py``''s ``MODEL_PRICING``.'
-    DocAgentDebugOverviewResponse:
+    DocAgentDebugWorkflowIdRow:
       properties:
-        days:
-          items:
-            $ref: '#/components/schemas/DocAgentDebugOverviewDayRow'
-          type: array
-          title: Days
-        top_failing_tools:
-          items:
-            $ref: '#/components/schemas/DocAgentDebugFailingToolRow'
-          type: array
-          title: Top Failing Tools
-        generated_at:
+        workflow_id:
           type: string
-          title: Generated At
-        cache_hit:
+          title: Workflow Id
+        workflow_type:
+          type: string
+          title: Workflow Type
+        matched_by_time:
           type: boolean
-          title: Cache Hit
+          title: Matched By Time
       type: object
       required:
-      - days
-      - top_failing_tools
-      - generated_at
-      - cache_hit
-      title: DocAgentDebugOverviewResponse
-      description: 'The 21-day aggregate — default shape of ``GET /doc-agent-debug/overview``
+      - workflow_id
+      - workflow_type
+      - matched_by_time
+      title: DocAgentDebugWorkflowIdRow
+      description: 'One Temporal workflow id linked to a run.
 
-        when no ``status``/``date`` drill-down filter is given.'
-    DocAgentDebugUsageLedgerRow:
-      properties:
-        step:
-          type: string
-          title: Step
-        model:
-          type: string
-          title: Model
-        input_tokens:
-          type: integer
-          title: Input Tokens
-        output_tokens:
-          type: integer
-          title: Output Tokens
-        cached_tokens:
-          type: integer
-          title: Cached Tokens
-        cost_usd:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Cost Usd
-        credits_charged:
-          type: string
-          title: Credits Charged
-        event_time:
-          type: string
-          title: Event Time
-        idempotency_key:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Idempotency Key
-        metadata:
-          additionalProperties: true
-          type: object
-          title: Metadata
-      type: object
-      required:
-      - step
-      - model
-      - input_tokens
-      - output_tokens
-      - cached_tokens
-      - cost_usd
-      - credits_charged
-      - event_time
-      - idempotency_key
-      - metadata
-      title: DocAgentDebugUsageLedgerRow
-      description: One ``model_usage_ledger`` row, for the run inspection routes below.
-    DocAgentDebugOutputDownloadRow:
-      properties:
-        doc_id:
-          type: string
-          title: Doc Id
-        name:
-          type: string
-          title: Name
-        filename:
-          type: string
-          title: Filename
-        download_url:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Download Url
-        unresolved_reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Unresolved Reason
-      type: object
-      required:
-      - doc_id
-      - name
-      - filename
-      - download_url
-      - unresolved_reason
-      title: DocAgentDebugOutputDownloadRow
-      description: 'A resolved output''s signed download URL — one row per
 
-        ``DocAgentDebugRunLinks.outputs`` entry, signed with the same
+        ``matched_by_time`` is always ``True`` for chat-turn ids today (Smart Bot''s
 
-        account/expiry/content-disposition approach as
+        chat-turn billing prefix is the run id, not a workflow id, so there is no
 
-        ``doc_agent_v2/routes/router.py``''s ``doc_agent_output`` route (see
+        exact key to match on — see ``run_links.py``''s module docstring); kept as
 
-        ``service._sign_output_download``). ``filename`` is the run-id-prefixed
+        a field rather than a hardcoded constant so a future exact-match source
 
-        name (``"{run_id}-{name}"``) baked into the signed URL''s
+        (e.g. a workflow id persisted somewhere) can set it ``False`` without a
 
-        ``Content-Disposition`` header, so a browser download always lands with
-
-        that name regardless of what the URL''s query string carries.'
+        schema change.'
     DocAgentDebugRunView:
       properties:
         id:
@@ -1445,55 +1073,153 @@ components:
         here is the intended cost — see ``run_links.py``''s module docstring on
 
         why the *overview* route avoids it instead.'
-    DocAgentDebugOutputRow:
+    DocAgentDebugOverviewDayRow:
       properties:
-        doc_id:
+        day:
           type: string
-          title: Doc Id
-        name:
-          type: string
-          title: Name
-        location:
+          title: Day
+        total_runs:
+          type: integer
+          title: Total Runs
+        failed_runs:
+          type: integer
+          title: Failed Runs
+        stuck_runs:
+          type: integer
+          title: Stuck Runs
+        avg_turns_per_run:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Avg Turns Per Run
+        avg_iterations_per_run:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Avg Iterations Per Run
+        avg_iterations_per_done_run:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Avg Iterations Per Done Run
+        avg_tool_calls_per_run:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Avg Tool Calls Per Run
+        avg_errors_per_run:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Avg Errors Per Run
+        total_errors:
+          type: integer
+          title: Total Errors
+        outcome_finish:
+          type: integer
+          title: Outcome Finish
+        outcome_max_iterations:
+          type: integer
+          title: Outcome Max Iterations
+        outcome_error:
+          type: integer
+          title: Outcome Error
+        p50_duration_seconds:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: P50 Duration Seconds
+        p95_duration_seconds:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: P95 Duration Seconds
+        avg_cost_usd:
           anyOf:
           - type: string
           - type: 'null'
-          title: Location
-        storage_account_alias:
+          title: Avg Cost Usd
+        total_cost_usd:
           anyOf:
           - type: string
           - type: 'null'
-          title: Storage Account Alias
-        storage_container:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Storage Container
-        upload_datetime:
-          type: string
-          title: Upload Datetime
+          title: Total Cost Usd
       type: object
       required:
-      - doc_id
-      - name
-      - location
-      - storage_account_alias
-      - storage_container
-      - upload_datetime
-      title: DocAgentDebugOutputRow
-      description: 'One ``doc_metadata`` row matched to a run as one of its drafted outputs —
+      - day
+      - total_runs
+      - failed_runs
+      - stuck_runs
+      - avg_turns_per_run
+      - avg_iterations_per_run
+      - avg_iterations_per_done_run
+      - avg_tool_calls_per_run
+      - avg_errors_per_run
+      - total_errors
+      - outcome_finish
+      - outcome_max_iterations
+      - outcome_error
+      - p50_duration_seconds
+      - p95_duration_seconds
+      - avg_cost_usd
+      - total_cost_usd
+      title: DocAgentDebugOverviewDayRow
+      description: 'One day''s aggregate row for ``GET /doc-agent-debug/overview`` — see
 
-        see ``run_links.resolve_run_links``.
+        ``routes/router.py`` and ``platform/queries/doc_agent_v2_run.py``''s
+
+        ``get_overview_day_rows``.
 
 
-        ``storage_account_alias``/``storage_container`` (plus ``location``) are the
+        ``avg_*``/``p50_*``/``p95_*`` fields are ``None`` for a day with no
 
-        exact three fields ``doc_storage.blob_ref_from_doc_metadata`` needs to build
+        matching rows (Postgres ``AVG``/``percentile_cont`` over an empty set),
 
-        a ``BlobRef`` for signing a download URL (see ``service._sign_output_download``);
+        not ``0`` — a debug chart should render a gap, not a false zero.'
+    DocAgentDebugCostBreakdown:
+      properties:
+        total_cost_usd:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Total Cost Usd
+        source:
+          type: string
+          title: Source
+      type: object
+      required:
+      - total_cost_usd
+      - source
+      title: DocAgentDebugCostBreakdown
+      description: Exact-cost resolution result for one run — see ``run_links._resolve_cost``.
+    DocAgentDebugOverviewResponse:
+      properties:
+        days:
+          items:
+            $ref: '#/components/schemas/DocAgentDebugOverviewDayRow'
+          type: array
+          title: Days
+        top_failing_tools:
+          items:
+            $ref: '#/components/schemas/DocAgentDebugFailingToolRow'
+          type: array
+          title: Top Failing Tools
+        generated_at:
+          type: string
+          title: Generated At
+        cache_hit:
+          type: boolean
+          title: Cache Hit
+      type: object
+      required:
+      - days
+      - top_failing_tools
+      - generated_at
+      - cache_hit
+      title: DocAgentDebugOverviewResponse
+      description: 'The 21-day aggregate — default shape of ``GET /doc-agent-debug/overview``
 
-        kept alongside the display fields rather than requiring a second DocMetadata
-
-        fetch just to sign what this resolver already read once.'
+        when no ``status``/``date`` drill-down filter is given.'
     ValidationError:
       properties:
         loc:
@@ -1520,3 +1246,277 @@ components:
       - msg
       - type
       title: ValidationError
+    DocAgentDebugSearchRunRow:
+      properties:
+        id:
+          type: string
+          title: Id
+        status:
+          type: string
+          title: Status
+        created_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Created At
+        conversation_id:
+          type: string
+          title: Conversation Id
+        user_id:
+          type: string
+          title: User Id
+        user_email:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: User Email
+        matched_document_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Matched Document Name
+      type: object
+      required:
+      - id
+      - status
+      - created_at
+      - conversation_id
+      - user_id
+      - user_email
+      - matched_document_name
+      title: DocAgentDebugSearchRunRow
+      description: 'One matched run for ``GET /doc-agent-debug/runs/search`` — see
+
+        ``search.search_runs``. Deliberately thin, like
+
+        :class:`DocAgentDebugOverviewRunRow`; the full run detail (outputs,
+
+        inputs, cost, conversation, Temporal) is one click away via ``id``.
+
+
+        ``matched_document_name`` is set only when this run matched the search
+
+        box''s ``q`` through a document-name source (a ``doc_metadata`` output
+
+        name, a ``DocAgentSession.OutputFilename``, or a trace-parsed draft
+
+        title) — ``None`` when the run matched some other way (exact run/
+
+        conversation/user id, or exact email) or when no ``q`` was given at all.'
+    DocAgentDebugFailingToolRow:
+      properties:
+        tool:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tool
+        message:
+          type: string
+          title: Message
+        occurrences:
+          type: integer
+          title: Occurrences
+      type: object
+      required:
+      - tool
+      - message
+      - occurrences
+      title: DocAgentDebugFailingToolRow
+      description: 'One ``(tool, error message)`` bucket from the top-10 failing-tools table.
+
+
+        ``tool`` is ``None`` for a supervisor-level ``error`` event (a model-call
+
+        failure with no specific tool attached) rather than a step-level tool
+
+        error — see ``get_top_failing_tools``.'
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    DocAgentDebugRunLinks:
+      properties:
+        run_id:
+          type: string
+          title: Run Id
+        outputs:
+          items:
+            $ref: '#/components/schemas/DocAgentDebugOutputRow'
+          type: array
+          title: Outputs
+        outputs_unresolved_reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Outputs Unresolved Reason
+        draft_workflow_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Draft Workflow Id
+        draft_workflow_unresolved_reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Draft Workflow Unresolved Reason
+        chat_turn_workflow_ids:
+          items:
+            $ref: '#/components/schemas/DocAgentDebugWorkflowIdRow'
+          type: array
+          title: Chat Turn Workflow Ids
+        chat_turn_workflow_ids_unresolved_reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Chat Turn Workflow Ids Unresolved Reason
+        inputs:
+          anyOf:
+          - $ref: '#/components/schemas/DocAgentDebugResolvedInputs'
+          - type: 'null'
+        inputs_unresolved_reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Inputs Unresolved Reason
+        cost:
+          $ref: '#/components/schemas/DocAgentDebugCostBreakdown'
+      type: object
+      required:
+      - run_id
+      - outputs
+      - outputs_unresolved_reason
+      - draft_workflow_id
+      - draft_workflow_unresolved_reason
+      - chat_turn_workflow_ids
+      - chat_turn_workflow_ids_unresolved_reason
+      - inputs
+      - inputs_unresolved_reason
+      - cost
+      title: DocAgentDebugRunLinks
+      description: 'Everything ``resolve_run_links`` could derive for one run, each
+
+        sub-resolution independently best-effort (see ``run_links.py``''s module
+
+        docstring): a failed lookup leaves its field empty/``None`` and sets the
+
+        matching ``*_unresolved_reason`` instead of failing the whole response.'
+    DocAgentDebugWorkflowStatusRow:
+      properties:
+        workflow_id:
+          type: string
+          title: Workflow Id
+        workflow_type:
+          type: string
+          title: Workflow Type
+        temporal_workflow_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Temporal Workflow Type
+        status:
+          type: string
+          title: Status
+        terminal:
+          type: boolean
+          title: Terminal
+        start_time:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Start Time
+        close_time:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Close Time
+        failure_message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Failure Message
+        unresolved_reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Unresolved Reason
+      type: object
+      required:
+      - workflow_id
+      - workflow_type
+      - temporal_workflow_type
+      - status
+      - terminal
+      - start_time
+      - close_time
+      - failure_message
+      - unresolved_reason
+      title: DocAgentDebugWorkflowStatusRow
+      description: 'One resolved workflow id''s live Temporal status — see
+
+        ``GET /doc-agent-debug/runs/{run_id}/workflows``.
+
+
+        ``status`` mirrors ``temporal/utils/workflow_status.py``''s
+
+        ``query_basic_workflow_status`` mapping (``"processing"``/``"completed"``/
+
+        ``"failed"``), plus ``"unknown"`` when the lookup itself failed here (see
+
+        ``unresolved_reason``, set instead of raising — matching this package''s
+
+        per-field best-effort convention). ``workflow_type`` is this module''s own
+
+        label (``"draft"``/``"chat_turn"``, matching
+
+        :class:`DocAgentDebugWorkflowIdRow`); ``temporal_workflow_type`` is the
+
+        actual registered Temporal workflow type name read off a plain
+
+        ``describe()`` call.'
+    DocAgentDebugWorkflowsResponse:
+      properties:
+        run_id:
+          type: string
+          title: Run Id
+        run_status:
+          type: string
+          title: Run Status
+        workflows:
+          items:
+            $ref: '#/components/schemas/DocAgentDebugWorkflowStatusRow'
+          type: array
+          title: Workflows
+        mismatches:
+          items:
+            type: string
+          type: array
+          title: Mismatches
+      type: object
+      required:
+      - run_id
+      - run_status
+      - workflows
+      - mismatches
+      title: DocAgentDebugWorkflowsResponse
+      description: '``GET /doc-agent-debug/runs/{run_id}/workflows``: live Temporal status
+
+        for every workflow id ``run_links.resolve_run_links`` resolved for this
+
+        run, plus plain-English diagnostics where Temporal and the run''s own
+
+        ``Status`` disagree (a workflow closed while the run is still
+
+        ``"running"``, or the run is ``"done"`` while a resolved workflow''s
+
+        terminal status was a failure — the latter happens because the draft
+
+        activity writes ``"done"`` before it uploads the output file; see
+
+        ``temporal/activities/doc_agent_v2/draft.py``) — see
+
+        ``service._workflow_mismatches``.'

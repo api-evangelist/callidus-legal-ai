@@ -118,6 +118,15 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     RegisterTemplateRequest:
       properties:
         doc_id:
@@ -144,23 +153,6 @@ components:
         this endpoint just associates that ``doc_id`` as the firm template for
 
         the given doctype on this matter.'
-    MatterDraftingTemplatesResponse:
-      properties:
-        templates:
-          additionalProperties:
-            $ref: '#/components/schemas/MatterDraftingTemplateEntry'
-          type: object
-          title: Templates
-      type: object
-      required:
-      - templates
-      title: MatterDraftingTemplatesResponse
-      description: '``GET /matters/{matter_id}/drafting-templates`` response.
-
-
-        Always returns a complete map (never null) — empty dict when the matter
-
-        has no templates registered. Lets the UI iterate without null-checks.'
     MatterDraftingTemplateEntry:
       properties:
         doc_id:
@@ -222,12 +214,20 @@ components:
       - msg
       - type
       title: ValidationError
-    HTTPValidationError:
+    MatterDraftingTemplatesResponse:
       properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
+        templates:
+          additionalProperties:
+            $ref: '#/components/schemas/MatterDraftingTemplateEntry'
+          type: object
+          title: Templates
       type: object
-      title: HTTPValidationError
+      required:
+      - templates
+      title: MatterDraftingTemplatesResponse
+      description: '``GET /matters/{matter_id}/drafting-templates`` response.
+
+
+        Always returns a complete map (never null) — empty dict when the matter
+
+        has no templates registered. Lets the UI iterate without null-checks.'

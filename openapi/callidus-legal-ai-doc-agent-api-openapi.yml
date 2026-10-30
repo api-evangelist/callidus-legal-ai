@@ -180,20 +180,24 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    DocAgentToggleRequest:
+    DocAgentChatRequest:
       properties:
+        request:
+          type: string
+          title: Request
         conversationId:
           type: string
           title: Conversationid
-        enabled:
-          type: boolean
-          title: Enabled
+        interaction_mode:
+          type: string
+          title: Interaction Mode
+          default: detailed
       type: object
       required:
+      - request
       - conversationId
-      - enabled
-      title: DocAgentToggleRequest
-      description: Request body for PATCH /doc-agent/toggle.
+      title: DocAgentChatRequest
+      description: Request body for POST /doc-agent/chat.
     Body_doc_agent_upload_doc_agent_upload_post:
       properties:
         file:
@@ -204,6 +208,15 @@ components:
       required:
       - file
       title: Body_doc_agent_upload_doc_agent_upload_post
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     ValidationError:
       properties:
         loc:
@@ -230,30 +243,17 @@ components:
       - msg
       - type
       title: ValidationError
-    DocAgentChatRequest:
+    DocAgentToggleRequest:
       properties:
-        request:
-          type: string
-          title: Request
         conversationId:
           type: string
           title: Conversationid
-        interaction_mode:
-          type: string
-          title: Interaction Mode
-          default: detailed
+        enabled:
+          type: boolean
+          title: Enabled
       type: object
       required:
-      - request
       - conversationId
-      title: DocAgentChatRequest
-      description: Request body for POST /doc-agent/chat.
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
+      - enabled
+      title: DocAgentToggleRequest
+      description: Request body for PATCH /doc-agent/toggle.

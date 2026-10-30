@@ -39,6 +39,56 @@ paths:
       - Generate Summary
 components:
   schemas:
+    BasicBotRequestRoot:
+      properties:
+        request:
+          type: string
+          title: Request
+        conversationId:
+          type: string
+          title: Conversationid
+        history:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: History
+          default: []
+        control_options:
+          anyOf:
+          - $ref: '#/components/schemas/BasicBotControlPanelOptions'
+          - type: 'null'
+          default:
+            creativity: 0.0
+            analysisDepth: 1
+            legalFocus: 'True'
+            jurisdictions: ''
+        needs_citations:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Needs Citations
+        is_advanced_mode:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Advanced Mode
+          default: false
+      type: object
+      required:
+      - request
+      - conversationId
+      title: BasicBotRequestRoot
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     BasicBotControlPanelOptions:
       properties:
         creativity:
@@ -94,53 +144,3 @@ components:
       - msg
       - type
       title: ValidationError
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    BasicBotRequestRoot:
-      properties:
-        request:
-          type: string
-          title: Request
-        conversationId:
-          type: string
-          title: Conversationid
-        history:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: History
-          default: []
-        control_options:
-          anyOf:
-          - $ref: '#/components/schemas/BasicBotControlPanelOptions'
-          - type: 'null'
-          default:
-            creativity: 0.0
-            analysisDepth: 1
-            legalFocus: 'True'
-            jurisdictions: ''
-        needs_citations:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Needs Citations
-        is_advanced_mode:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Is Advanced Mode
-          default: false
-      type: object
-      required:
-      - request
-      - conversationId
-      title: BasicBotRequestRoot

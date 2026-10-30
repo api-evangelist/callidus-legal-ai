@@ -493,74 +493,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    DocumentSchemaResponse:
-      properties:
-        document_type:
-          type: string
-          title: Document Type
-        practice_area:
-          type: string
-          title: Practice Area
-        elements:
-          items:
-            $ref: '#/components/schemas/ElementSchemaEntry'
-          type: array
-          title: Elements
-      type: object
-      required:
-      - document_type
-      - practice_area
-      - elements
-      title: DocumentSchemaResponse
-    AvailableDraftEntry:
-      properties:
-        draft_id:
-          type: string
-          title: Draft Id
-        label:
-          type: string
-          title: Label
-        item_count:
-          type: integer
-          title: Item Count
-      type: object
-      required:
-      - draft_id
-      - label
-      - item_count
-      title: AvailableDraftEntry
-    DocumentTypeEntry:
-      properties:
-        document_type:
-          type: string
-          title: Document Type
-        practice_area:
-          type: string
-          title: Practice Area
-        label:
-          type: string
-          title: Label
-        supported_jurisdictions:
-          items:
-            $ref: '#/components/schemas/JurisdictionOption'
-          type: array
-          title: Supported Jurisdictions
-      type: object
-      required:
-      - document_type
-      - practice_area
-      - label
-      - supported_jurisdictions
-      title: DocumentTypeEntry
-    GenerateDocumentRequest:
-      properties:
-        matter_name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Matter Name
-      type: object
-      title: GenerateDocumentRequest
     PatchElementRequest:
       properties:
         sections:
@@ -573,299 +505,53 @@ components:
       - sections
       title: PatchElementRequest
       description: Incremental update — replaces sections for a single element.
-    GenerateDraftResponse:
+    CreateDraftRequest:
       properties:
-        draft_id:
-          type: string
-          title: Draft Id
-        doc_id:
-          type: string
-          format: uuid
-          title: Doc Id
-        status:
-          $ref: '#/components/schemas/DraftStatus'
-          default: final
-        enriched_doc_id:
-          anyOf:
-          - type: string
-            format: uuid
-          - type: 'null'
-          title: Enriched Doc Id
-        enrichment_status:
-          anyOf:
-          - additionalProperties: true
-            type: object
-          - type: 'null'
-          title: Enrichment Status
-        fallback_note:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Fallback Note
-      type: object
-      required:
-      - draft_id
-      - doc_id
-      title: GenerateDraftResponse
-    DataSource:
-      type: string
-      enum:
-      - forensic_analysis
-      - tax_documents
-      - user_input
-      - user_override
-      - discovery
-      title: DataSource
-    FormField:
-      properties:
-        key:
-          type: string
-          title: Key
-        value:
-          title: Value
-        source:
-          anyOf:
-          - $ref: '#/components/schemas/DataSource'
-          - type: 'null'
-        confidence:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Confidence
-        source_document_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Source Document Id
-        widget:
-          $ref: '#/components/schemas/UIWidget'
-        label:
-          type: string
-          title: Label
-        order:
-          type: integer
-          title: Order
-        required:
-          type: boolean
-          title: Required
-          default: true
-        help_text:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Help Text
-        placeholder:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Placeholder
-        options:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Options
-        visible_when:
-          anyOf:
-          - additionalProperties: true
-            type: object
-          - type: 'null'
-          title: Visible When
-        group:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Group
-        show_if:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Show If
-        hidden:
-          type: boolean
-          title: Hidden
-          default: false
-      type: object
-      required:
-      - key
-      - widget
-      - label
-      - order
-      title: FormField
-      description: 'One field: its UI definition merged with its current value.'
-    PopulateElementResponse:
-      properties:
-        element_id:
-          type: string
-          title: Element Id
-        sections:
-          items: {}
-          type: array
-          title: Sections
-        field_schema:
-          items: {}
-          type: array
-          title: Field Schema
-      type: object
-      required:
-      - element_id
-      - sections
-      - field_schema
-      title: PopulateElementResponse
-    DataOrigin:
-      type: string
-      enum:
-      - source
-      - draft
-      - blank
-      title: DataOrigin
-    ElementForm:
-      properties:
-        element_id:
-          type: string
-          title: Element Id
-        label:
-          type: string
-          title: Label
-        description:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Description
-        repeatable:
-          type: boolean
-          title: Repeatable
-          default: false
-        seed_locked:
-          type: boolean
-          title: Seed Locked
-          default: false
-        sections:
-          items:
-            $ref: '#/components/schemas/FormSection'
-          type: array
-          title: Sections
-        field_schema:
-          items:
-            $ref: '#/components/schemas/FormField'
-          type: array
-          title: Field Schema
-      type: object
-      required:
-      - element_id
-      - label
-      - sections
-      - field_schema
-      title: ElementForm
-      description: One element ready to render in the UI.
-    DraftStatus:
-      type: string
-      enum:
-      - not_started
-      - in_progress
-      - complete
-      - generating
-      - final
-      title: DraftStatus
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    app__modules__matters__drafting__schemas__draft__SaveDraftRequest:
-      properties:
-        elements:
-          items:
-            $ref: '#/components/schemas/ElementForm'
-          type: array
-          title: Elements
-      type: object
-      required:
-      - elements
-      title: SaveDraftRequest
-      description: Full payload update — overwrites the entire form snapshot.
-    DocumentDraftPayload:
-      properties:
-        draft_id:
-          type: string
-          title: Draft Id
-        matter_id:
-          type: string
-          title: Matter Id
         document_type:
           type: string
           title: Document Type
-        practice_area:
-          type: string
-          title: Practice Area
+          description: Key from DOCUMENT_REGISTRY, e.g. 'marital_settlement_agreement'
         jurisdiction:
-          type: string
+          anyOf:
+          - type: string
+          - type: 'null'
           title: Jurisdiction
-        status:
-          $ref: '#/components/schemas/DraftStatus'
-        elements:
-          items:
-            $ref: '#/components/schemas/ElementForm'
-          type: array
-          title: Elements
-        fields_filled:
-          type: integer
-          title: Fields Filled
-          default: 0
-        fields_total:
-          type: integer
-          title: Fields Total
-          default: 0
-        created_at:
-          type: string
-          format: date-time
-          title: Created At
-        updated_at:
-          type: string
-          format: date-time
-          title: Updated At
-        jurisdiction_requirements:
-          additionalProperties:
-            type: boolean
-          type: object
-          title: Jurisdiction Requirements
+          description: State abbreviation, e.g. 'NH'. Omit to auto-derive from the matter's forensic profile.
+        dataset_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Dataset Id
+          description: Forensic dataset ID; auto-resolved from matter if omitted
       type: object
       required:
-      - draft_id
-      - matter_id
       - document_type
-      - practice_area
-      - jurisdiction
-      - status
-      - elements
-      - created_at
-      - updated_at
-      title: DocumentDraftPayload
-      description: 'Full form payload returned by create_draft and get_draft endpoints.
-
-
-        This is also what gets stored verbatim in the form_snapshot JSONB column.
-
-        jurisdiction_requirements contains the active CourtRequirements flags so the
-
-        UI can evaluate each FormField''s show_if condition without a separate request.'
-    FormSection:
+      title: CreateDraftRequest
+    DraftEnrichmentStatusResponse:
       properties:
-        fields:
-          items:
-            $ref: '#/components/schemas/FormField'
-          type: array
-          title: Fields
+        drafts:
+          additionalProperties:
+            $ref: '#/components/schemas/DraftEnrichmentEntry'
+          type: object
+          title: Drafts
       type: object
       required:
-      - fields
-      title: FormSection
-      description: A repeatable group — one bank account, one vehicle, one child, etc.
+      - drafts
+      title: DraftEnrichmentStatusResponse
+      description: Batch poll response keyed by draft id.
+    JurisdictionOption:
+      properties:
+        code:
+          type: string
+          title: Code
+        display_name:
+          type: string
+          title: Display Name
+      type: object
+      required:
+      - code
+      - display_name
+      title: JurisdictionOption
     app__modules__matters__drafting__schemas__draft__DraftListItem:
       properties:
         draft_id:
@@ -953,28 +639,38 @@ components:
       - created_at
       - updated_at
       title: DraftListItem
-    CreateDraftRequest:
+    DocumentTypeEntry:
       properties:
         document_type:
           type: string
           title: Document Type
-          description: Key from DOCUMENT_REGISTRY, e.g. 'marital_settlement_agreement'
-        jurisdiction:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Jurisdiction
-          description: State abbreviation, e.g. 'NH'. Omit to auto-derive from the matter's forensic profile.
-        dataset_id:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Dataset Id
-          description: Forensic dataset ID; auto-resolved from matter if omitted
+        practice_area:
+          type: string
+          title: Practice Area
+        label:
+          type: string
+          title: Label
+        supported_jurisdictions:
+          items:
+            $ref: '#/components/schemas/JurisdictionOption'
+          type: array
+          title: Supported Jurisdictions
       type: object
       required:
       - document_type
-      title: CreateDraftRequest
+      - practice_area
+      - label
+      - supported_jurisdictions
+      title: DocumentTypeEntry
+    DataSource:
+      type: string
+      enum:
+      - forensic_analysis
+      - tax_documents
+      - user_input
+      - user_override
+      - discovery
+      title: DataSource
     DocumentTypesResponse:
       properties:
         document_types:
@@ -1000,18 +696,178 @@ components:
       - number
       - percent
       title: UIWidget
-    DraftEnrichmentStatusResponse:
+    GenerateDocumentRequest:
       properties:
-        drafts:
-          additionalProperties:
-            $ref: '#/components/schemas/DraftEnrichmentEntry'
-          type: object
-          title: Drafts
+        matter_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Matter Name
+      type: object
+      title: GenerateDocumentRequest
+    FormSection:
+      properties:
+        fields:
+          items:
+            $ref: '#/components/schemas/FormField'
+          type: array
+          title: Fields
       type: object
       required:
-      - drafts
-      title: DraftEnrichmentStatusResponse
-      description: Batch poll response keyed by draft id.
+      - fields
+      title: FormSection
+      description: A repeatable group — one bank account, one vehicle, one child, etc.
+    ElementSchemaEntry:
+      properties:
+        element_id:
+          type: string
+          title: Element Id
+        label:
+          type: string
+          title: Label
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        repeatable:
+          type: boolean
+          title: Repeatable
+        has_resolver:
+          type: boolean
+          title: Has Resolver
+        field_schema:
+          items: {}
+          type: array
+          title: Field Schema
+      type: object
+      required:
+      - element_id
+      - label
+      - description
+      - repeatable
+      - has_resolver
+      - field_schema
+      title: ElementSchemaEntry
+    FormField:
+      properties:
+        key:
+          type: string
+          title: Key
+        value:
+          title: Value
+        source:
+          anyOf:
+          - $ref: '#/components/schemas/DataSource'
+          - type: 'null'
+        confidence:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Confidence
+        source_document_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Source Document Id
+        widget:
+          $ref: '#/components/schemas/UIWidget'
+        label:
+          type: string
+          title: Label
+        order:
+          type: integer
+          title: Order
+        required:
+          type: boolean
+          title: Required
+          default: true
+        help_text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Help Text
+        placeholder:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Placeholder
+        options:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Options
+        visible_when:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Visible When
+        group:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Group
+        show_if:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Show If
+        hidden:
+          type: boolean
+          title: Hidden
+          default: false
+      type: object
+      required:
+      - key
+      - widget
+      - label
+      - order
+      title: FormField
+      description: 'One field: its UI definition merged with its current value.'
+    GenerateDraftResponse:
+      properties:
+        draft_id:
+          type: string
+          title: Draft Id
+        doc_id:
+          type: string
+          format: uuid
+          title: Doc Id
+        status:
+          $ref: '#/components/schemas/DraftStatus'
+          default: final
+        enriched_doc_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Enriched Doc Id
+        enrichment_status:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Enrichment Status
+        fallback_note:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Fallback Note
+      type: object
+      required:
+      - draft_id
+      - doc_id
+      title: GenerateDraftResponse
+    DataOrigin:
+      type: string
+      enum:
+      - source
+      - draft
+      - blank
+      title: DataOrigin
     app__modules__matters__drafting__schemas__draft__DraftListResponse:
       properties:
         drafts:
@@ -1027,19 +883,108 @@ components:
       - drafts
       - total
       title: DraftListResponse
-    JurisdictionOption:
+    PopulateElementResponse:
       properties:
-        code:
+        element_id:
           type: string
-          title: Code
-        display_name:
-          type: string
-          title: Display Name
+          title: Element Id
+        sections:
+          items: {}
+          type: array
+          title: Sections
+        field_schema:
+          items: {}
+          type: array
+          title: Field Schema
       type: object
       required:
-      - code
-      - display_name
-      title: JurisdictionOption
+      - element_id
+      - sections
+      - field_schema
+      title: PopulateElementResponse
+    DocumentSchemaResponse:
+      properties:
+        document_type:
+          type: string
+          title: Document Type
+        practice_area:
+          type: string
+          title: Practice Area
+        elements:
+          items:
+            $ref: '#/components/schemas/ElementSchemaEntry'
+          type: array
+          title: Elements
+      type: object
+      required:
+      - document_type
+      - practice_area
+      - elements
+      title: DocumentSchemaResponse
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    AvailableDraftEntry:
+      properties:
+        draft_id:
+          type: string
+          title: Draft Id
+        label:
+          type: string
+          title: Label
+        item_count:
+          type: integer
+          title: Item Count
+      type: object
+      required:
+      - draft_id
+      - label
+      - item_count
+      title: AvailableDraftEntry
+    app__modules__matters__drafting__schemas__draft__SaveDraftRequest:
+      properties:
+        elements:
+          items:
+            $ref: '#/components/schemas/ElementForm'
+          type: array
+          title: Elements
+      type: object
+      required:
+      - elements
+      title: SaveDraftRequest
+      description: Full payload update — overwrites the entire form snapshot.
+    DraftStatus:
+      type: string
+      enum:
+      - not_started
+      - in_progress
+      - complete
+      - generating
+      - final
+      title: DraftStatus
     DraftEnrichmentEntry:
       properties:
         draft_id:
@@ -1077,7 +1022,81 @@ components:
       - enrichment_status
       title: DraftEnrichmentEntry
       description: Per-draft entry in the batch enrichment-status polling response.
-    ElementSchemaEntry:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    DocumentDraftPayload:
+      properties:
+        draft_id:
+          type: string
+          title: Draft Id
+        matter_id:
+          type: string
+          title: Matter Id
+        document_type:
+          type: string
+          title: Document Type
+        practice_area:
+          type: string
+          title: Practice Area
+        jurisdiction:
+          type: string
+          title: Jurisdiction
+        status:
+          $ref: '#/components/schemas/DraftStatus'
+        elements:
+          items:
+            $ref: '#/components/schemas/ElementForm'
+          type: array
+          title: Elements
+        fields_filled:
+          type: integer
+          title: Fields Filled
+          default: 0
+        fields_total:
+          type: integer
+          title: Fields Total
+          default: 0
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+        jurisdiction_requirements:
+          additionalProperties:
+            type: boolean
+          type: object
+          title: Jurisdiction Requirements
+      type: object
+      required:
+      - draft_id
+      - matter_id
+      - document_type
+      - practice_area
+      - jurisdiction
+      - status
+      - elements
+      - created_at
+      - updated_at
+      title: DocumentDraftPayload
+      description: 'Full form payload returned by create_draft and get_draft endpoints.
+
+
+        This is also what gets stored verbatim in the form_snapshot JSONB column.
+
+        jurisdiction_requirements contains the active CourtRequirements flags so the
+
+        UI can evaluate each FormField''s show_if condition without a separate request.'
+    ElementForm:
       properties:
         element_id:
           type: string
@@ -1093,45 +1112,26 @@ components:
         repeatable:
           type: boolean
           title: Repeatable
-        has_resolver:
+          default: false
+        seed_locked:
           type: boolean
-          title: Has Resolver
+          title: Seed Locked
+          default: false
+        sections:
+          items:
+            $ref: '#/components/schemas/FormSection'
+          type: array
+          title: Sections
         field_schema:
-          items: {}
+          items:
+            $ref: '#/components/schemas/FormField'
           type: array
           title: Field Schema
       type: object
       required:
       - element_id
       - label
-      - description
-      - repeatable
-      - has_resolver
+      - sections
       - field_schema
-      title: ElementSchemaEntry
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
+      title: ElementForm
+      description: One element ready to render in the UI.

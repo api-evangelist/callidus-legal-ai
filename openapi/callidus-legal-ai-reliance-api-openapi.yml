@@ -207,30 +207,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    RelianceFilesResponse:
-      properties:
-        doc_ids:
-          items:
-            type: string
-          type: array
-          title: Doc Ids
-        reliance_files:
-          items:
-            type: string
-          type: array
-          title: Reliance Files
-        reliance_lists:
-          items:
-            $ref: '#/components/schemas/RelianceListEntry'
-          type: array
-          title: Reliance Lists
-      type: object
-      required:
-      - doc_ids
-      - reliance_files
-      - reliance_lists
-      title: RelianceFilesResponse
-      description: Files generated for a reliance task, from either storage source.
     RelianceListEntry:
       properties:
         expert_name:
@@ -260,48 +236,55 @@ components:
       - output_doc_metadata_id
       title: RelianceListEntry
       description: A generated reliance list record from the reliance_list table.
-    DownloadUrlResponse:
+    RelianceFilesResponse:
       properties:
-        url:
-          type: string
-          title: Url
-      type: object
-      required:
-      - url
-      title: DownloadUrlResponse
-      description: Signed Azure download URL for a reliance file.
-    ValidationError:
-      properties:
-        loc:
+        doc_ids:
           items:
-            anyOf:
-            - type: string
-            - type: integer
+            type: string
           type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
+          title: Doc Ids
+        reliance_files:
+          items:
+            type: string
+          type: array
+          title: Reliance Files
+        reliance_lists:
+          items:
+            $ref: '#/components/schemas/RelianceListEntry'
+          type: array
+          title: Reliance Lists
       type: object
       required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
+      - doc_ids
+      - reliance_files
+      - reliance_lists
+      title: RelianceFilesResponse
+      description: Files generated for a reliance task, from either storage source.
     PreferredFormat:
       type: string
       enum:
       - XLSX
       - DOCX
       title: PreferredFormat
+    DownloadRequest:
+      properties:
+        file_ref:
+          type: string
+          title: File Ref
+      type: object
+      required:
+      - file_ref
+      title: DownloadRequest
+      description: Request body for the download URL endpoint.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     GenerateRequest:
       properties:
         task_id:
@@ -330,6 +313,16 @@ components:
       - preferred_format
       title: GenerateRequest
       description: Request body for the generate reliance list endpoint.
+    DownloadUrlResponse:
+      properties:
+        url:
+          type: string
+          title: Url
+      type: object
+      required:
+      - url
+      title: DownloadUrlResponse
+      description: Signed Azure download URL for a reliance file.
     GenerateResponse:
       properties:
         task_id:
@@ -350,22 +343,29 @@ components:
       - temporal_job_id
       title: GenerateResponse
       description: Response after kicking off reliance list generation.
-    DownloadRequest:
+    ValidationError:
       properties:
-        file_ref:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
           type: string
-          title: File Ref
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
       type: object
       required:
-      - file_ref
-      title: DownloadRequest
-      description: Request body for the download URL endpoint.
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
+      - loc
+      - msg
+      - type
+      title: ValidationError

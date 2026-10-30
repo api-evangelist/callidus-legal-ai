@@ -1587,150 +1587,24 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    AddinCaseSearchWithFiltersRequest:
+    AddinBatchVerifyCitationsRequest:
       properties:
-        query:
-          type: string
-          title: Query
-        db_jurisdictions:
+        document:
           items:
-            type: string
+            $ref: '#/components/schemas/ParagraphData'
           type: array
-          title: Db Jurisdictions
-        max_cases:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Max Cases
-        year_start:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Year Start
-        year_end:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Year End
-        area_of_law:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Area Of Law
-        sub_area_of_law:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Sub Area Of Law
+          title: Document
       type: object
       required:
-      - query
-      title: AddinCaseSearchWithFiltersRequest
-      description: Request model for filtered add-in case search.
-    OpinionContentRequest:
-      properties:
-        cluster_id:
-          type: string
-          title: Cluster Id
-      type: object
-      required:
-      - cluster_id
-      title: OpinionContentRequest
-    FindByCitationRequest:
-      properties:
-        citation:
-          type: string
-          title: Citation
-      type: object
-      required:
-      - citation
-      title: FindByCitationRequest
-    AddinFindByCaseNameRequest:
-      properties:
-        case_name:
-          type: string
-          title: Case Name
-      type: object
-      required:
-      - case_name
-      title: AddinFindByCaseNameRequest
-      description: Request model for finding case by name.
-    AddinCaseSearchRequest:
-      properties:
-        query:
-          type: string
-          title: Query
-        db_jurisdictions:
-          items:
-            type: string
-          type: array
-          title: Db Jurisdictions
-        max_cases:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Max Cases
-      type: object
-      required:
-      - query
-      title: AddinCaseSearchRequest
-      description: Request model for add-in case search using deep search.
-    OpenLawsAncestor:
-      properties:
-        path:
-          type: string
-          title: Path
-          default: ''
-        display_name:
-          type: string
-          title: Display Name
-      type: object
-      required:
-      - display_name
-      title: OpenLawsAncestor
-    CaseFormSearchRequest:
-      properties:
-        filters:
-          $ref: '#/components/schemas/Filters'
-        semanticInputs:
-          $ref: '#/components/schemas/SemanticInputs'
-        jurisdictions:
-          items:
-            type: string
-          type: array
-          title: Jurisdictions
-        page_size:
-          type: integer
-          title: Page Size
-          default: 25
-        cursor:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Cursor
-      type: object
-      required:
-      - filters
-      - semanticInputs
-      - jurisdictions
-      title: CaseFormSearchRequest
-    SuggestPincitesRequest:
-      properties:
-        cluster_id:
-          type: string
-          title: Cluster Id
-        query_context:
-          type: string
-          title: Query Context
-      type: object
-      required:
-      - cluster_id
-      - query_context
-      title: SuggestPincitesRequest
-      description: 'Request model for suggesting relevant pincites for a case.
+      - document
+      title: AddinBatchVerifyCitationsRequest
+      description: 'Request model for batch citation verification endpoint.
 
+        Extracts and verifies all citations in a document (no specific citation required).
 
-        Contains the cluster_id of the case and the user''s query context.'
+        Frontend sends paragraphs directly - no need to split text.
+
+        Citation details are extracted later.'
     AddinFilteredCaseSearchRequest:
       properties:
         query:
@@ -1770,326 +1644,32 @@ components:
       required:
       - query
       title: AddinFilteredCaseSearchRequest
-    AddinCaseSearchResult:
+    CaseFormSearchRequest:
       properties:
-        caseName:
-          type: string
-          title: Casename
-        title:
-          type: string
-          title: Title
-        citation:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Citation
-        bluebook:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Bluebook
-        date_filed:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Date Filed
-        jurisdiction:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Jurisdiction
-        citationCount:
+        filters:
+          $ref: '#/components/schemas/Filters'
+        semanticInputs:
+          $ref: '#/components/schemas/SemanticInputs'
+        jurisdictions:
+          items:
+            type: string
+          type: array
+          title: Jurisdictions
+        page_size:
           type: integer
-          title: Citationcount
-          default: 0
-        snippet:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Snippet
-        areaOfLaw:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Areaoflaw
-        subAreaOfLaw:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Subareaoflaw
-        totalAreasOfLaw:
-          items:
-            type: string
-          type: array
-          title: Totalareasoflaw
-        url:
-          type: string
-          title: Url
-        caseClusterId:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Caseclusterid
-        caseDBId:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Casedbid
-        courtDetails:
-          additionalProperties: true
-          type: object
-          title: Courtdetails
-      type: object
-      required:
-      - caseName
-      - title
-      - url
-      title: AddinCaseSearchResult
-      description: Case search result formatted for add-in frontend.
-    SemanticInputs:
-      properties:
-        questions:
-          $ref: '#/components/schemas/SemanticSection'
-        holdings:
-          $ref: '#/components/schemas/SemanticSection'
-        facts:
-          $ref: '#/components/schemas/SemanticSection'
-      type: object
-      required:
-      - questions
-      - holdings
-      - facts
-      title: SemanticInputs
-    CaseSearch:
-      properties:
-        request:
-          $ref: '#/components/schemas/CaseSearchRequest'
-      type: object
-      required:
-      - request
-      title: CaseSearch
-    PublicationStatus:
-      type: string
-      enum:
-      - Published
-      - Slip Opinion
-      title: PublicationStatus
-      description: Derived at hydration from reporter_citations presence — not a stored column (ENG-18892).
-    DeepSearchRequest:
-      properties:
-        query:
-          type: string
-          title: Query
-        db_jurisdictions:
-          items:
-            type: string
-          type: array
-          title: Db Jurisdictions
-        max_cases:
+          title: Page Size
+          default: 25
+        cursor:
           anyOf:
           - type: integer
           - type: 'null'
-          title: Max Cases
-        vector_search_config:
-          anyOf:
-          - $ref: '#/components/schemas/VectorSearchConfig'
-          - additionalProperties: true
-            type: object
-          - type: 'null'
-          title: Vector Search Config
-        use_optimized_query:
-          type: boolean
-          title: Use Optimized Query
-          default: false
+          title: Cursor
       type: object
       required:
-      - query
-      - db_jurisdictions
-      title: DeepSearchRequest
-    CaseSearchRequest:
-      properties:
-        query:
-          type: string
-          title: Query
-        courts:
-          anyOf:
-          - items:
-              type: integer
-            type: array
-          - type: 'null'
-          title: Courts
-      type: object
-      required:
-      - query
-      title: CaseSearchRequest
-    ExtractClusterSlugRequest:
-      properties:
-        url:
-          type: string
-          minLength: 1
-          title: Url
-          description: CourtListener URL to parse. Supports public URLs (https://www.courtlistener.com/opinion/{cluster_id}/{slug}/) or internal URLs (/case-details?caseid={cluster_id}&slug={slug}, or the legacy /chat/caseDetails form)
-      type: object
-      required:
-      - url
-      title: ExtractClusterSlugRequest
-    AuthoritySearchResponse:
-      properties:
-        results:
-          items:
-            $ref: '#/components/schemas/AuthoritySearchResult'
-          type: array
-          title: Results
-        search_type:
-          type: string
-          title: Search Type
-          default: none
-        jurisdiction_used:
-          type: string
-          title: Jurisdiction Used
-          default: none
-      type: object
-      title: AuthoritySearchResponse
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    CitationSearchResult:
-      properties:
-        case_id:
-          type: string
-          format: uuid
-          title: Case Id
-        opinioncluster_id:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Opinioncluster Id
-        case_name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Case Name
-        slug:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Slug
-        court_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Court Id
-        jurisdiction:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Jurisdiction
-        court_name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Court Name
-        year_filed:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Year Filed
-        legal_reasoning:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Legal Reasoning
-        n_cited:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: N Cited
-        yearly_cites:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Yearly Cites
-        total_score:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Total Score
-        citation_normalized:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Citation Normalized
-        similarity_score:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Similarity Score
-      type: object
-      required:
-      - case_id
-      - opinioncluster_id
-      - case_name
-      - slug
-      - court_id
-      - jurisdiction
-      - court_name
-      - year_filed
-      - n_cited
-      - yearly_cites
-      - total_score
-      title: CitationSearchResult
-    TableOfAuthoritiesRequest:
-      properties:
-        document_pages:
-          items:
-            $ref: '#/components/schemas/DocumentPage'
-          type: array
-          title: Document Pages
-      type: object
-      required:
-      - document_pages
-      title: TableOfAuthoritiesRequest
-      description: 'Request model for table of authorities creation.
-
-        Contains a list of document pages with page numbers and text content.'
-    AddinBatchVerifyCitationsRequest:
-      properties:
-        document:
-          items:
-            $ref: '#/components/schemas/ParagraphData'
-          type: array
-          title: Document
-      type: object
-      required:
-      - document
-      title: AddinBatchVerifyCitationsRequest
-      description: 'Request model for batch citation verification endpoint.
-
-        Extracts and verifies all citations in a document (no specific citation required).
-
-        Frontend sends paragraphs directly - no need to split text.
-
-        Citation details are extracted later.'
-    FindCasesRequest:
-      properties:
-        cluster_id:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Cluster Id
-        slug:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Slug
-      type: object
-      title: FindCasesRequest
+      - filters
+      - semanticInputs
+      - jurisdictions
+      title: CaseFormSearchRequest
     AddinCaseDetailsResponse:
       properties:
         caseId:
@@ -2243,25 +1823,145 @@ components:
       - court
       title: AddinCaseDetailsResponse
       description: Response model for case details from HydratedDisposition.
-    CaseRelationshipRequest:
+    AddinCaseSearchWithFiltersRequest:
       properties:
-        user_context:
+        query:
           type: string
-          title: User Context
-        case_details:
-          additionalProperties: true
-          type: object
-          title: Case Details
-        original_query:
+          title: Query
+        db_jurisdictions:
+          items:
+            type: string
+          type: array
+          title: Db Jurisdictions
+        max_cases:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Max Cases
+        year_start:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Year Start
+        year_end:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Year End
+        area_of_law:
           anyOf:
           - type: string
           - type: 'null'
-          title: Original Query
+          title: Area Of Law
+        sub_area_of_law:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sub Area Of Law
       type: object
       required:
-      - user_context
-      - case_details
-      title: CaseRelationshipRequest
+      - query
+      title: AddinCaseSearchWithFiltersRequest
+      description: Request model for filtered add-in case search.
+    DeepSearchWedgeRequest:
+      properties:
+        query:
+          type: string
+          title: Query
+        jurisdiction:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Jurisdiction
+        max_cases:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Max Cases
+        recaptcha_token:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Recaptcha Token
+      type: object
+      required:
+      - query
+      title: DeepSearchWedgeRequest
+    DeepSearchResponse:
+      properties:
+        job_id:
+          type: string
+          title: Job Id
+        message:
+          type: string
+          title: Message
+        lr_type:
+          type: string
+          title: Lr Type
+        session_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Session Id
+      type: object
+      required:
+      - job_id
+      - message
+      - lr_type
+      title: DeepSearchResponse
+    DocumentPage:
+      properties:
+        pageNumber:
+          type: integer
+          title: Pagenumber
+        text:
+          type: string
+          title: Text
+      type: object
+      required:
+      - pageNumber
+      - text
+      title: DocumentPage
+      description: Model for a single page of a document with text content.
+    SemanticSection:
+      properties:
+        items:
+          items:
+            type: string
+          type: array
+          title: Items
+      type: object
+      required:
+      - items
+      title: SemanticSection
+    OpinionContentRequest:
+      properties:
+        cluster_id:
+          type: string
+          title: Cluster Id
+      type: object
+      required:
+      - cluster_id
+      title: OpinionContentRequest
+    AnalyzeQueryRequest:
+      properties:
+        query:
+          type: string
+          title: Query
+        jurisdiction:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Jurisdiction
+        recaptcha_token:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Recaptcha Token
+      type: object
+      required:
+      - query
+      title: AnalyzeQueryRequest
     ParagraphData:
       properties:
         index:
@@ -2291,36 +1991,20 @@ components:
       - text
       title: ParagraphData
       description: Model for paragraph data structure.
-    AnalyzeQueryRequest:
+    TableOfAuthoritiesRequest:
       properties:
-        query:
-          type: string
-          title: Query
-        jurisdiction:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Jurisdiction
-        recaptcha_token:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Recaptcha Token
-      type: object
-      required:
-      - query
-      title: AnalyzeQueryRequest
-    SemanticSection:
-      properties:
-        items:
+        document_pages:
           items:
-            type: string
+            $ref: '#/components/schemas/DocumentPage'
           type: array
-          title: Items
+          title: Document Pages
       type: object
       required:
-      - items
-      title: SemanticSection
+      - document_pages
+      title: TableOfAuthoritiesRequest
+      description: 'Request model for table of authorities creation.
+
+        Contains a list of document pages with page numbers and text content.'
     AICaseSearch:
       properties:
         query:
@@ -2330,82 +2014,199 @@ components:
       required:
       - query
       title: AICaseSearch
-    AddinVerifyCitationRequest:
+    AddinCaseSearchResult:
       properties:
-        context:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Context
+        caseName:
+          type: string
+          title: Casename
+        title:
+          type: string
+          title: Title
         citation:
           anyOf:
           - type: string
           - type: 'null'
           title: Citation
-        case_name:
+        bluebook:
           anyOf:
           - type: string
           - type: 'null'
-          title: Case Name
-        pincite:
+          title: Bluebook
+        date_filed:
           anyOf:
           - type: string
           - type: 'null'
-          title: Pincite
-      additionalProperties: true
-      type: object
-      title: AddinVerifyCitationRequest
-      description: 'Unified request model for citation and case name verification.
-
-
-        Supports three verification modes:
-
-        1. Citation verification (with optional pincite validation)
-
-        2. Case name verification
-
-        3. Both citation and case name (verifies they match the same case)
-
-
-        At least one of citation or case_name must be provided.'
-    DocumentPage:
-      properties:
-        pageNumber:
-          type: integer
-          title: Pagenumber
-        text:
-          type: string
-          title: Text
-      type: object
-      required:
-      - pageNumber
-      - text
-      title: DocumentPage
-      description: Model for a single page of a document with text content.
-    DeepSearchWedgeRequest:
-      properties:
-        query:
-          type: string
-          title: Query
+          title: Date Filed
         jurisdiction:
           anyOf:
           - type: string
           - type: 'null'
           title: Jurisdiction
+        citationCount:
+          type: integer
+          title: Citationcount
+          default: 0
+        snippet:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Snippet
+        areaOfLaw:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Areaoflaw
+        subAreaOfLaw:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Subareaoflaw
+        totalAreasOfLaw:
+          items:
+            type: string
+          type: array
+          title: Totalareasoflaw
+        url:
+          type: string
+          title: Url
+        caseClusterId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Caseclusterid
+        caseDBId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Casedbid
+        courtDetails:
+          additionalProperties: true
+          type: object
+          title: Courtdetails
+      type: object
+      required:
+      - caseName
+      - title
+      - url
+      title: AddinCaseSearchResult
+      description: Case search result formatted for add-in frontend.
+    FindCasesRequest:
+      properties:
+        cluster_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Cluster Id
+        slug:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Slug
+      type: object
+      title: FindCasesRequest
+    ExtractClusterSlugRequest:
+      properties:
+        url:
+          type: string
+          minLength: 1
+          title: Url
+          description: CourtListener URL to parse. Supports public URLs (https://www.courtlistener.com/opinion/{cluster_id}/{slug}/) or internal URLs (/case-details?caseid={cluster_id}&slug={slug}, or the legacy /chat/caseDetails form)
+      type: object
+      required:
+      - url
+      title: ExtractClusterSlugRequest
+    FindByCitationRequest:
+      properties:
+        citation:
+          type: string
+          title: Citation
+      type: object
+      required:
+      - citation
+      title: FindByCitationRequest
+    AddinCaseSearchRequest:
+      properties:
+        query:
+          type: string
+          title: Query
+        db_jurisdictions:
+          items:
+            type: string
+          type: array
+          title: Db Jurisdictions
         max_cases:
           anyOf:
           - type: integer
           - type: 'null'
           title: Max Cases
-        recaptcha_token:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Recaptcha Token
       type: object
       required:
       - query
-      title: DeepSearchWedgeRequest
+      title: AddinCaseSearchRequest
+      description: Request model for add-in case search using deep search.
+    DocumentBatchCaseSearch:
+      properties:
+        paragraphs:
+          items:
+            additionalProperties:
+              type: string
+            type: object
+          type: array
+          title: Paragraphs
+        usage_data:
+          additionalProperties: true
+          type: object
+          title: Usage Data
+      type: object
+      required:
+      - paragraphs
+      - usage_data
+      title: DocumentBatchCaseSearch
+    AuthoritySearchRequest:
+      properties:
+        citation:
+          type: string
+          title: Citation
+        jurisdiction_key:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Jurisdiction Key
+        state_code:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: State Code
+      type: object
+      required:
+      - citation
+      title: AuthoritySearchRequest
+      description: Statute/regulation search request for the standalone case-search authorities tab.
+    AddinCaseLookupRequest:
+      properties:
+        query:
+          type: string
+          title: Query
+      type: object
+      required:
+      - query
+      title: AddinCaseLookupRequest
+      description: Request model for unified case lookup endpoint.
+    CaseSearch:
+      properties:
+        request:
+          $ref: '#/components/schemas/CaseSearchRequest'
+      type: object
+      required:
+      - request
+      title: CaseSearch
+    PublicationStatus:
+      type: string
+      enum:
+      - Published
+      - Slip Opinion
+      title: PublicationStatus
+      description: Derived at hydration from reporter_citations presence — not a stored column (ENG-18892).
     Filters:
       properties:
         areaOfLaw:
@@ -2467,28 +2268,359 @@ components:
       - fromYear
       - toYear
       title: Filters
-    DeepSearchResponse:
+    AddinFindByCaseNameRequest:
       properties:
-        job_id:
+        case_name:
           type: string
-          title: Job Id
-        message:
+          title: Case Name
+      type: object
+      required:
+      - case_name
+      title: AddinFindByCaseNameRequest
+      description: Request model for finding case by name.
+    CitationSearchResult:
+      properties:
+        case_id:
           type: string
-          title: Message
-        lr_type:
-          type: string
-          title: Lr Type
-        session_id:
+          format: uuid
+          title: Case Id
+        opinioncluster_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Opinioncluster Id
+        case_name:
           anyOf:
           - type: string
           - type: 'null'
-          title: Session Id
+          title: Case Name
+        slug:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Slug
+        court_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Court Id
+        jurisdiction:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Jurisdiction
+        court_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Court Name
+        year_filed:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Year Filed
+        legal_reasoning:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Legal Reasoning
+        n_cited:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: N Cited
+        yearly_cites:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Yearly Cites
+        total_score:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Total Score
+        citation_normalized:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Citation Normalized
+        similarity_score:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Similarity Score
       type: object
       required:
-      - job_id
-      - message
-      - lr_type
-      title: DeepSearchResponse
+      - case_id
+      - opinioncluster_id
+      - case_name
+      - slug
+      - court_id
+      - jurisdiction
+      - court_name
+      - year_filed
+      - n_cited
+      - yearly_cites
+      - total_score
+      title: CitationSearchResult
+    SuggestPincitesRequest:
+      properties:
+        cluster_id:
+          type: string
+          title: Cluster Id
+        query_context:
+          type: string
+          title: Query Context
+      type: object
+      required:
+      - cluster_id
+      - query_context
+      title: SuggestPincitesRequest
+      description: 'Request model for suggesting relevant pincites for a case.
+
+
+        Contains the cluster_id of the case and the user''s query context.'
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    AddinCaseChatRequest:
+      properties:
+        citation:
+          type: string
+          title: Citation
+        question:
+          type: string
+          title: Question
+        document:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Document
+      type: object
+      required:
+      - citation
+      - question
+      title: AddinCaseChatRequest
+      description: Request model for case chat endpoint.
+    DeepSearchRequest:
+      properties:
+        query:
+          type: string
+          title: Query
+        db_jurisdictions:
+          items:
+            type: string
+          type: array
+          title: Db Jurisdictions
+        max_cases:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Max Cases
+        vector_search_config:
+          anyOf:
+          - $ref: '#/components/schemas/VectorSearchConfig'
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Vector Search Config
+        use_optimized_query:
+          type: boolean
+          title: Use Optimized Query
+          default: false
+      type: object
+      required:
+      - query
+      - db_jurisdictions
+      title: DeepSearchRequest
+    VectorSearchConfig:
+      properties:
+        max_vector_results:
+          type: integer
+          title: Max Vector Results
+        ann_k_scale:
+          type: integer
+          title: Ann K Scale
+        ann_k_max:
+          type: integer
+          title: Ann K Max
+        ef_search:
+          type: integer
+          title: Ef Search
+        rerank_candidates:
+          type: integer
+          title: Rerank Candidates
+      type: object
+      required:
+      - max_vector_results
+      - ann_k_scale
+      - ann_k_max
+      - ef_search
+      - rerank_candidates
+      title: VectorSearchConfig
+      description: 'Tunable configuration for the vector search step.
+
+
+        This centralizes the main "levers" for ANN + HNSW search so we can:
+
+        - Log the exact settings used for a given run
+
+        - Vary them per-environment via env/config
+
+        - Optionally override them per-request when experimenting.'
+    AddinCaseSearchResponse:
+      properties:
+        status:
+          type: string
+          title: Status
+        cases:
+          items:
+            $ref: '#/components/schemas/AddinCaseSearchResult'
+          type: array
+          title: Cases
+        case_ids:
+          items:
+            type: string
+          type: array
+          title: Case Ids
+      type: object
+      required:
+      - status
+      title: AddinCaseSearchResponse
+      description: Response model for add-in case search results endpoint.
+    SemanticInputs:
+      properties:
+        questions:
+          $ref: '#/components/schemas/SemanticSection'
+        holdings:
+          $ref: '#/components/schemas/SemanticSection'
+        facts:
+          $ref: '#/components/schemas/SemanticSection'
+      type: object
+      required:
+      - questions
+      - holdings
+      - facts
+      title: SemanticInputs
+    OpenLawsAncestor:
+      properties:
+        path:
+          type: string
+          title: Path
+          default: ''
+        display_name:
+          type: string
+          title: Display Name
+      type: object
+      required:
+      - display_name
+      title: OpenLawsAncestor
+    AddinVerifyCitationRequest:
+      properties:
+        context:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Context
+        citation:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Citation
+        case_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Case Name
+        pincite:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Pincite
+      additionalProperties: true
+      type: object
+      title: AddinVerifyCitationRequest
+      description: 'Unified request model for citation and case name verification.
+
+
+        Supports three verification modes:
+
+        1. Citation verification (with optional pincite validation)
+
+        2. Case name verification
+
+        3. Both citation and case name (verifies they match the same case)
+
+
+        At least one of citation or case_name must be provided.'
+    AuthoritySearchResponse:
+      properties:
+        results:
+          items:
+            $ref: '#/components/schemas/AuthoritySearchResult'
+          type: array
+          title: Results
+        search_type:
+          type: string
+          title: Search Type
+          default: none
+        jurisdiction_used:
+          type: string
+          title: Jurisdiction Used
+          default: none
+      type: object
+      title: AuthoritySearchResponse
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    CaseRelationshipRequest:
+      properties:
+        user_context:
+          type: string
+          title: User Context
+        case_details:
+          additionalProperties: true
+          type: object
+          title: Case Details
+        original_query:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Original Query
+      type: object
+      required:
+      - user_context
+      - case_details
+      title: CaseRelationshipRequest
     AuthoritySearchResult:
       properties:
         display_name:
@@ -2549,151 +2681,19 @@ components:
       - jurisdiction_key
       title: AuthoritySearchResult
       description: Flat OpenLaws record shape consumed by the case-search frontend hook.
-    AddinCaseChatRequest:
-      properties:
-        citation:
-          type: string
-          title: Citation
-        question:
-          type: string
-          title: Question
-        document:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Document
-      type: object
-      required:
-      - citation
-      - question
-      title: AddinCaseChatRequest
-      description: Request model for case chat endpoint.
-    DocumentBatchCaseSearch:
-      properties:
-        paragraphs:
-          items:
-            additionalProperties:
-              type: string
-            type: object
-          type: array
-          title: Paragraphs
-        usage_data:
-          additionalProperties: true
-          type: object
-          title: Usage Data
-      type: object
-      required:
-      - paragraphs
-      - usage_data
-      title: DocumentBatchCaseSearch
-    AuthoritySearchRequest:
-      properties:
-        citation:
-          type: string
-          title: Citation
-        jurisdiction_key:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Jurisdiction Key
-        state_code:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: State Code
-      type: object
-      required:
-      - citation
-      title: AuthoritySearchRequest
-      description: Statute/regulation search request for the standalone case-search authorities tab.
-    VectorSearchConfig:
-      properties:
-        max_vector_results:
-          type: integer
-          title: Max Vector Results
-        ann_k_scale:
-          type: integer
-          title: Ann K Scale
-        ann_k_max:
-          type: integer
-          title: Ann K Max
-        ef_search:
-          type: integer
-          title: Ef Search
-        rerank_candidates:
-          type: integer
-          title: Rerank Candidates
-      type: object
-      required:
-      - max_vector_results
-      - ann_k_scale
-      - ann_k_max
-      - ef_search
-      - rerank_candidates
-      title: VectorSearchConfig
-      description: 'Tunable configuration for the vector search step.
-
-
-        This centralizes the main "levers" for ANN + HNSW search so we can:
-
-        - Log the exact settings used for a given run
-
-        - Vary them per-environment via env/config
-
-        - Optionally override them per-request when experimenting.'
-    AddinCaseSearchResponse:
-      properties:
-        status:
-          type: string
-          title: Status
-        cases:
-          items:
-            $ref: '#/components/schemas/AddinCaseSearchResult'
-          type: array
-          title: Cases
-        case_ids:
-          items:
-            type: string
-          type: array
-          title: Case Ids
-      type: object
-      required:
-      - status
-      title: AddinCaseSearchResponse
-      description: Response model for add-in case search results endpoint.
-    AddinCaseLookupRequest:
+    CaseSearchRequest:
       properties:
         query:
           type: string
           title: Query
+        courts:
+          anyOf:
+          - items:
+              type: integer
+            type: array
+          - type: 'null'
+          title: Courts
       type: object
       required:
       - query
-      title: AddinCaseLookupRequest
-      description: Request model for unified case lookup endpoint.
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
+      title: CaseSearchRequest

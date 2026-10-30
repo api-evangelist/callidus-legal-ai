@@ -35,6 +35,15 @@ paths:
       - Suggestions
 components:
   schemas:
+    MessageSuggestions:
+      properties:
+        module:
+          type: string
+          title: Module
+      type: object
+      required:
+      - module
+      title: MessageSuggestions
     HTTPValidationError:
       properties:
         detail:
@@ -70,12 +79,3 @@ components:
       - msg
       - type
       title: ValidationError
-    MessageSuggestions:
-      properties:
-        module:
-          type: string
-          title: Module
-      type: object
-      required:
-      - module
-      title: MessageSuggestions

@@ -354,6 +354,106 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    TrialStageEnum:
+      type: string
+      enum:
+      - trial
+      - deposition
+      title: TrialStageEnum
+    SaveTaskMemoryResponse:
+      properties:
+        saved:
+          type: boolean
+          title: Saved
+        skipped_reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Skipped Reason
+        doc_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Doc Id
+      type: object
+      required:
+      - saved
+      title: SaveTaskMemoryResponse
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    SectionEnum:
+      type: string
+      enum:
+      - supporting
+      - counterparty
+      - context
+      - oral
+      title: SectionEnum
+    WitnessMetadata:
+      properties:
+        witness_name:
+          type: string
+          title: Witness Name
+        witness_disposition:
+          type: string
+          title: Witness Disposition
+        witness_background:
+          type: string
+          title: Witness Background
+        is_expert:
+          type: boolean
+          title: Is Expert
+      type: object
+      required:
+      - witness_name
+      - witness_disposition
+      - witness_background
+      - is_expert
+      title: WitnessMetadata
+    Body_background_research_legacy_oral_argument_simulator_background_research_post:
+      properties:
+        files_context:
+          items:
+            type: string
+          type: array
+          title: Files Context
+        blob_names:
+          items:
+            type: string
+          type: array
+          title: Blob Names
+        dataset_id:
+          type: string
+          title: Dataset Id
+        trial_stage:
+          type: string
+          title: Trial Stage
+        witness_name:
+          type: string
+          title: Witness Name
+        witness_disposition:
+          type: string
+          title: Witness Disposition
+        witness_background:
+          type: string
+          title: Witness Background
+        is_expert:
+          type: string
+          title: Is Expert
+      type: object
+      required:
+      - files_context
+      - blob_names
+      - dataset_id
+      - trial_stage
+      title: Body_background_research_legacy_oral_argument_simulator_background_research_post
     InputsPayload:
       properties:
         role:
@@ -380,12 +480,32 @@ components:
       - trial_stage
       title: InputsPayload
       description: Full-replace payload for PUT /inputs/{dataset_id}.
-    TrialStageEnum:
-      type: string
-      enum:
-      - trial
-      - deposition
-      title: TrialStageEnum
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
     SourceFileEntry:
       properties:
         section:
@@ -467,129 +587,9 @@ components:
       - dataset_id
       - trial_stage
       title: Body_background_research2_oral_argument_simulator_background_research2_post
-    SectionEnum:
-      type: string
-      enum:
-      - supporting
-      - counterparty
-      - context
-      - oral
-      title: SectionEnum
-    WitnessMetadata:
-      properties:
-        witness_name:
-          type: string
-          title: Witness Name
-        witness_disposition:
-          type: string
-          title: Witness Disposition
-        witness_background:
-          type: string
-          title: Witness Background
-        is_expert:
-          type: boolean
-          title: Is Expert
-      type: object
-      required:
-      - witness_name
-      - witness_disposition
-      - witness_background
-      - is_expert
-      title: WitnessMetadata
     RoleEnum:
       type: string
       enum:
       - judge
       - witness
       title: RoleEnum
-    Body_background_research_legacy_oral_argument_simulator_background_research_post:
-      properties:
-        files_context:
-          items:
-            type: string
-          type: array
-          title: Files Context
-        blob_names:
-          items:
-            type: string
-          type: array
-          title: Blob Names
-        dataset_id:
-          type: string
-          title: Dataset Id
-        trial_stage:
-          type: string
-          title: Trial Stage
-        witness_name:
-          type: string
-          title: Witness Name
-        witness_disposition:
-          type: string
-          title: Witness Disposition
-        witness_background:
-          type: string
-          title: Witness Background
-        is_expert:
-          type: string
-          title: Is Expert
-      type: object
-      required:
-      - files_context
-      - blob_names
-      - dataset_id
-      - trial_stage
-      title: Body_background_research_legacy_oral_argument_simulator_background_research_post
-    SaveTaskMemoryResponse:
-      properties:
-        saved:
-          type: boolean
-          title: Saved
-        skipped_reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Skipped Reason
-        doc_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Doc Id
-      type: object
-      required:
-      - saved
-      title: SaveTaskMemoryResponse
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError

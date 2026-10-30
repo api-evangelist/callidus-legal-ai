@@ -618,7 +618,7 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    Body_negotiate_review_playbook_addin_negotiate_review_playbook_post:
+    Body_negotiate_review_process_files_addin_negotiate_review_process_files_post:
       properties:
         data:
           type: string
@@ -626,66 +626,7 @@ components:
       type: object
       required:
       - data
-      title: Body_negotiate_review_playbook_addin_negotiate_review_playbook_post
-    Body_negotiate_relevant_documents_addin_negotiate_relevant_documents_post:
-      properties:
-        file0:
-          anyOf:
-          - type: string
-            contentMediaType: application/octet-stream
-          - type: 'null'
-          title: File0
-        file1:
-          anyOf:
-          - type: string
-            contentMediaType: application/octet-stream
-          - type: 'null'
-          title: File1
-        file2:
-          anyOf:
-          - type: string
-            contentMediaType: application/octet-stream
-          - type: 'null'
-          title: File2
-        file3:
-          anyOf:
-          - type: string
-            contentMediaType: application/octet-stream
-          - type: 'null'
-          title: File3
-        file4:
-          anyOf:
-          - type: string
-            contentMediaType: application/octet-stream
-          - type: 'null'
-          title: File4
-        file_type0:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: File Type0
-        file_type1:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: File Type1
-        file_type2:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: File Type2
-        file_type3:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: File Type3
-        file_type4:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: File Type4
-      type: object
-      title: Body_negotiate_relevant_documents_addin_negotiate_relevant_documents_post
+      title: Body_negotiate_review_process_files_addin_negotiate_review_process_files_post
     AddinNegotiate:
       properties:
         paragraphs:
@@ -755,7 +696,7 @@ components:
           default: ''
       type: object
       title: AddinNegotiate
-    Body_negotiate_review_sections_addin_negotiate_review_post:
+    Body_negotiate_review_playbook_addin_negotiate_review_playbook_post:
       properties:
         data:
           type: string
@@ -763,16 +704,75 @@ components:
       type: object
       required:
       - data
-      title: Body_negotiate_review_sections_addin_negotiate_review_post
-    Body_negotiate_review_process_files_addin_negotiate_review_process_files_post:
+      title: Body_negotiate_review_playbook_addin_negotiate_review_playbook_post
+    HTTPValidationError:
       properties:
-        data:
-          type: string
-          title: Data
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
       type: object
-      required:
-      - data
-      title: Body_negotiate_review_process_files_addin_negotiate_review_process_files_post
+      title: HTTPValidationError
+    Body_negotiate_relevant_documents_addin_negotiate_relevant_documents_post:
+      properties:
+        file0:
+          anyOf:
+          - type: string
+            contentMediaType: application/octet-stream
+          - type: 'null'
+          title: File0
+        file1:
+          anyOf:
+          - type: string
+            contentMediaType: application/octet-stream
+          - type: 'null'
+          title: File1
+        file2:
+          anyOf:
+          - type: string
+            contentMediaType: application/octet-stream
+          - type: 'null'
+          title: File2
+        file3:
+          anyOf:
+          - type: string
+            contentMediaType: application/octet-stream
+          - type: 'null'
+          title: File3
+        file4:
+          anyOf:
+          - type: string
+            contentMediaType: application/octet-stream
+          - type: 'null'
+          title: File4
+        file_type0:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: File Type0
+        file_type1:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: File Type1
+        file_type2:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: File Type2
+        file_type3:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: File Type3
+        file_type4:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: File Type4
+      type: object
+      title: Body_negotiate_relevant_documents_addin_negotiate_relevant_documents_post
     ValidationError:
       properties:
         loc:
@@ -799,12 +799,12 @@ components:
       - msg
       - type
       title: ValidationError
-    HTTPValidationError:
+    Body_negotiate_review_sections_addin_negotiate_review_post:
       properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
+        data:
+          type: string
+          title: Data
       type: object
-      title: HTTPValidationError
+      required:
+      - data
+      title: Body_negotiate_review_sections_addin_negotiate_review_post

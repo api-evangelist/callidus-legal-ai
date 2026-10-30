@@ -39,6 +39,36 @@ paths:
       - Validate
 components:
   schemas:
+    ValidateUserInput:
+      properties:
+        var_name:
+          type: string
+          title: Var Name
+          description: The name of the variable for which the user provided an input
+          examples:
+          - statute
+          - an area of law
+        var_value:
+          type: string
+          title: Var Value
+          description: The value of the variable provided by the user
+          examples:
+          - section 123
+          - Tort Law
+      type: object
+      required:
+      - var_name
+      - var_value
+      title: ValidateUserInput
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     ValidationError:
       properties:
         loc:
@@ -65,33 +95,3 @@ components:
       - msg
       - type
       title: ValidationError
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    ValidateUserInput:
-      properties:
-        var_name:
-          type: string
-          title: Var Name
-          description: The name of the variable for which the user provided an input
-          examples:
-          - statute
-          - an area of law
-        var_value:
-          type: string
-          title: Var Value
-          description: The value of the variable provided by the user
-          examples:
-          - section 123
-          - Tort Law
-      type: object
-      required:
-      - var_name
-      - var_value
-      title: ValidateUserInput

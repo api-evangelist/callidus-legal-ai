@@ -469,6 +469,35 @@ paths:
       - Optp
 components:
   schemas:
+    UserGoalUpdate:
+      properties:
+        userGoal:
+          type: number
+          title: Usergoal
+      type: object
+      required:
+      - userGoal
+      title: UserGoalUpdate
+    Body_optp_convert_optp_convert_post:
+      properties:
+        url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Url
+        text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Text
+        file:
+          anyOf:
+          - type: string
+            contentMediaType: application/octet-stream
+          - type: 'null'
+          title: File
+      type: object
+      title: Body_optp_convert_optp_convert_post
     OPTPProvisionRequest:
       properties:
         request:
@@ -485,229 +514,6 @@ components:
       required:
       - request
       title: OPTPFollowUpRequest
-    OPTPIncludedContracts:
-      properties:
-        baseContract:
-          type: boolean
-          title: Basecontract
-          default: false
-        comparisonContract:
-          type: boolean
-          title: Comparisoncontract
-          default: false
-      type: object
-      title: OPTPIncludedContracts
-    OPTPNewProvisionRequest:
-      properties:
-        request:
-          $ref: '#/components/schemas/OPTPNewProvision'
-      type: object
-      required:
-      - request
-      title: OPTPNewProvisionRequest
-    UserGoalUpdate:
-      properties:
-        userGoal:
-          type: number
-          title: Usergoal
-      type: object
-      required:
-      - userGoal
-      title: UserGoalUpdate
-    Body_regenerate_optp_section_optp__optp_session_id__parties_extract_post:
-      properties:
-        file_content:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: File Content
-      type: object
-      title: Body_regenerate_optp_section_optp__optp_session_id__parties_extract_post
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    Party-Input:
-      properties:
-        name:
-          type: string
-          title: Name
-        relationship:
-          type: string
-          title: Relationship
-      type: object
-      required:
-      - name
-      - relationship
-      title: Party
-    Body_rank_and_match_provisions_optp_rank_and_match_post:
-      properties:
-        base_pickle:
-          type: string
-          contentMediaType: application/octet-stream
-          title: Base Pickle
-        comparison_pickle:
-          type: string
-          contentMediaType: application/octet-stream
-          title: Comparison Pickle
-      type: object
-      required:
-      - base_pickle
-      - comparison_pickle
-      title: Body_rank_and_match_provisions_optp_rank_and_match_post
-    OPTPNewProvision:
-      properties:
-        provisionTitle:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Provisiontitle
-        instructions:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Instructions
-        baseDefinedTerms:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Basedefinedterms
-        provisionNames:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Provisionnames
-        provisionText:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Provisiontext
-        previousProvisionFormat:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Previousprovisionformat
-      type: object
-      title: OPTPNewProvision
-    OPTPData:
-      properties:
-        baseContractUrl:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Basecontracturl
-        comparisonContractUrl:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Comparisoncontracturl
-        baseContractDocId:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Basecontractdocid
-        comparisonContractDocId:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Comparisoncontractdocid
-        baseContractDocName:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Basecontractdocname
-        comparisonContractDocName:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Comparisoncontractdocname
-        messagesAvailable:
-          type: integer
-          title: Messagesavailable
-        optpIngestionRate:
-          type: number
-          title: Optpingestionrate
-        options:
-          $ref: '#/components/schemas/Options'
-        userEmail:
-          type: string
-          title: Useremail
-        matterId:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Matterid
-      type: object
-      required:
-      - messagesAvailable
-      - optpIngestionRate
-      - options
-      - userEmail
-      title: OPTPData
-    Options:
-      properties:
-        typeOfDeal:
-          type: string
-          title: Typeofdeal
-        party1:
-          $ref: '#/components/schemas/Party-Input'
-        party2:
-          $ref: '#/components/schemas/Party-Input'
-        industry:
-          type: string
-          title: Industry
-        secondaryIndustry:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Secondaryindustry
-        extraAttention:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Extraattention
-        dealBreakers:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Dealbreakers
-        favoritism:
-          type: number
-          title: Favoritism
-        useAdvancedModel:
-          type: boolean
-          title: Useadvancedmodel
-          default: false
-      type: object
-      required:
-      - typeOfDeal
-      - party1
-      - party2
-      - industry
-      - favoritism
-      title: Options
     OPTPProvision:
       properties:
         baseContractId:
@@ -824,53 +630,64 @@ components:
           title: Basedefinedterms
       type: object
       title: OPTPProvision
-    OPTPDataRequest:
+    HTTPValidationError:
       properties:
-        request:
-          $ref: '#/components/schemas/OPTPData'
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    Party-Input:
+      properties:
+        name:
+          type: string
+          title: Name
+        relationship:
+          type: string
+          title: Relationship
       type: object
       required:
-      - request
-      title: OPTPDataRequest
-    OPTPMetrics:
+      - name
+      - relationship
+      title: Party
+    Body_rank_and_match_provisions_optp_rank_and_match_post:
       properties:
-        substanceBaseContract:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Substancebasecontract
-        substanceDraftContract:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Substancedraftcontract
-        biasBaseContract:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Biasbasecontract
-        biasComparisonContract:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Biascomparisoncontract
-        biasDraftContract:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Biasdraftcontract
-        overallBaseAlignment:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Overallbasealignment
-        overallDraftAlignment:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Overalldraftalignment
+        base_pickle:
+          type: string
+          contentMediaType: application/octet-stream
+          title: Base Pickle
+        comparison_pickle:
+          type: string
+          contentMediaType: application/octet-stream
+          title: Comparison Pickle
       type: object
-      title: OPTPMetrics
+      required:
+      - base_pickle
+      - comparison_pickle
+      title: Body_rank_and_match_provisions_optp_rank_and_match_post
+    Body_regenerate_optp_section_optp__optp_session_id__parties_extract_post:
+      properties:
+        file_content:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: File Content
+      type: object
+      title: Body_regenerate_optp_section_optp__optp_session_id__parties_extract_post
+    OPTPIncludedContracts:
+      properties:
+        baseContract:
+          type: boolean
+          title: Basecontract
+          default: false
+        comparisonContract:
+          type: boolean
+          title: Comparisoncontract
+          default: false
+      type: object
+      title: OPTPIncludedContracts
     OPTPFollowUp:
       properties:
         relevantText:
@@ -982,32 +799,215 @@ components:
       required:
       - relevantText
       title: OPTPFollowUp
-    Body_optp_convert_optp_convert_post:
+    ValidationError:
       properties:
-        url:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Url
-        text:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Text
-        file:
-          anyOf:
-          - type: string
-            contentMediaType: application/octet-stream
-          - type: 'null'
-          title: File
-      type: object
-      title: Body_optp_convert_optp_convert_post
-    HTTPValidationError:
-      properties:
-        detail:
+        loc:
           items:
-            $ref: '#/components/schemas/ValidationError'
+            anyOf:
+            - type: string
+            - type: integer
           type: array
-          title: Detail
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
       type: object
-      title: HTTPValidationError
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    OPTPNewProvisionRequest:
+      properties:
+        request:
+          $ref: '#/components/schemas/OPTPNewProvision'
+      type: object
+      required:
+      - request
+      title: OPTPNewProvisionRequest
+    OPTPData:
+      properties:
+        baseContractUrl:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Basecontracturl
+        comparisonContractUrl:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Comparisoncontracturl
+        baseContractDocId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Basecontractdocid
+        comparisonContractDocId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Comparisoncontractdocid
+        baseContractDocName:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Basecontractdocname
+        comparisonContractDocName:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Comparisoncontractdocname
+        messagesAvailable:
+          type: integer
+          title: Messagesavailable
+        optpIngestionRate:
+          type: number
+          title: Optpingestionrate
+        options:
+          $ref: '#/components/schemas/Options'
+        userEmail:
+          type: string
+          title: Useremail
+        matterId:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Matterid
+      type: object
+      required:
+      - messagesAvailable
+      - optpIngestionRate
+      - options
+      - userEmail
+      title: OPTPData
+    OPTPDataRequest:
+      properties:
+        request:
+          $ref: '#/components/schemas/OPTPData'
+      type: object
+      required:
+      - request
+      title: OPTPDataRequest
+    Options:
+      properties:
+        typeOfDeal:
+          type: string
+          title: Typeofdeal
+        party1:
+          $ref: '#/components/schemas/Party-Input'
+        party2:
+          $ref: '#/components/schemas/Party-Input'
+        industry:
+          type: string
+          title: Industry
+        secondaryIndustry:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Secondaryindustry
+        extraAttention:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Extraattention
+        dealBreakers:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Dealbreakers
+        favoritism:
+          type: number
+          title: Favoritism
+        useAdvancedModel:
+          type: boolean
+          title: Useadvancedmodel
+          default: false
+      type: object
+      required:
+      - typeOfDeal
+      - party1
+      - party2
+      - industry
+      - favoritism
+      title: Options
+    OPTPMetrics:
+      properties:
+        substanceBaseContract:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Substancebasecontract
+        substanceDraftContract:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Substancedraftcontract
+        biasBaseContract:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Biasbasecontract
+        biasComparisonContract:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Biascomparisoncontract
+        biasDraftContract:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Biasdraftcontract
+        overallBaseAlignment:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Overallbasealignment
+        overallDraftAlignment:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Overalldraftalignment
+      type: object
+      title: OPTPMetrics
+    OPTPNewProvision:
+      properties:
+        provisionTitle:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Provisiontitle
+        instructions:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Instructions
+        baseDefinedTerms:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Basedefinedterms
+        provisionNames:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Provisionnames
+        provisionText:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Provisiontext
+        previousProvisionFormat:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Previousprovisionformat
+      type: object
+      title: OPTPNewProvision

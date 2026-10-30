@@ -127,6 +127,75 @@ paths:
       - Proofread
 components:
   schemas:
+    ChatQuery:
+      properties:
+        request:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Request
+        control_options:
+          anyOf:
+          - $ref: '#/components/schemas/ControlPanelOptions'
+          - type: 'null'
+          default:
+            legalQuestionsCount: 3
+            casePerQuestionsCount: 3
+            casesToInclude: 3
+            legalResearchFollowUpQuestions: 5
+            followUpQuestions: 3
+            statutesCount: 3
+            showHoldings: true
+            analysisDepth: 2
+            creativity: 0.0
+            argumentBias: objective
+            documentType: ''
+            partyToFavour: ''
+            focusArea: ''
+            legalFocus: notInteracted
+            jurisdictions: ''
+            responseLength: 2
+            grammarCheck: false
+            activeVoiceCheck: false
+            legalWritingCheck: false
+            persuasiveCheck: false
+            narrativeCheck: false
+            expositoryCheck: false
+            descriptiveCheck: false
+            summaryMethod: notInteracted
+            summaryType: notInteracted
+      type: object
+      required:
+      - request
+      title: ChatQuery
+    ProofreadRequestParams:
+      properties:
+        types:
+          items:
+            type: string
+          type: array
+          title: Types
+        defined_terms:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Defined Terms
+      type: object
+      required:
+      - types
+      - defined_terms
+      title: ProofreadRequestParams
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     Body_proofread_intake_proofread_intake_post:
       properties:
         url:
@@ -147,37 +216,32 @@ components:
           title: File
       type: object
       title: Body_proofread_intake_proofread_intake_post
-    ProofreadRequest:
+    ValidationError:
       properties:
-        request:
-          $ref: '#/components/schemas/ProofreadRequestParams'
-        control_options:
-          anyOf:
-          - $ref: '#/components/schemas/ControlPanelOptions'
-          - type: 'null'
-      type: object
-      required:
-      - request
-      title: ProofreadRequest
-    ProofreadRequestParams:
-      properties:
-        types:
+        loc:
           items:
-            type: string
+            anyOf:
+            - type: string
+            - type: integer
           type: array
-          title: Types
-        defined_terms:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Defined Terms
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
       type: object
       required:
-      - types
-      - defined_terms
-      title: ProofreadRequestParams
+      - loc
+      - msg
+      - type
+      title: ValidationError
     ControlPanelOptions:
       properties:
         legalQuestionsCount:
@@ -284,79 +348,15 @@ components:
           default: notInteracted
       type: object
       title: ControlPanelOptions
-    ChatQuery:
+    ProofreadRequest:
       properties:
         request:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Request
+          $ref: '#/components/schemas/ProofreadRequestParams'
         control_options:
           anyOf:
           - $ref: '#/components/schemas/ControlPanelOptions'
           - type: 'null'
-          default:
-            legalQuestionsCount: 3
-            casePerQuestionsCount: 3
-            casesToInclude: 3
-            legalResearchFollowUpQuestions: 5
-            followUpQuestions: 3
-            statutesCount: 3
-            showHoldings: true
-            analysisDepth: 2
-            creativity: 0.0
-            argumentBias: objective
-            documentType: ''
-            partyToFavour: ''
-            focusArea: ''
-            legalFocus: notInteracted
-            jurisdictions: ''
-            responseLength: 2
-            grammarCheck: false
-            activeVoiceCheck: false
-            legalWritingCheck: false
-            persuasiveCheck: false
-            narrativeCheck: false
-            expositoryCheck: false
-            descriptiveCheck: false
-            summaryMethod: notInteracted
-            summaryType: notInteracted
       type: object
       required:
       - request
-      title: ChatQuery
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
+      title: ProofreadRequest

@@ -794,250 +794,6 @@ paths:
       - Basic Bot
 components:
   schemas:
-    BasicBotCaseLaw:
-      properties:
-        case_name:
-          type: string
-          title: Case Name
-        citation:
-          type: string
-          title: Citation
-        court:
-          type: string
-          title: Court
-        year:
-          type: integer
-          title: Year
-        holding_summary:
-          type: string
-          title: Holding Summary
-      type: object
-      required:
-      - case_name
-      - citation
-      - court
-      - year
-      - holding_summary
-      title: BasicBotCaseLaw
-    Body_basic_bot_upload_basic_bot_upload_start_post:
-      properties:
-        file:
-          anyOf:
-          - type: string
-            contentMediaType: application/octet-stream
-          - type: 'null'
-          title: File
-        conversation_id:
-          type: string
-          title: Conversation Id
-      type: object
-      title: Body_basic_bot_upload_basic_bot_upload_start_post
-    BasicBotCitationSearch:
-      properties:
-        request:
-          $ref: '#/components/schemas/CaseCitationRequest'
-      type: object
-      required:
-      - request
-      title: BasicBotCitationSearch
-    BasicBotResearchedRequest:
-      properties:
-        request:
-          type: string
-          title: Request
-        conversationId:
-          type: string
-          title: Conversationid
-        history:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: History
-          default: []
-        control_options:
-          anyOf:
-          - $ref: '#/components/schemas/BasicBotControlPanelOptions'
-          - type: 'null'
-          default:
-            creativity: 0.0
-            analysisDepth: 1
-            legalFocus: 'True'
-            jurisdictions: ''
-        needs_citations:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Needs Citations
-        is_advanced_mode:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Is Advanced Mode
-          default: false
-        allowed_cases:
-          items:
-            $ref: '#/components/schemas/CaseSearchResult'
-          type: array
-          title: Allowed Cases
-        allowed_statutes:
-          items:
-            additionalProperties:
-              type: string
-            type: object
-          type: array
-          title: Allowed Statutes
-        allowed_web_search:
-          items:
-            additionalProperties:
-              type: string
-            type: object
-          type: array
-          title: Allowed Web Search
-      type: object
-      required:
-      - request
-      - conversationId
-      - allowed_cases
-      - allowed_statutes
-      - allowed_web_search
-      title: BasicBotResearchedRequest
-    NotifyTurnCompleteRequest:
-      properties:
-        count:
-          type: integer
-          minimum: 1.0
-          title: Count
-          description: 'Number of qualifying messages in this turn: the user input plus the number of final displayed AI text responses.  Thinking blocks, tool calls, and tool results must be excluded by the caller.'
-          default: 1
-      type: object
-      title: NotifyTurnCompleteRequest
-      description: Request body for the notify-turn-complete endpoint.
-    BasicBotValidateCases:
-      properties:
-        data:
-          $ref: '#/components/schemas/BasicBotLegalResearchResponse'
-      type: object
-      required:
-      - data
-      title: BasicBotValidateCases
-    PrecedentTreatment:
-      type: string
-      enum:
-      - OVERRULES_FULLY
-      - OVERRULES_PARTIALLY
-      - LIMITS
-      - REVERSES
-      - VACATES
-      - QUESTIONS
-      - DEPARTS
-      - DISTINGUISHES
-      - CLARIFIES
-      - HARMONIZES
-      - FOLLOWS
-      - EXTENDS
-      - CITES
-      - OTHER
-      title: PrecedentTreatment
-      description: A more complete version of PrecedentInteraction.
-    LegalAuthoritiesJobStatus:
-      properties:
-        status:
-          type: string
-          title: Status
-        job_id:
-          type: string
-          title: Job Id
-        result:
-          anyOf:
-          - $ref: '#/components/schemas/LegalAuthoritiesJobResult'
-          - type: 'null'
-        error:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Error
-        error_type:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Error Type
-      type: object
-      required:
-      - status
-      - job_id
-      title: LegalAuthoritiesJobStatus
-    AttachDocHubDocumentsRequest:
-      properties:
-        document_ids:
-          items:
-            type: string
-          type: array
-          minItems: 1
-          title: Document Ids
-          description: Doc-hub document IDs to attach
-        current_context_tokens:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Current Context Tokens
-          description: Current conversation token count (from frontend). When provided, skips server-side token counting.
-      type: object
-      required:
-      - document_ids
-      title: AttachDocHubDocumentsRequest
-      description: Request body for attaching doc-hub documents to a basic_bot conversation.
-    BasicBotControlPanelOptions:
-      properties:
-        creativity:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Creativity
-          default: 0
-        analysisDepth:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Analysisdepth
-          default: 1
-        legalFocus:
-          anyOf:
-          - type: boolean
-          - type: string
-          - type: 'null'
-          title: Legalfocus
-          default: 'True'
-        jurisdictions:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Jurisdictions
-          default: ''
-      type: object
-      title: BasicBotControlPanelOptions
-    BasicBotStatute:
-      properties:
-        statute_name:
-          type: string
-          title: Statute Name
-        citation:
-          type: string
-          title: Citation
-        jurisdiction:
-          type: string
-          title: Jurisdiction
-        summary:
-          type: string
-          title: Summary
-      type: object
-      required:
-      - statute_name
-      - citation
-      - jurisdiction
-      - summary
-      title: BasicBotStatute
     CaseCitationRequest:
       properties:
         citation:
@@ -1092,6 +848,61 @@ components:
       - legal_questions_with_facts
       - legal_doctrines
       title: BasicBotResearchRobustPrepResult
+    BasicBotCitationSearch:
+      properties:
+        request:
+          $ref: '#/components/schemas/CaseCitationRequest'
+      type: object
+      required:
+      - request
+      title: BasicBotCitationSearch
+    TreatmentConfidence:
+      type: string
+      enum:
+      - EXTREMELY_LOW
+      - LOW
+      - MEDIUM
+      - HIGH
+      - EXTREMELY_HIGH
+      title: TreatmentConfidence
+    LegalAuthoritiesJobStatus:
+      properties:
+        status:
+          type: string
+          title: Status
+        job_id:
+          type: string
+          title: Job Id
+        result:
+          anyOf:
+          - $ref: '#/components/schemas/LegalAuthoritiesJobResult'
+          - type: 'null'
+        error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error
+        error_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error Type
+      type: object
+      required:
+      - status
+      - job_id
+      title: LegalAuthoritiesJobStatus
+    NotifyTurnCompleteRequest:
+      properties:
+        count:
+          type: integer
+          minimum: 1.0
+          title: Count
+          description: 'Number of qualifying messages in this turn: the user input plus the number of final displayed AI text responses.  Thinking blocks, tool calls, and tool results must be excluded by the caller.'
+          default: 1
+      type: object
+      title: NotifyTurnCompleteRequest
+      description: Request body for the notify-turn-complete endpoint.
     FileUploadJobStatus:
       properties:
         status:
@@ -1124,15 +935,104 @@ components:
       - status
       - job_id
       title: FileUploadJobStatus
-    HTTPValidationError:
+    BasicBotValidateCases:
       properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
+        data:
+          $ref: '#/components/schemas/BasicBotLegalResearchResponse'
       type: object
-      title: HTTPValidationError
+      required:
+      - data
+      title: BasicBotValidateCases
+    BasicBotCaseLaw:
+      properties:
+        case_name:
+          type: string
+          title: Case Name
+        citation:
+          type: string
+          title: Citation
+        court:
+          type: string
+          title: Court
+        year:
+          type: integer
+          title: Year
+        holding_summary:
+          type: string
+          title: Holding Summary
+      type: object
+      required:
+      - case_name
+      - citation
+      - court
+      - year
+      - holding_summary
+      title: BasicBotCaseLaw
+    BasicBotStatute:
+      properties:
+        statute_name:
+          type: string
+          title: Statute Name
+        citation:
+          type: string
+          title: Citation
+        jurisdiction:
+          type: string
+          title: Jurisdiction
+        summary:
+          type: string
+          title: Summary
+      type: object
+      required:
+      - statute_name
+      - citation
+      - jurisdiction
+      - summary
+      title: BasicBotStatute
+    BasicBotResearchPrepLegalAuthorities:
+      properties:
+        request:
+          type: string
+          title: Request
+        conversationId:
+          type: string
+          title: Conversationid
+        history:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: History
+          default: []
+        control_options:
+          anyOf:
+          - $ref: '#/components/schemas/BasicBotControlPanelOptions'
+          - type: 'null'
+          default:
+            creativity: 0.0
+            analysisDepth: 1
+            legalFocus: 'True'
+            jurisdictions: ''
+        needs_citations:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Needs Citations
+        is_advanced_mode:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Advanced Mode
+          default: false
+        research_prep:
+          $ref: '#/components/schemas/BasicBotResearchRobustPrepResult'
+      type: object
+      required:
+      - request
+      - conversationId
+      - research_prep
+      title: BasicBotResearchPrepLegalAuthorities
     ShepardizingSummary:
       properties:
         flag_color:
@@ -1154,6 +1054,53 @@ components:
       - top_overruling
       - chain
       title: ShepardizingSummary
+    LegalAuthoritiesJobStartResponse:
+      properties:
+        job_id:
+          type: string
+          title: Job Id
+      type: object
+      required:
+      - job_id
+      title: LegalAuthoritiesJobStartResponse
+    BasicBotControlPanelOptions:
+      properties:
+        creativity:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Creativity
+          default: 0
+        analysisDepth:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Analysisdepth
+          default: 1
+        legalFocus:
+          anyOf:
+          - type: boolean
+          - type: string
+          - type: 'null'
+          title: Legalfocus
+          default: 'True'
+        jurisdictions:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Jurisdictions
+          default: ''
+      type: object
+      title: BasicBotControlPanelOptions
+    FileUploadJobStartResponse:
+      properties:
+        job_id:
+          type: string
+          title: Job Id
+      type: object
+      required:
+      - job_id
+      title: FileUploadJobStartResponse
     BasicBotResearchedCasesRequest:
       properties:
         allowed_cases:
@@ -1181,22 +1128,112 @@ components:
       - allowed_statutes
       - allowed_web_search
       title: BasicBotResearchedCasesRequest
-    BasicBotLegalResearchResponse:
+    BasicBotRequestRoot:
       properties:
-        cases:
-          items:
-            $ref: '#/components/schemas/BasicBotCaseLaw'
-          type: array
-          title: Cases
-        statutes:
-          items:
-            $ref: '#/components/schemas/BasicBotStatute'
-          type: array
-          title: Statutes
+        request:
+          type: string
+          title: Request
+        conversationId:
+          type: string
+          title: Conversationid
+        history:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: History
+          default: []
+        control_options:
+          anyOf:
+          - $ref: '#/components/schemas/BasicBotControlPanelOptions'
+          - type: 'null'
+          default:
+            creativity: 0.0
+            analysisDepth: 1
+            legalFocus: 'True'
+            jurisdictions: ''
+        needs_citations:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Needs Citations
+        is_advanced_mode:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Advanced Mode
+          default: false
       type: object
       required:
-      - cases
-      title: BasicBotLegalResearchResponse
+      - request
+      - conversationId
+      title: BasicBotRequestRoot
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    AttachDocHubDocumentsRequest:
+      properties:
+        document_ids:
+          items:
+            type: string
+          type: array
+          minItems: 1
+          title: Document Ids
+          description: Doc-hub document IDs to attach
+        current_context_tokens:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Current Context Tokens
+          description: Current conversation token count (from frontend). When provided, skips server-side token counting.
+      type: object
+      required:
+      - document_ids
+      title: AttachDocHubDocumentsRequest
+      description: Request body for attaching doc-hub documents to a basic_bot conversation.
+    PrecedentTreatment:
+      type: string
+      enum:
+      - OVERRULES_FULLY
+      - OVERRULES_PARTIALLY
+      - LIMITS
+      - REVERSES
+      - VACATES
+      - QUESTIONS
+      - DEPARTS
+      - DISTINGUISHES
+      - CLARIFIES
+      - HARMONIZES
+      - FOLLOWS
+      - EXTENDS
+      - CITES
+      - OTHER
+      title: PrecedentTreatment
+      description: A more complete version of PrecedentInteraction.
     ShepardizingChainEntry:
       properties:
         case_id:
@@ -1242,132 +1279,19 @@ components:
           default: gray
       type: object
       title: ShepardizingChainEntry
-    BasicBotResearchPrepLegalAuthorities:
+    FileUploadJobResult:
       properties:
-        request:
+        file_id:
           type: string
-          title: Request
-        conversationId:
-          type: string
-          title: Conversationid
-        history:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: History
-          default: []
-        control_options:
-          anyOf:
-          - $ref: '#/components/schemas/BasicBotControlPanelOptions'
-          - type: 'null'
-          default:
-            creativity: 0.0
-            analysisDepth: 1
-            legalFocus: 'True'
-            jurisdictions: ''
-        needs_citations:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Needs Citations
-        is_advanced_mode:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Is Advanced Mode
-          default: false
-        research_prep:
-          $ref: '#/components/schemas/BasicBotResearchRobustPrepResult'
-      type: object
-      required:
-      - request
-      - conversationId
-      - research_prep
-      title: BasicBotResearchPrepLegalAuthorities
-    BasicBotRequestRoot:
-      properties:
-        request:
-          type: string
-          title: Request
-        conversationId:
-          type: string
-          title: Conversationid
-        history:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: History
-          default: []
-        control_options:
-          anyOf:
-          - $ref: '#/components/schemas/BasicBotControlPanelOptions'
-          - type: 'null'
-          default:
-            creativity: 0.0
-            analysisDepth: 1
-            legalFocus: 'True'
-            jurisdictions: ''
-        needs_citations:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Needs Citations
-        is_advanced_mode:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Is Advanced Mode
-          default: false
-      type: object
-      required:
-      - request
-      - conversationId
-      title: BasicBotRequestRoot
-    LegalAuthoritiesJobResult:
-      properties:
-        job_id:
-          type: string
-          title: Job Id
-        cases:
-          items:
-            additionalProperties: true
-            type: object
-          type: array
-          title: Cases
-        statutes:
-          items:
-            additionalProperties: true
-            type: object
-          type: array
-          title: Statutes
-      type: object
-      required:
-      - job_id
-      - cases
-      - statutes
-      title: LegalAuthoritiesJobResult
-    TreatmentConfidence:
-      type: string
-      enum:
-      - EXTREMELY_LOW
-      - LOW
-      - MEDIUM
-      - HIGH
-      - EXTREMELY_HIGH
-      title: TreatmentConfidence
-    FileUploadJobStartResponse:
-      properties:
+          title: File Id
         job_id:
           type: string
           title: Job Id
       type: object
       required:
+      - file_id
       - job_id
-      title: FileUploadJobStartResponse
+      title: FileUploadJobResult
     AttachMatterContextRequest:
       properties:
         markdown:
@@ -1387,68 +1311,15 @@ components:
       - markdown
       title: AttachMatterContextRequest
       description: Request body for attaching matter context engine output to a basic_bot conversation.
-    LegalAuthoritiesJobStartResponse:
+    HTTPValidationError:
       properties:
-        job_id:
-          type: string
-          title: Job Id
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
       type: object
-      required:
-      - job_id
-      title: LegalAuthoritiesJobStartResponse
-    CaseSearchResult:
-      properties:
-        case_id:
-          anyOf:
-          - type: string
-            format: uuid
-          - type: 'null'
-          title: Case Id
-        title:
-          type: string
-          title: Title
-        url:
-          type: string
-          title: Url
-        bluebook:
-          type: string
-          title: Bluebook
-          default: ''
-        snippet:
-          type: string
-          title: Snippet
-          default: ''
-        source:
-          type: string
-          title: Source
-          default: Unknown
-        jurisdiction:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Jurisdiction
-        holdings:
-          anyOf:
-          - items:
-              $ref: '#/components/schemas/HoldingModel'
-            type: array
-          - type: 'null'
-          title: Holdings
-        shepardizing:
-          anyOf:
-          - $ref: '#/components/schemas/ShepardizingSummary'
-          - type: 'null'
-        citator_status:
-          anyOf:
-          - type: string
-            const: unavailable
-          - type: 'null'
-          title: Citator Status
-      type: object
-      required:
-      - title
-      - url
-      title: CaseSearchResult
+      title: HTTPValidationError
     BasicBotOptionalResearchedCaseRequest:
       properties:
         request:
@@ -1515,6 +1386,19 @@ components:
       - request
       - conversationId
       title: BasicBotOptionalResearchedCaseRequest
+    Body_basic_bot_upload_basic_bot_upload_start_post:
+      properties:
+        file:
+          anyOf:
+          - type: string
+            contentMediaType: application/octet-stream
+          - type: 'null'
+          title: File
+        conversation_id:
+          type: string
+          title: Conversation Id
+      type: object
+      title: Body_basic_bot_upload_basic_bot_upload_start_post
     HoldingModel:
       properties:
         holding:
@@ -1528,42 +1412,158 @@ components:
       - holding
       - generalized_holding
       title: HoldingModel
-    FileUploadJobResult:
+    LegalAuthoritiesJobResult:
       properties:
-        file_id:
-          type: string
-          title: File Id
         job_id:
           type: string
           title: Job Id
-      type: object
-      required:
-      - file_id
-      - job_id
-      title: FileUploadJobResult
-    ValidationError:
-      properties:
-        loc:
+        cases:
           items:
-            anyOf:
-            - type: string
-            - type: integer
+            additionalProperties: true
+            type: object
           type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
+          title: Cases
+        statutes:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Statutes
       type: object
       required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
+      - job_id
+      - cases
+      - statutes
+      title: LegalAuthoritiesJobResult
+    CaseSearchResult:
+      properties:
+        case_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Case Id
+        title:
+          type: string
+          title: Title
+        url:
+          type: string
+          title: Url
+        bluebook:
+          type: string
+          title: Bluebook
+          default: ''
+        snippet:
+          type: string
+          title: Snippet
+          default: ''
+        source:
+          type: string
+          title: Source
+          default: Unknown
+        jurisdiction:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Jurisdiction
+        holdings:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/HoldingModel'
+            type: array
+          - type: 'null'
+          title: Holdings
+        shepardizing:
+          anyOf:
+          - $ref: '#/components/schemas/ShepardizingSummary'
+          - type: 'null'
+        citator_status:
+          anyOf:
+          - type: string
+            const: unavailable
+          - type: 'null'
+          title: Citator Status
+      type: object
+      required:
+      - title
+      - url
+      title: CaseSearchResult
+    BasicBotResearchedRequest:
+      properties:
+        request:
+          type: string
+          title: Request
+        conversationId:
+          type: string
+          title: Conversationid
+        history:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: History
+          default: []
+        control_options:
+          anyOf:
+          - $ref: '#/components/schemas/BasicBotControlPanelOptions'
+          - type: 'null'
+          default:
+            creativity: 0.0
+            analysisDepth: 1
+            legalFocus: 'True'
+            jurisdictions: ''
+        needs_citations:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Needs Citations
+        is_advanced_mode:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Advanced Mode
+          default: false
+        allowed_cases:
+          items:
+            $ref: '#/components/schemas/CaseSearchResult'
+          type: array
+          title: Allowed Cases
+        allowed_statutes:
+          items:
+            additionalProperties:
+              type: string
+            type: object
+          type: array
+          title: Allowed Statutes
+        allowed_web_search:
+          items:
+            additionalProperties:
+              type: string
+            type: object
+          type: array
+          title: Allowed Web Search
+      type: object
+      required:
+      - request
+      - conversationId
+      - allowed_cases
+      - allowed_statutes
+      - allowed_web_search
+      title: BasicBotResearchedRequest
+    BasicBotLegalResearchResponse:
+      properties:
+        cases:
+          items:
+            $ref: '#/components/schemas/BasicBotCaseLaw'
+          type: array
+          title: Cases
+        statutes:
+          items:
+            $ref: '#/components/schemas/BasicBotStatute'
+          type: array
+          title: Statutes
+      type: object
+      required:
+      - cases
+      title: BasicBotLegalResearchResponse

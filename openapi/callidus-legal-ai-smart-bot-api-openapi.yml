@@ -799,6 +799,115 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    StarterSuggestionsRequest:
+      properties:
+        dataset_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Dataset Id
+          description: Discovery dataset id (Timeline / Doc Review / Forensic / Reliance / Case Coach)
+        deposition_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Deposition Id
+          description: Deposition task id
+        research_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Research Id
+          description: Legal Research V3 session id
+        matter_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Matter Id
+          description: Matter the task belongs to; folds matter context into the suggestions
+        module:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Module
+          description: Task Assistant module discriminator (e.g. 'timeline', 'doc-review'); scopes suggestions to what the assistant can do in that module
+        refresh:
+          type: boolean
+          title: Refresh
+          description: Regenerate instead of serving the cached set (the fresh result still overwrites the cache); sent after the user consumed a suggestion
+          default: false
+      type: object
+      title: StarterSuggestionsRequest
+      description: 'Task source for LLM-generated Task Assistant starter suggestions.
+
+
+        Mirrors :class:`StartConversationRequest`''s task-link fields: exactly one of
+
+        ``dataset_id`` / ``deposition_id`` / ``research_id`` identifies the task.'
+    CreateConversationRequest:
+      properties:
+        matter_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Matter Id
+          description: Optional matter to associate the conversation with
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+          description: Optional title for the conversation
+        smart_suggestions:
+          type: boolean
+          title: Smart Suggestions
+          description: Whether smart suggestions are enabled for this conversation
+          default: true
+        parent_conversation_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Parent Conversation Id
+          description: Optional task root Conversation.id; scopes this chat to that task's history
+      type: object
+      title: CreateConversationRequest
+    ConversationResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+        matter_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Matter Id
+        matter_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Matter Name
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+      type: object
+      required:
+      - id
+      - title
+      - matter_id
+      - created_at
+      - updated_at
+      title: ConversationResponse
     UpdateEnterKeyBehaviorRequest:
       properties:
         behavior:
@@ -811,26 +920,124 @@ components:
       required:
       - behavior
       title: UpdateEnterKeyBehaviorRequest
-    DatasetConversationResponse:
+    NextStep:
+      properties:
+        short:
+          type: string
+          title: Short
+        long:
+          type: string
+          title: Long
+      type: object
+      required:
+      - short
+      - long
+      title: NextStep
+    SmartbotOptOutResponse:
+      properties:
+        opt_out:
+          type: boolean
+          title: Opt Out
+      type: object
+      required:
+      - opt_out
+      title: SmartbotOptOutResponse
+    MessageResponse:
       properties:
         id:
           type: string
           title: Id
-        matter_id:
+        conversation_id:
           anyOf:
           - type: string
           - type: 'null'
-          title: Matter Id
-        dataset_file_count:
+          title: Conversation Id
+        content:
           anyOf:
-          - type: integer
+          - type: string
           - type: 'null'
-          title: Dataset File Count
+          title: Content
+        content_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Content Type
+        is_ai:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Ai
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        index:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Index
+        image_mime_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Image Mime Type
+        image_data:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Image Data
+        image_urls:
+          anyOf:
+          - items:
+              additionalProperties:
+                type: string
+              type: object
+            type: array
+          - type: 'null'
+          title: Image Urls
+        doc_ids:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Doc Ids
+        draft_session_ids:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Draft Session Ids
+        attached_file_names:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Attached File Names
+        generated_doc_ids:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Generated Doc Ids
       type: object
       required:
       - id
-      title: DatasetConversationResponse
-      description: Lookup result for the Timeline Task Assistant conversation linked to a dataset.
+      - conversation_id
+      - content
+      - content_type
+      - is_ai
+      - created_at
+      - index
+      - image_mime_type
+      - image_data
+      - image_urls
+      - doc_ids
+      - draft_session_ids
+      title: MessageResponse
     ConversationDetailResponse:
       properties:
         id:
@@ -928,6 +1135,304 @@ components:
       - active
       - generating_id
       title: ConversationDetailResponse
+    SendMessageRequest:
+      properties:
+        content:
+          type: string
+          minLength: 1
+          title: Content
+          description: The user's message text
+        doc_ids:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Doc Ids
+          description: Optional list of document IDs to provide context for the message
+        mode:
+          $ref: '#/components/schemas/AgentMode'
+          description: 'Agent mode: quick (no tools, fastest), standard (tools, medium thinking), deep (tools, high thinking)'
+          default: standard
+      type: object
+      required:
+      - content
+      title: SendMessageRequest
+    app__modules__smart_bot__routes__router__NextStepsResponse:
+      properties:
+        steps:
+          items:
+            $ref: '#/components/schemas/NextStep'
+          type: array
+          title: Steps
+        date:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Date
+      type: object
+      required:
+      - steps
+      - date
+      title: NextStepsResponse
+    ToolResponseRequest:
+      properties:
+        tool_use_id:
+          type: string
+          minLength: 1
+          title: Tool Use Id
+          description: The tool_use_id from the ask_user SSE event being answered
+        decision:
+          type: string
+          enum:
+          - confirm
+          - cancel
+          - answered
+          title: Decision
+          description: 'The option the user picked on the card: ''confirm''/''cancel'' for a write confirmation, or ''answered'' for a clarification questionnaire (including a skip-all, which is ''answered'' with no answers). Only the proceed-decision the paused tool declared lets it continue, so ''answered'' cannot authorize a write.'
+        data:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Data
+          description: Optional structured payload returned to the paused tool call (e.g. doc_ids uploaded through an upload-widget gate). Only fields the tool opted into are merged into its input; omit for plain confirm/cancel tools.
+      type: object
+      required:
+      - tool_use_id
+      - decision
+      title: ToolResponseRequest
+      description: The user's decision for a pending ask_user confirmation question.
+    SmartbotReferenceResponse:
+      properties:
+        id:
+          type: integer
+          title: Id
+        doc_id:
+          type: string
+          title: Doc Id
+        page_numbers:
+          anyOf:
+          - items:
+              type: integer
+            type: array
+          - type: 'null'
+          title: Page Numbers
+        quote:
+          type: string
+          title: Quote
+        filename:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Filename
+        full_path:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Full Path
+      type: object
+      required:
+      - id
+      - doc_id
+      - page_numbers
+      - quote
+      title: SmartbotReferenceResponse
+    UpdateSmartSuggestionsRequest:
+      properties:
+        enabled:
+          type: boolean
+          title: Enabled
+      type: object
+      required:
+      - enabled
+      title: UpdateSmartSuggestionsRequest
+    TaskLinkInfo:
+      properties:
+        module_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Module Type
+        conversation_id:
+          type: string
+          title: Conversation Id
+        dataset_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Dataset Id
+        legal_research_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Legal Research Id
+        title:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Title
+      type: object
+      required:
+      - conversation_id
+      title: TaskLinkInfo
+      description: 'Routing essentials for the task a chat was created in.
+
+
+        Resolved from the chat''s ``parent_conversation_id`` (the task root). The
+
+        client maps ``module_type`` + the relevant id to a per-module task route.
+
+        ``conversation_id`` is the *root* conversation''s id (used by id-keyed routes
+
+        like depositions); ``dataset_id`` is the discovery dataset id for
+
+        dataset-backed modules (Timeline / Doc Review / Forensic / Reliance);
+
+        ``legal_research_id`` is the Legal Research V3 session id for LR task roots.
+
+
+        Field names are friendlier than the underlying ``Conversation`` columns they
+
+        come from (``reference_data`` / ``research_id``).
+
+
+        ``title`` is the task root''s display name, decrypted where the module stores
+
+        it encrypted. It lets the client name the task itself ("Smith depo prep")
+
+        instead of falling back to its module ("Deposition"); empty when the root
+
+        was never titled, in which case the client keeps the module-name fallback.'
+    UpdateSmartbotOptOutRequest:
+      properties:
+        opt_out:
+          type: boolean
+          title: Opt Out
+      type: object
+      required:
+      - opt_out
+      title: UpdateSmartbotOptOutRequest
+    DepositionConversationResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        matter_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Matter Id
+      type: object
+      required:
+      - id
+      title: DepositionConversationResponse
+      description: Lookup result for the Task Assistant conversation linked to a deposition task.
+    AgentMode:
+      type: string
+      enum:
+      - quick
+      - standard
+      - deep
+      title: AgentMode
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    DraftDocumentResultResponse:
+      properties:
+        status:
+          type: string
+          title: Status
+        doc_agent_session_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Doc Agent Session Id
+        output_filename:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Output Filename
+        error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error
+      type: object
+      required:
+      - status
+      title: DraftDocumentResultResponse
+    EnterKeyBehaviorResponse:
+      properties:
+        behavior:
+          type: string
+          enum:
+          - enter_sends
+          - enter_newline
+          title: Behavior
+      type: object
+      required:
+      - behavior
+      title: EnterKeyBehaviorResponse
+    TaskLinkResponse:
+      properties:
+        task_link:
+          anyOf:
+          - $ref: '#/components/schemas/TaskLinkInfo'
+          - type: 'null'
+      type: object
+      title: TaskLinkResponse
+      description: 'Envelope for the task-link lookup.
+
+
+        Wrapping in an object (rather than returning a bare ``TaskLinkInfo | None``)
+
+        keeps the not-task-tied case as a 200 with ``task_link: null`` — a bare
+
+        ``null`` body can''t be parsed by the legacy ApiCall client.'
+    DatasetConversationResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        matter_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Matter Id
+        dataset_file_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Dataset File Count
+      type: object
+      required:
+      - id
+      title: DatasetConversationResponse
+      description: Lookup result for the Timeline Task Assistant conversation linked to a dataset.
     StartConversationRequest:
       properties:
         initial_input:
@@ -991,145 +1496,24 @@ components:
       required:
       - initial_input
       title: StartConversationRequest
-    SendMessageRequest:
+    HTTPValidationError:
       properties:
-        content:
-          type: string
-          minLength: 1
-          title: Content
-          description: The user's message text
-        doc_ids:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Doc Ids
-          description: Optional list of document IDs to provide context for the message
-        mode:
-          $ref: '#/components/schemas/AgentMode'
-          description: 'Agent mode: quick (no tools, fastest), standard (tools, medium thinking), deep (tools, high thinking)'
-          default: standard
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
       type: object
-      required:
-      - content
-      title: SendMessageRequest
-    CreateConversationRequest:
+      title: HTTPValidationError
+    StartConversationResponse:
       properties:
-        matter_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Matter Id
-          description: Optional matter to associate the conversation with
-        title:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Title
-          description: Optional title for the conversation
-        smart_suggestions:
-          type: boolean
-          title: Smart Suggestions
-          description: Whether smart suggestions are enabled for this conversation
-          default: true
-        parent_conversation_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Parent Conversation Id
-          description: Optional task root Conversation.id; scopes this chat to that task's history
-      type: object
-      title: CreateConversationRequest
-    TaskLinkResponse:
-      properties:
-        task_link:
-          anyOf:
-          - $ref: '#/components/schemas/TaskLinkInfo'
-          - type: 'null'
-      type: object
-      title: TaskLinkResponse
-      description: 'Envelope for the task-link lookup.
-
-
-        Wrapping in an object (rather than returning a bare ``TaskLinkInfo | None``)
-
-        keeps the not-task-tied case as a 200 with ``task_link: null`` — a bare
-
-        ``null`` body can''t be parsed by the legacy ApiCall client.'
-    AgentMode:
-      type: string
-      enum:
-      - quick
-      - standard
-      - deep
-      title: AgentMode
-    SmartbotOptOutResponse:
-      properties:
-        opt_out:
-          type: boolean
-          title: Opt Out
-      type: object
-      required:
-      - opt_out
-      title: SmartbotOptOutResponse
-    TaskLinkInfo:
-      properties:
-        module_type:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Module Type
         conversation_id:
           type: string
           title: Conversation Id
-        dataset_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Dataset Id
-        legal_research_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Legal Research Id
-        title:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Title
       type: object
       required:
       - conversation_id
-      title: TaskLinkInfo
-      description: 'Routing essentials for the task a chat was created in.
-
-
-        Resolved from the chat''s ``parent_conversation_id`` (the task root). The
-
-        client maps ``module_type`` + the relevant id to a per-module task route.
-
-        ``conversation_id`` is the *root* conversation''s id (used by id-keyed routes
-
-        like depositions); ``dataset_id`` is the discovery dataset id for
-
-        dataset-backed modules (Timeline / Doc Review / Forensic / Reliance);
-
-        ``legal_research_id`` is the Legal Research V3 session id for LR task roots.
-
-
-        Field names are friendlier than the underlying ``Conversation`` columns they
-
-        come from (``reference_data`` / ``research_id``).
-
-
-        ``title`` is the task root''s display name, decrypted where the module stores
-
-        it encrypted. It lets the client name the task itself ("Smith depo prep")
-
-        instead of falling back to its module ("Deposition"); empty when the root
-
-        was never titled, in which case the client keeps the module-name fallback.'
+      title: StartConversationResponse
     StarterSuggestionsResponse:
       properties:
         suggestions:
@@ -1142,387 +1526,3 @@ components:
       - suggestions
       title: StarterSuggestionsResponse
       description: Empty ``suggestions`` means generation failed or was too thin — the client keeps its static fallback.
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    ToolResponseRequest:
-      properties:
-        tool_use_id:
-          type: string
-          minLength: 1
-          title: Tool Use Id
-          description: The tool_use_id from the ask_user SSE event being answered
-        decision:
-          type: string
-          enum:
-          - confirm
-          - cancel
-          - answered
-          title: Decision
-          description: 'The option the user picked on the card: ''confirm''/''cancel'' for a write confirmation, or ''answered'' for a clarification questionnaire (including a skip-all, which is ''answered'' with no answers). Only the proceed-decision the paused tool declared lets it continue, so ''answered'' cannot authorize a write.'
-        data:
-          anyOf:
-          - additionalProperties: true
-            type: object
-          - type: 'null'
-          title: Data
-          description: Optional structured payload returned to the paused tool call (e.g. doc_ids uploaded through an upload-widget gate). Only fields the tool opted into are merged into its input; omit for plain confirm/cancel tools.
-      type: object
-      required:
-      - tool_use_id
-      - decision
-      title: ToolResponseRequest
-      description: The user's decision for a pending ask_user confirmation question.
-    NextStep:
-      properties:
-        short:
-          type: string
-          title: Short
-        long:
-          type: string
-          title: Long
-      type: object
-      required:
-      - short
-      - long
-      title: NextStep
-    StartConversationResponse:
-      properties:
-        conversation_id:
-          type: string
-          title: Conversation Id
-      type: object
-      required:
-      - conversation_id
-      title: StartConversationResponse
-    SmartbotReferenceResponse:
-      properties:
-        id:
-          type: integer
-          title: Id
-        doc_id:
-          type: string
-          title: Doc Id
-        page_numbers:
-          anyOf:
-          - items:
-              type: integer
-            type: array
-          - type: 'null'
-          title: Page Numbers
-        quote:
-          type: string
-          title: Quote
-        filename:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Filename
-        full_path:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Full Path
-      type: object
-      required:
-      - id
-      - doc_id
-      - page_numbers
-      - quote
-      title: SmartbotReferenceResponse
-    DepositionConversationResponse:
-      properties:
-        id:
-          type: string
-          title: Id
-        matter_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Matter Id
-      type: object
-      required:
-      - id
-      title: DepositionConversationResponse
-      description: Lookup result for the Task Assistant conversation linked to a deposition task.
-    StarterSuggestionsRequest:
-      properties:
-        dataset_id:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Dataset Id
-          description: Discovery dataset id (Timeline / Doc Review / Forensic / Reliance / Case Coach)
-        deposition_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Deposition Id
-          description: Deposition task id
-        research_id:
-          anyOf:
-          - type: string
-            format: uuid
-          - type: 'null'
-          title: Research Id
-          description: Legal Research V3 session id
-        matter_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Matter Id
-          description: Matter the task belongs to; folds matter context into the suggestions
-        module:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Module
-          description: Task Assistant module discriminator (e.g. 'timeline', 'doc-review'); scopes suggestions to what the assistant can do in that module
-        refresh:
-          type: boolean
-          title: Refresh
-          description: Regenerate instead of serving the cached set (the fresh result still overwrites the cache); sent after the user consumed a suggestion
-          default: false
-      type: object
-      title: StarterSuggestionsRequest
-      description: 'Task source for LLM-generated Task Assistant starter suggestions.
-
-
-        Mirrors :class:`StartConversationRequest`''s task-link fields: exactly one of
-
-        ``dataset_id`` / ``deposition_id`` / ``research_id`` identifies the task.'
-    EnterKeyBehaviorResponse:
-      properties:
-        behavior:
-          type: string
-          enum:
-          - enter_sends
-          - enter_newline
-          title: Behavior
-      type: object
-      required:
-      - behavior
-      title: EnterKeyBehaviorResponse
-    MessageResponse:
-      properties:
-        id:
-          type: string
-          title: Id
-        conversation_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Conversation Id
-        content:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Content
-        content_type:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Content Type
-        is_ai:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Is Ai
-        created_at:
-          type: string
-          format: date-time
-          title: Created At
-        index:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Index
-        image_mime_type:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Image Mime Type
-        image_data:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Image Data
-        image_urls:
-          anyOf:
-          - items:
-              additionalProperties:
-                type: string
-              type: object
-            type: array
-          - type: 'null'
-          title: Image Urls
-        doc_ids:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Doc Ids
-        draft_session_ids:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Draft Session Ids
-        attached_file_names:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Attached File Names
-        generated_doc_ids:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Generated Doc Ids
-      type: object
-      required:
-      - id
-      - conversation_id
-      - content
-      - content_type
-      - is_ai
-      - created_at
-      - index
-      - image_mime_type
-      - image_data
-      - image_urls
-      - doc_ids
-      - draft_session_ids
-      title: MessageResponse
-    ConversationResponse:
-      properties:
-        id:
-          type: string
-          title: Id
-        title:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Title
-        matter_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Matter Id
-        matter_name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Matter Name
-        created_at:
-          type: string
-          format: date-time
-          title: Created At
-        updated_at:
-          type: string
-          format: date-time
-          title: Updated At
-      type: object
-      required:
-      - id
-      - title
-      - matter_id
-      - created_at
-      - updated_at
-      title: ConversationResponse
-    UpdateSmartSuggestionsRequest:
-      properties:
-        enabled:
-          type: boolean
-          title: Enabled
-      type: object
-      required:
-      - enabled
-      title: UpdateSmartSuggestionsRequest
-    app__modules__smart_bot__routes__router__NextStepsResponse:
-      properties:
-        steps:
-          items:
-            $ref: '#/components/schemas/NextStep'
-          type: array
-          title: Steps
-        date:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Date
-      type: object
-      required:
-      - steps
-      - date
-      title: NextStepsResponse
-    DraftDocumentResultResponse:
-      properties:
-        status:
-          type: string
-          title: Status
-        doc_agent_session_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Doc Agent Session Id
-        output_filename:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Output Filename
-        error:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Error
-      type: object
-      required:
-      - status
-      title: DraftDocumentResultResponse
-    UpdateSmartbotOptOutRequest:
-      properties:
-        opt_out:
-          type: boolean
-          title: Opt Out
-      type: object
-      required:
-      - opt_out
-      title: UpdateSmartbotOptOutRequest
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError

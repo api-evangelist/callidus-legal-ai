@@ -243,6 +243,20 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    ChatRequest:
+      properties:
+        chat_id:
+          type: integer
+          title: Chat Id
+          default: 0
+        question:
+          type: string
+          title: Question
+      type: object
+      required:
+      - question
+      title: ChatRequest
+      description: Ask a question; chat_id=0 creates a new chat.
     DepositionSuggestionsContext:
       properties:
         witness_name:
@@ -273,36 +287,55 @@ components:
       type: object
       title: DepositionSuggestionsContext
       description: POST body fields forwarded from the FE deposition prep form.
-    ChatSource:
+    MatterFileSuggestionsResponse:
       properties:
+        matter_intelligence_enabled:
+          type: boolean
+          title: Matter Intelligence Enabled
+          default: false
+        mode:
+          type: string
+          enum:
+          - initial
+          - incremental
+          title: Mode
+          default: initial
+        cutoff_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Cutoff At
+        documents:
+          items:
+            $ref: '#/components/schemas/MatterFileSuggestionDoc'
+          type: array
+          title: Documents
+      type: object
+      title: MatterFileSuggestionsResponse
+      description: Candidate matter-level files to suggest after the Add Files step.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ChatRenameRequest:
+      properties:
+        chat_id:
+          type: integer
+          title: Chat Id
         name:
           type: string
           title: Name
-        text:
-          type: string
-          title: Text
-          default: ''
-        page:
-          type: integer
-          title: Page
-        score:
-          type: number
-          title: Score
-        path:
-          type: string
-          title: Path
-        mime_type:
-          type: string
-          title: Mime Type
       type: object
       required:
+      - chat_id
       - name
-      - page
-      - score
-      - path
-      - mime_type
-      title: ChatSource
-      description: Describe the document in which a search/query result was found.
+      title: ChatRenameRequest
     ChatEntryResponse:
       properties:
         id:
@@ -344,6 +377,75 @@ components:
       - rating
       - chat_id
       title: ChatEntryResponse
+    ChatSource:
+      properties:
+        name:
+          type: string
+          title: Name
+        text:
+          type: string
+          title: Text
+          default: ''
+        page:
+          type: integer
+          title: Page
+        score:
+          type: number
+          title: Score
+        path:
+          type: string
+          title: Path
+        mime_type:
+          type: string
+          title: Mime Type
+      type: object
+      required:
+      - name
+      - page
+      - score
+      - path
+      - mime_type
+      title: ChatSource
+      description: Describe the document in which a search/query result was found.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ChatEntryUpdateRequest:
+      properties:
+        chat_entry_id:
+          type: integer
+          title: Chat Entry Id
+        rating:
+          type: integer
+          title: Rating
+      type: object
+      required:
+      - chat_entry_id
+      - rating
+      title: ChatEntryUpdateRequest
     MatterFileSuggestionDoc:
       properties:
         id:
@@ -385,33 +487,6 @@ components:
       - name
       title: MatterFileSuggestionDoc
       description: One candidate matter-level document surfaced in the suggestion modal.
-    ChatEntryUpdateRequest:
-      properties:
-        chat_entry_id:
-          type: integer
-          title: Chat Entry Id
-        rating:
-          type: integer
-          title: Rating
-      type: object
-      required:
-      - chat_entry_id
-      - rating
-      title: ChatEntryUpdateRequest
-    ChatRequest:
-      properties:
-        chat_id:
-          type: integer
-          title: Chat Id
-          default: 0
-        question:
-          type: string
-          title: Question
-      type: object
-      required:
-      - question
-      title: ChatRequest
-      description: Ask a question; chat_id=0 creates a new chat.
     ChatListResponse:
       properties:
         id:
@@ -430,78 +505,3 @@ components:
       - started_at
       - name
       title: ChatListResponse
-    MatterFileSuggestionsResponse:
-      properties:
-        matter_intelligence_enabled:
-          type: boolean
-          title: Matter Intelligence Enabled
-          default: false
-        mode:
-          type: string
-          enum:
-          - initial
-          - incremental
-          title: Mode
-          default: initial
-        cutoff_at:
-          anyOf:
-          - type: string
-            format: date-time
-          - type: 'null'
-          title: Cutoff At
-        documents:
-          items:
-            $ref: '#/components/schemas/MatterFileSuggestionDoc'
-          type: array
-          title: Documents
-      type: object
-      title: MatterFileSuggestionsResponse
-      description: Candidate matter-level files to suggest after the Add Files step.
-    ChatRenameRequest:
-      properties:
-        chat_id:
-          type: integer
-          title: Chat Id
-        name:
-          type: string
-          title: Name
-      type: object
-      required:
-      - chat_id
-      - name
-      title: ChatRenameRequest
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
