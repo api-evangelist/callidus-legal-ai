@@ -801,6 +801,8 @@ apis:
   humanURL: https://api.app.strongsuit.com
   baseURL: https://api.app.strongsuit.com
   tags:
+  - MyIp
+  tags_raw:
   - Myip
   properties:
   - type: OpenAPI
