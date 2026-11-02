@@ -16,6 +16,19 @@ x-source: harvest:secondary-market
 x-tier: profiled
 x-tier-reason: enrichment pass 2026-10-06 (modular-v1; was harvest)
 
+accessModel:
+  pricing: unknown
+  onboarding: unknown
+  trial: false
+  try_now: false
+  public: false
+  label: Unknown
+  confidence: low
+  probe_state: gated
+  source:
+  - security
+  generated: '2026-11-02'
+  method: derived
 specificationVersion: '0.20'
 
 created: '2026-10-06'
