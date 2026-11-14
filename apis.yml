@@ -1,21 +1,14 @@
 aid: callidus-legal-ai
-
 name: Callidus Legal AI
-
 description: Callidus Legal AI, now operating as StrongSuit, provides an advanced AI-driven legal research and litigation platform. It offers
   case law search, contract drafting, document review, oral argument simulation, and workflow automation for lawyers and legal teams. The platform
   integrates a comprehensive U.S. case law database with generative AI to streamline research, drafting, and risk management, targeting appellate
   litigators and corporate legal departments.
-
 url: https://raw.githubusercontent.com/api-evangelist/callidus-legal-ai/refs/heads/main/apis.yml
-
 x-type: company
-
 x-source: harvest:secondary-market
-
 x-tier: profiled
 x-tier-reason: enrichment pass 2026-10-06 (modular-v1; was harvest)
-
 accessModel:
   pricing: unknown
   onboarding: unknown
@@ -27,14 +20,11 @@ accessModel:
   probe_state: gated
   source:
   - security
-  generated: '2026-11-06'
+  generated: '2026-11-13'
   method: derived
 specificationVersion: '0.20'
-
 created: '2026-10-06'
-
 modified: '2026-10-06'
-
 tags:
 - Legal Tech
 - Artificial Intelligence
@@ -47,13 +37,11 @@ tags_raw:
 - Litigation
 - ContractAutomation
 - Research
-
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
-
 common:
 - type: AgenticAccess
   url: agentic-access/callidus-legal-ai-agentic-access.yml
@@ -89,7 +77,6 @@ common:
   url: security/callidus-legal-ai-domain-security.yml
 - type: Website
   url: https://strongsuit.com
-
 apis:
 - aid: callidus-legal-ai:callidus-legal-ai-addin-docutils-api
   name: Callidus Legal AI Addin Doc Utils API
@@ -102,17 +89,7 @@ apis:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-addin-docutils-api-openapi.yml
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
+    url: json-schema/callidus-legal-ai-bilingual-redline-request-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-addin-litigate-api
   name: Callidus Legal AI Addin Litigate API
   description: The Addin-Litigate API from Callidus Legal AI — 2 operation(s) for addin-litigate.
@@ -124,17 +101,9 @@ apis:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-addin-litigate-api-openapi.yml
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
+    url: json-schema/callidus-legal-ai-addin-batch-verify-citations-request-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
+    url: json-schema/callidus-legal-ai-body-convert-to-word-addin-litigate-convert-to-word-post-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-addin-liveedit-api
   name: Callidus Legal AI Addin Live Edit API
   description: The Addin-LiveEdit API from Callidus Legal AI — 4 operation(s) for addin-liveedit.
@@ -146,17 +115,7 @@ apis:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-addin-liveedit-api-openapi.yml
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
+    url: json-schema/callidus-legal-ai-addin-live-editing-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-addin-negotiate-api
   name: Callidus Legal AI Addin Negotiate API
   description: The Addin-Negotiate API from Callidus Legal AI — 13 operation(s) for addin-negotiate.
@@ -168,17 +127,15 @@ apis:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-addin-negotiate-api-openapi.yml
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
+    url: json-schema/callidus-legal-ai-addin-negotiate-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
+    url: json-schema/callidus-legal-ai-body-negotiate-relevant-documents-addin-negotiate-relevant-documents-post-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
+    url: json-schema/callidus-legal-ai-body-negotiate-review-process-files-addin-negotiate-review-process-files-post-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
+    url: json-schema/callidus-legal-ai-body-negotiate-review-playbook-addin-negotiate-review-playbook-post-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
+    url: json-schema/callidus-legal-ai-body-negotiate-review-sections-addin-negotiate-review-post-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-addin-outlook-api
   name: Callidus Legal AI Addin Outlook API
   description: The Addin-Outlook API from Callidus Legal AI — 5 operation(s) for addin-outlook.
@@ -190,17 +147,17 @@ apis:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-addin-outlook-api-openapi.yml
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
+    url: json-schema/callidus-legal-ai-detect-matter-response-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
+    url: json-schema/callidus-legal-ai-draft-request-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
+    url: json-schema/callidus-legal-ai-context-counts-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
+    url: json-schema/callidus-legal-ai-detect-matter-request-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
+    url: json-schema/callidus-legal-ai-suggest-instruction-response-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
+    url: json-schema/callidus-legal-ai-suggest-instruction-request-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-authorization-api
   name: Callidus Legal AI Authorization API
   description: The Authorization API from Callidus Legal AI — 6 operation(s) for authorization.
@@ -212,17 +169,17 @@ apis:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-authorization-api-openapi.yml
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
+    url: json-schema/callidus-legal-ai-grant-permission-response-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
+    url: json-schema/callidus-legal-ai-grant-permission-request-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
+    url: json-schema/callidus-legal-ai-inherited-permission-response-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
+    url: json-schema/callidus-legal-ai-permission-can-response-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
+    url: json-schema/callidus-legal-ai-resource-members-response-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
+    url: json-schema/callidus-legal-ai-permission-list-response-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-basic-bot-api
   name: Callidus Legal AI Basic Bot API
   description: The Basic Bot API from Callidus Legal AI — 24 operation(s) for basic bot.
@@ -234,17 +191,17 @@ apis:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-basic-bot-api-openapi.yml
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
+    url: json-schema/callidus-legal-ai-basic-bot-optional-researched-case-request-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
+    url: json-schema/callidus-legal-ai-basic-bot-researched-request-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
+    url: json-schema/callidus-legal-ai-basic-bot-research-prep-legal-authorities-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
+    url: json-schema/callidus-legal-ai-basic-bot-request-root-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
+    url: json-schema/callidus-legal-ai-attach-doc-hub-documents-request-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
+    url: json-schema/callidus-legal-ai-basic-bot-researched-cases-request-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-callidusai-api-api
   name: Callidus Legal AI CallidusAI API
   description: The CallidusAI API API from Callidus Legal AI — 1 operation(s) for callidusai api.
@@ -255,18 +212,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-callidusai-api-api-openapi.yml
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-cases-api
   name: Callidus Legal AI Cases API
   description: The cases API from Callidus Legal AI — 40 operation(s) for cases.
@@ -280,17 +225,17 @@ apis:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-cases-api-openapi.yml
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
+    url: json-schema/callidus-legal-ai-addin-case-details-response-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
+    url: json-schema/callidus-legal-ai-citation-search-result-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
+    url: json-schema/callidus-legal-ai-addin-verify-citation-request-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
+    url: json-schema/callidus-legal-ai-addin-case-search-with-filters-request-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
+    url: json-schema/callidus-legal-ai-addin-filtered-case-search-request-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
+    url: json-schema/callidus-legal-ai-deep-search-request-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-changes-api
   name: Callidus Legal AI Changes API
   description: The Changes API from Callidus Legal AI — 1 operation(s) for changes.
@@ -302,17 +247,7 @@ apis:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-changes-api-openapi.yml
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
+    url: json-schema/callidus-legal-ai-optpfile-update-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-chat-api
   name: Callidus Legal AI Chat API
   description: The Chat API from Callidus Legal AI — 3 operation(s) for chat.
@@ -324,17 +259,17 @@ apis:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-chat-api-openapi.yml
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
+    url: json-schema/callidus-legal-ai-chat-entry-response-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
+    url: json-schema/callidus-legal-ai-deposition-suggestions-context-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
+    url: json-schema/callidus-legal-ai-matter-file-suggestions-response-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
+    url: json-schema/callidus-legal-ai-chat-list-response-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
+    url: json-schema/callidus-legal-ai-chat-request-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
+    url: json-schema/callidus-legal-ai-chat-entry-update-request-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-contract-api
   name: Callidus Legal AI Contract API
   description: The Contract API from Callidus Legal AI — 38 operation(s) for contract.
@@ -346,17 +281,17 @@ apis:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-contract-api-openapi.yml
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
+    url: json-schema/callidus-legal-ai-addin-proof-read-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
+    url: json-schema/callidus-legal-ai-addin-reference-doc-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
+    url: json-schema/callidus-legal-ai-addin-negotiate-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
+    url: json-schema/callidus-legal-ai-body-negotiate-relevant-documents-contract-negotiate-relevant-documents-post-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
+    url: json-schema/callidus-legal-ai-followup-questions-input-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
+    url: json-schema/callidus-legal-ai-contract-chat-with-context-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-courts-api
   name: Callidus Legal AI Courts API
   description: The courts API from Callidus Legal AI — 4 operation(s) for courts.
@@ -370,17 +305,7 @@ apis:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-courts-api-openapi.yml
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
+    url: json-schema/callidus-legal-ai-court-request-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-db-caselaw-api
   name: Callidus Legal AI DB Caselaw API
   description: The DB Caselaw API from Callidus Legal AI — 17 operation(s) for db caselaw.
@@ -392,17 +317,17 @@ apis:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-db-caselaw-api-openapi.yml
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
+    url: json-schema/callidus-legal-ai-delete-dispositions-request-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
+    url: json-schema/callidus-legal-ai-process-batch-jobs-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
+    url: json-schema/callidus-legal-ai-upload-batch-jobs-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
+    url: json-schema/callidus-legal-ai-process-batch-job-vertex-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
+    url: json-schema/callidus-legal-ai-hydrated-disposition-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
+    url: json-schema/callidus-legal-ai-batch-job-queue-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-depositions-api
   name: Callidus Legal AI Depositions API
   description: The Depositions API from Callidus Legal AI — 12 operation(s) for depositions.
@@ -414,17 +339,17 @@ apis:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-depositions-api-openapi.yml
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
+    url: json-schema/callidus-legal-ai-deposition-prep-response-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
+    url: json-schema/callidus-legal-ai-deposition-response-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
+    url: json-schema/callidus-legal-ai-inconsistency-run-status-response-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
+    url: json-schema/callidus-legal-ai-deposition-prep-create-request-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
+    url: json-schema/callidus-legal-ai-inconsistency-finding-response-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
+    url: json-schema/callidus-legal-ai-inconsistency-run-create-request-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-desktop-oauth-api
   name: Callidus Legal AI Desktop OAuth API
   description: The Desktop OAuth API from Callidus Legal AI — 6 operation(s) for desktop oauth.
@@ -436,17 +361,9 @@ apis:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-desktop-oauth-api-openapi.yml
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
+    url: json-schema/callidus-legal-ai-authorize-request-schema.json
   - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
+    url: json-schema/callidus-legal-ai-act-as-response-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-doc-agent-api
   name: Callidus Legal AI Doc Agent API
   description: The Doc Agent API from Callidus Legal AI — 5 operation(s) for doc agent.
@@ -457,18 +374,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-doc-agent-api-openapi.yml
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-doc-agent-debug-api
   name: Callidus Legal AI Doc Agent Debug API
   description: The Doc Agent Debug API from Callidus Legal AI — 10 operation(s) for doc agent debug.
@@ -479,18 +384,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-doc-agent-debug-api-openapi.yml
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-doc-agent-v2-api
   name: Callidus Legal AI Doc Agent v2 API
   description: The Doc Agent v2 API from Callidus Legal AI — 5 operation(s) for doc agent v2.
@@ -501,18 +394,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-doc-agent-v2-api-openapi.yml
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-document-api
   name: Callidus Legal AI Document API
   description: The Document API from Callidus Legal AI — 61 operation(s) for document.
@@ -525,22 +406,9 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-document-api-openapi.yml
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-document-drafting-api
   name: Callidus Legal AI Document Drafting API
-  description: >-
-    The Document Drafting API from Callidus Legal AI — 10 operation(s) for document drafting.
+  description: The Document Drafting API from Callidus Legal AI — 10 operation(s) for document drafting.
   humanURL: https://api.app.strongsuit.com
   baseURL: https://api.app.strongsuit.com
   tags:
@@ -548,22 +416,9 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-document-drafting-api-openapi.yml
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-drafting-templates-api
   name: Callidus Legal AI Drafting Templates API
-  description: >-
-    The Drafting Templates API from Callidus Legal AI — 2 operation(s) for drafting templates.
+  description: The Drafting Templates API from Callidus Legal AI — 2 operation(s) for drafting templates.
   humanURL: https://api.app.strongsuit.com
   baseURL: https://api.app.strongsuit.com
   tags:
@@ -571,18 +426,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-drafting-templates-api-openapi.yml
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-ediscovery-api
   name: Callidus Legal AI E Discovery API
   description: The eDiscovery API from Callidus Legal AI — 159 operation(s) for ediscovery.
@@ -617,18 +460,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-error-api-openapi.yml
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-form-filler-api
   name: Callidus Legal AI Form Filler API
   description: The Form Filler API from Callidus Legal AI — 2 operation(s) for form filler.
@@ -639,18 +470,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-form-filler-api-openapi.yml
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-generate-summary-api
   name: Callidus Legal AI Generate Summary API
   description: The Generate Summary API from Callidus Legal AI — 1 operation(s) for generate summary.
@@ -661,18 +480,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-generate-summary-api-openapi.yml
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-health-api
   name: Callidus Legal AI Health API
   description: The Health API from Callidus Legal AI — 2 operation(s) for health.
@@ -683,18 +490,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-health-api-openapi.yml
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-integrations-api
   name: Callidus Legal AI Integrations API
   description: The Integrations API from Callidus Legal AI — 24 operation(s) for integrations.
@@ -707,18 +502,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-integrations-api-openapi.yml
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-legal-research-api
   name: Callidus Legal AI Legal Research API
   description: The Legal Research API from Callidus Legal AI — 4 operation(s) for legal research.
@@ -729,22 +512,9 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-legal-research-api-openapi.yml
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-legal-research-v3-api-api
   name: 'Callidus Legal AI Legal Research: V3 API'
-  description: >-
-    The Legal Research: V3 API API from Callidus Legal AI — 140 operation(s) for legal research: v3 api.
+  description: 'The Legal Research: V3 API API from Callidus Legal AI — 140 operation(s) for legal research: v3 api.'
   humanURL: https://api.app.strongsuit.com
   baseURL: https://api.app.strongsuit.com
   tags:
@@ -752,18 +522,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-legal-research-v3-api-api-openapi.yml
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-mcp-api
   name: Callidus Legal AI MCP API
   description: The MCP API from Callidus Legal AI — 1 operation(s) for mcp.
@@ -774,18 +532,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-mcp-api-openapi.yml
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-mcp-oauth-api
   name: Callidus Legal AI MCP OAuth API
   description: The MCP OAuth API from Callidus Legal AI — 7 operation(s) for mcp oauth.
@@ -796,18 +542,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-mcp-oauth-api-openapi.yml
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-myip-api
   name: Callidus Legal AI Myip API
   description: The Myip API from Callidus Legal AI — 1 operation(s) for myip.
@@ -820,18 +554,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-myip-api-openapi.yml
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-onboarding-api
   name: Callidus Legal AI Onboarding API
   description: The Onboarding API from Callidus Legal AI — 1 operation(s) for onboarding.
@@ -842,18 +564,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-onboarding-api-openapi.yml
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-optp-api
   name: Callidus Legal AI Optp API
   description: The Optp API from Callidus Legal AI — 16 operation(s) for optp.
@@ -864,22 +574,9 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-optp-api-openapi.yml
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-oral-argument-simulator-api
   name: Callidus Legal AI Oral Argument Simulator API
-  description: >-
-    The Oral Argument Simulator API from Callidus Legal AI — 10 operation(s) for oral argument simulator.
+  description: The Oral Argument Simulator API from Callidus Legal AI — 10 operation(s) for oral argument simulator.
   humanURL: https://api.app.strongsuit.com
   baseURL: https://api.app.strongsuit.com
   tags:
@@ -887,18 +584,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-oral-argument-simulator-api-openapi.yml
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-pii-api
   name: Callidus Legal AI Pii API
   description: The Pii API from Callidus Legal AI — 1 operation(s) for pii.
@@ -911,18 +596,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-pii-api-openapi.yml
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-platform-api
   name: Callidus Legal AI Platform API
   description: The Platform API from Callidus Legal AI — 81 operation(s) for platform.
@@ -933,18 +606,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-platform-api-openapi.yml
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-proofread-api
   name: Callidus Legal AI Proofread API
   description: The Proofread API from Callidus Legal AI — 6 operation(s) for proofread.
@@ -955,18 +616,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-proofread-api-openapi.yml
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-reliance-api
   name: Callidus Legal AI Reliance API
   description: The Reliance API from Callidus Legal AI — 5 operation(s) for reliance.
@@ -977,18 +626,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-reliance-api-openapi.yml
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-serp-api
   name: Callidus Legal AI Serp API
   description: The Serp API from Callidus Legal AI — 1 operation(s) for serp.
@@ -1001,18 +638,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-serp-api-openapi.yml
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-session-id-api
   name: Callidus Legal AI Session Id API
   description: The Session Id API from Callidus Legal AI — 1 operation(s) for session id.
@@ -1023,18 +648,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-session-id-api-openapi.yml
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-smart-bot-api
   name: Callidus Legal AI Smart Bot API
   description: The Smart Bot API from Callidus Legal AI — 19 operation(s) for smart bot.
@@ -1045,18 +658,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-smart-bot-api-openapi.yml
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-stats-api
   name: Callidus Legal AI Stats API
   description: The stats API from Callidus Legal AI — 2 operation(s) for stats.
@@ -1069,18 +670,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-stats-api-openapi.yml
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-suggestion-api
   name: Callidus Legal AI Suggestion API
   description: The Suggestion API from Callidus Legal AI — 2 operation(s) for suggestion.
@@ -1091,18 +680,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-suggestion-api-openapi.yml
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-suggestions-api
   name: Callidus Legal AI Suggestions API
   description: The Suggestions API from Callidus Legal AI — 1 operation(s) for suggestions.
@@ -1113,18 +690,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-suggestions-api-openapi.yml
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-summarize-api
   name: Callidus Legal AI Summarize API
   description: The Summarize API from Callidus Legal AI — 1 operation(s) for summarize.
@@ -1135,18 +700,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-summarize-api-openapi.yml
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-summarize-full-api
   name: Callidus Legal AI Summarize Full API
   description: The Summarize Full API from Callidus Legal AI — 1 operation(s) for summarize full.
@@ -1157,22 +710,9 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-summarize-full-api-openapi.yml
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-summarize-full-details-api
   name: Callidus Legal AI Summarize Full Details API
-  description: >-
-    The Summarize Full Details API from Callidus Legal AI — 1 operation(s) for summarize full details.
+  description: The Summarize Full Details API from Callidus Legal AI — 1 operation(s) for summarize full details.
   humanURL: https://api.app.strongsuit.com
   baseURL: https://api.app.strongsuit.com
   tags:
@@ -1180,40 +720,18 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-summarize-full-details-api-openapi.yml
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-tasktracker-api
   name: Callidus Legal AI Tasktracker API
   description: The Tasktracker API from Callidus Legal AI — 1 operation(s) for tasktracker.
   humanURL: https://api.app.strongsuit.com
   baseURL: https://api.app.strongsuit.com
   tags:
+  - Task Tracker
+  tags_raw:
   - Tasktracker
   properties:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-tasktracker-api-openapi.yml
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-validate-api
   name: Callidus Legal AI Validate API
   description: The Validate API from Callidus Legal AI — 1 operation(s) for validate.
@@ -1224,18 +742,6 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-validate-api-openapi.yml
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
 - aid: callidus-legal-ai:callidus-legal-ai-version-api
   name: Callidus Legal AI Version API
   description: The version API from Callidus Legal AI — 1 operation(s) for version.
@@ -1248,26 +754,13 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/callidus-legal-ai-version-api-openapi.yml
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-vehicle-detail-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-tax-document-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-liability-account-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-detail-dataset-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-expense-record-response-schema.json
-  - type: JSONSchema
-    url: json-schema/callidus-legal-ai-rental-property-detail-response-schema.json
 x-coverage:
   state: gated
   reason: partner-login
   method: derived
   generated: '2026-10-06'
   generator: derive-coverage.py (pre-flight evidence)
-  detail: >-
-    the company serves an API surface but requires credentials before any description of it can be read
+  detail: the company serves an API surface but requires credentials before any description of it can be read
   evidence:
   - url: https://api.app.strongsuit.com/openapi.json
     status: null

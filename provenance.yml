@@ -5,6 +5,12 @@ artifacts:
   agentic-access/callidus-legal-ai-agentic-access.yml:
     method: generated
     evidence: declared in the artifact
+  certification/observations-2026-11-11.jsonl:
+    method: unknown
+    evidence: no authorship recorded
+  certification/status.yml:
+    method: unknown
+    evidence: no authorship recorded
   conformance/callidus-legal-ai-conformance.yml:
     method: derived
     evidence: declared in the artifact
@@ -20,25 +26,208 @@ artifacts:
   heartbeat/2026-11-06.yml:
     method: unknown
     evidence: no authorship recorded
+  heartbeat/2026-11-13.yml:
+    method: unknown
+    evidence: no authorship recorded
   hosts/callidus-legal-ai-hosts.yml:
     method: derived
     evidence: declared in the artifact
   json-ld/callidus-legal-ai-context.jsonld:
     method: unknown
     evidence: no authorship recorded
+  json-schema/callidus-legal-ai-act-as-response-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-addin-batch-verify-citations-request-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-addin-case-details-response-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-addin-case-search-with-filters-request-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-addin-filtered-case-search-request-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-addin-live-editing-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-addin-negotiate-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-addin-proof-read-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-addin-reference-doc-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-addin-verify-citation-request-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-attach-doc-hub-documents-request-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-authorize-request-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-basic-bot-optional-researched-case-request-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-basic-bot-request-root-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-basic-bot-research-prep-legal-authorities-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-basic-bot-researched-cases-request-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-basic-bot-researched-request-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-batch-job-queue-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-bilingual-redline-request-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-body-convert-to-word-addin-litigate-convert-to-word-post-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-body-negotiate-relevant-documents-addin-negotiate-relevant-documents-post-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-body-negotiate-relevant-documents-contract-negotiate-relevant-documents-post-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-body-negotiate-review-playbook-addin-negotiate-review-playbook-post-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-body-negotiate-review-process-files-addin-negotiate-review-process-files-post-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-body-negotiate-review-sections-addin-negotiate-review-post-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-chat-entry-response-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-chat-entry-update-request-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-chat-list-response-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-chat-request-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-citation-search-result-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-context-counts-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-contract-chat-with-context-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-court-request-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-deep-search-request-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-delete-dispositions-request-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-deposition-prep-create-request-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-deposition-prep-response-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-deposition-response-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-deposition-suggestions-context-schema.json:
+    method: unknown
+    evidence: no authorship recorded
   json-schema/callidus-legal-ai-detail-dataset-response-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-detect-matter-request-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-detect-matter-response-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-draft-request-schema.json:
     method: unknown
     evidence: no authorship recorded
   json-schema/callidus-legal-ai-expense-record-response-schema.json:
     method: unknown
     evidence: no authorship recorded
+  json-schema/callidus-legal-ai-followup-questions-input-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-grant-permission-request-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-grant-permission-response-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-hydrated-disposition-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-inconsistency-finding-response-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-inconsistency-run-create-request-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-inconsistency-run-status-response-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-inherited-permission-response-schema.json:
+    method: unknown
+    evidence: no authorship recorded
   json-schema/callidus-legal-ai-liability-account-response-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-matter-file-suggestions-response-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-optpfile-update-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-permission-can-response-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-permission-list-response-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-process-batch-job-vertex-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-process-batch-jobs-schema.json:
     method: unknown
     evidence: no authorship recorded
   json-schema/callidus-legal-ai-rental-property-detail-response-schema.json:
     method: unknown
     evidence: no authorship recorded
+  json-schema/callidus-legal-ai-resource-members-response-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-suggest-instruction-request-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-suggest-instruction-response-schema.json:
+    method: unknown
+    evidence: no authorship recorded
   json-schema/callidus-legal-ai-tax-document-response-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/callidus-legal-ai-upload-batch-jobs-schema.json:
     method: unknown
     evidence: no authorship recorded
   json-schema/callidus-legal-ai-vehicle-detail-response-schema.json:
@@ -47,7 +236,7 @@ artifacts:
   kin/checks-2026-10-23T222754.yml:
     method: generated
     evidence: Kin Score snapshot written by score.rb
-  kin/checks-2026-11-02T082323.yml:
+  kin/checks-2026-11-06T143934.yml:
     method: generated
     evidence: Kin Score snapshot written by score.rb
   kin/score-2026-10-09T213714.yml:
@@ -81,6 +270,9 @@ artifacts:
     method: generated
     evidence: Kin Score snapshot written by score.rb
   kin/score-2026-11-02T082323.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-11-06T143934.yml:
     method: generated
     evidence: Kin Score snapshot written by score.rb
   llms/callidus-legal-ai-llms-provenance.yml:
