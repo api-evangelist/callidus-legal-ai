@@ -20,7 +20,7 @@ accessModel:
   probe_state: gated
   source:
   - security
-  generated: '2026-11-13'
+  generated: '2026-11-20'
   method: derived
 specificationVersion: '0.20'
 created: '2026-10-06'
